@@ -1,0 +1,2 @@
+#define simunet_VERSION_MAJOR @simunet_VERSION_MAJOR@
+#define simunet_VERSION_MINOR @simunet_VERSION_MINOR@
