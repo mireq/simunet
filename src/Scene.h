@@ -20,21 +20,26 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
+#ifndef SCENE_H
+#define SCENE_H
 
-#include "simunet.h"
+#include <QGLWidget>
 
-#include <QApplication>
-#include <QPushButton>
-
-#include "MainWindow.h"
-
-int main(int argc, char *argv[])
+/**
+ @author Miroslav Bendik <miroslav.bendik@gmail.com>
+*/
+class Scene : public QGLWidget
 {
-	QApplication app(argc, argv);
+		Q_OBJECT
+	public:
+		Scene(QWidget* parent = 0);
+		~Scene();
 
-	MainWindow mainwin;
-	mainwin.show();
-	int returnCode = app.exec();
+	protected:
+		void initializeGL();
+		void resizeGL(int w, int h);
+		void paintGL();
 
-	return returnCode;
-}
+};
+
+#endif

@@ -20,21 +20,13 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
+#include "AboutDlg.h"
 
-#include "simunet.h"
-
-#include <QApplication>
-#include <QPushButton>
-
-#include "MainWindow.h"
-
-int main(int argc, char *argv[])
+AboutDlg::AboutDlg(QWidget *parent)
+		: QDialog(parent)
 {
-	QApplication app(argc, argv);
-
-	MainWindow mainwin;
-	mainwin.show();
-	int returnCode = app.exec();
-
-	return returnCode;
+	setupUi(this);
 }
+
+
+

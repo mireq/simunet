@@ -27,13 +27,20 @@ add_definitions("${QT_DEFINITIONS}")
 
 # zdrojove kody
 set(simunet_SRCS
-	src/simunet.cpp)
+	src/simunet.cpp
+	src/MainWindow.cpp
+	src/Scene.cpp
+	src/AboutDlg.cpp)
 
 # hlavickove subory ktore musi spracovat moc
-set(simunet_MOC_HDRS)
+set(simunet_MOC_HDRS
+	src/MainWindow.h
+	src/Scene.h
+	src/AboutDlg.h)
 
 # dialogy
-set(simunet_UIS)
+set(simunet_UIS
+	src/AboutDlg.ui)
 
 # zdroje
 set(simunet_QRC
@@ -59,7 +66,6 @@ target_link_libraries(simunet ${QT_LIBRARIES} ${QT_ADDITIONAL_LIBS})
 if(CMAKE_BUILD_TYPE MATCHES Debug)
 	add_definitions(-ggdb)
 	add_definitions(-DDEBUG)
-	add_definitions(-Wall)
 endif(CMAKE_BUILD_TYPE MATCHES Debug)
 
 add_definitions(-Wall -O2)

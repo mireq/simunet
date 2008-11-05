@@ -20,21 +20,47 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
+#ifndef MAINWINDOW_H
+#define MAINWINDOW_H
 
-#include "simunet.h"
+#include <QMainWindow>
 
-#include <QApplication>
-#include <QPushButton>
+class QAction;
+class QMenu;
 
-#include "MainWindow.h"
+class AboutDlg;
 
-int main(int argc, char *argv[])
+/**
+ @author Miroslav Bendik <miroslav.bendik@gmail.com>
+*/
+class MainWindow : public QMainWindow
 {
-	QApplication app(argc, argv);
+		Q_OBJECT
+	public:
+		MainWindow(QWidget* parent = 0, Qt::WindowFlags flags = 0);
+		~MainWindow();
 
-	MainWindow mainwin;
-	mainwin.show();
-	int returnCode = app.exec();
+	protected:
+		void setupVariables();
+		void setupUi();
+		void setupActions();
+		void setupMenus();
+		void setupToolBars();
 
-	return returnCode;
-}
+	protected slots:
+		void about();
+
+	private:
+		//menu
+		QMenu *m_fileMenu;
+		QMenu *m_helpMenu;
+
+		// akcie
+		QAction *m_quitAct;
+		QAction *m_aboutAct;
+
+		// okna
+		AboutDlg *m_aboutDlg;
+};
+
+#endif

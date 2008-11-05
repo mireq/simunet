@@ -20,21 +20,30 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
+#include "Scene.h"
 
-#include "simunet.h"
-
-#include <QApplication>
-#include <QPushButton>
-
-#include "MainWindow.h"
-
-int main(int argc, char *argv[])
+Scene::Scene(QWidget* parent): QGLWidget(parent)
 {
-	QApplication app(argc, argv);
-
-	MainWindow mainwin;
-	mainwin.show();
-	int returnCode = app.exec();
-
-	return returnCode;
+	/// TODO: Implementovat
 }
+
+
+Scene::~Scene()
+{
+}
+
+void Scene::initializeGL()
+{
+	/// TODO: Implementovat
+}
+
+void Scene::resizeGL(int w, int h)
+{
+	/// TODO: Implementovat
+}
+
+void Scene::paintGL()
+{
+	/// TODO: Implementovat
+}
+

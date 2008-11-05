@@ -20,21 +20,73 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-
-#include "simunet.h"
-
-#include <QApplication>
-#include <QPushButton>
-
 #include "MainWindow.h"
+#include "Scene.h"
+#include "AboutDlg.h"
 
-int main(int argc, char *argv[])
-{
-	QApplication app(argc, argv);
+#include <QAction>
+#include <QMenuBar>
+#include <QApplication>
+#include <QStatusBar>
 
-	MainWindow mainwin;
-	mainwin.show();
-	int returnCode = app.exec();
-
-	return returnCode;
+MainWindow::MainWindow(QWidget* parent, Qt::WindowFlags flags): QMainWindow(parent, flags)
+{	
+	setWindowTitle("SimuNet");
+	setupVariables();
+	setupUi();
+	Scene *scene = new Scene();
+	setCentralWidget(scene);
+	statusBar()->showMessage(tr("Ready"), 5000);
 }
+
+
+MainWindow::~MainWindow()
+{
+}
+
+void MainWindow::setupVariables()
+{
+	m_aboutDlg = NULL;
+}
+
+void MainWindow::setupUi()
+{
+	setupActions();
+	setupMenus();
+	setupToolBars();
+}
+
+void MainWindow::setupActions()
+{
+	m_quitAct = new QAction(tr("&Quit"), this);
+	m_quitAct->setShortcut(QKeySequence(tr("Ctrl+Q")));
+
+	m_aboutAct = new QAction(tr("&About"), this);
+
+	connect(m_quitAct, SIGNAL(triggered()), qApp, SLOT(quit()));
+	connect(m_aboutAct, SIGNAL(triggered()), SLOT(about()));
+}
+
+void MainWindow::setupMenus()
+{
+	m_fileMenu = menuBar()->addMenu(tr("&File"));
+	m_helpMenu = menuBar()->addMenu(tr("&Help"));
+
+	m_fileMenu->addAction(m_quitAct);
+
+	m_helpMenu->addAction(m_aboutAct);
+}
+
+void MainWindow::setupToolBars()
+{
+}
+
+void MainWindow::about()
+{
+	if (m_aboutDlg == NULL)
+	{
+		m_aboutDlg = new AboutDlg(this);
+	}
+	m_aboutDlg->show();
+}
+

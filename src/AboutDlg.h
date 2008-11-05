@@ -20,21 +20,22 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
+#ifndef ABOUTDLG_H
+#define ABOUTDLG_H
 
-#include "simunet.h"
+#include "ui_AboutDlg.h"
+#include <QDialog>
 
-#include <QApplication>
-#include <QPushButton>
+/**
+ @author Miroslav Bendik <miroslav.bendik@gmail.com>
+*/
 
-#include "MainWindow.h"
-
-int main(int argc, char *argv[])
+class AboutDlg : public QDialog, Ui_AboutDlg
 {
-	QApplication app(argc, argv);
+		Q_OBJECT
+	public:
+		AboutDlg(QWidget *parent = 0);
 
-	MainWindow mainwin;
-	mainwin.show();
-	int returnCode = app.exec();
+};
 
-	return returnCode;
-}
+#endif
