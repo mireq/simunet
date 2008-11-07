@@ -22,9 +22,12 @@
  ***************************************************************************/
 #include "Scene.h"
 
+#include <QDebug>
+
 Scene::Scene(QWidget* parent): QGLWidget(parent)
 {
 	/// TODO: Implementovat
+	setMinimumSize(100, 100);
 }
 
 
@@ -34,16 +37,45 @@ Scene::~Scene()
 
 void Scene::initializeGL()
 {
-	/// TODO: Implementovat
+	qglClearColor(Qt::black);
+	glClearDepth(1.0);
+	glDepthFunc(GL_LESS);
+	glEnable(GL_DEPTH_TEST);
 }
 
 void Scene::resizeGL(int w, int h)
 {
-	/// TODO: Implementovat
+	glViewport(0, 0, w, h);
+
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+
+	float pomer = (float)w / (float)h;
+
+	glFrustum(1.0 * pomer, -1.0 * pomer, 0.5, -0.5, 1, 1000);
+	glMatrixMode(GL_MODELVIEW);
 }
 
 void Scene::paintGL()
 {
-	/// TODO: Implementovat
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	qglColor(Qt::red);
+	glLoadIdentity();
+	glTranslatef(-300.0f, 0.0f,-600.0f);
+	glRotatef(85.0f, 1.0f, 0.0f, 0.0f);
+	glRotatef(-11.0f, 0.0f, 0.0f, 1.0f);
+	glBegin(GL_LINES);
+		for (int i = 0; i < 51; i++)
+		{
+			glVertex3i(i * 10,  0,  0);
+			glVertex3i(i * 10, 500, 0);
+		}
+		for (int i = 0; i < 51; i++)
+		{
+			glVertex3i(0,  i * 10,  0);
+			glVertex3i(500, i * 10, 0);
+		}
+	glEnd();
+	glFlush();
 }
 
