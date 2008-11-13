@@ -28,6 +28,19 @@
 #include <QMenuBar>
 #include <QApplication>
 #include <QStatusBar>
+#include <QGraphicsView>
+#include <QResizeEvent>
+#include <QGLWidget>
+
+class GraphicsView : public QGraphicsView
+{
+	protected:
+		void resizeEvent(QResizeEvent *event) {
+			if (scene())
+				scene()->setSceneRect(QRect(QPoint(0, 0), event->size()));
+			QGraphicsView::resizeEvent(event);
+		}
+};
 
 MainWindow::MainWindow(QWidget* parent, Qt::WindowFlags flags): QMainWindow(parent, flags)
 {	
@@ -35,7 +48,12 @@ MainWindow::MainWindow(QWidget* parent, Qt::WindowFlags flags): QMainWindow(pare
 	setupVariables();
 	setupUi();
 	Scene *scene = new Scene();
-	setCentralWidget(scene);
+	GraphicsView *view = new GraphicsView;
+	view->setScene(scene);
+	view->setViewport(new QGLWidget(QGLFormat(QGL::SampleBuffers)));
+	view->setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
+	view->show();
+	setCentralWidget(view);
 	statusBar()->showMessage(tr("Ready"), 5000);
 }
 

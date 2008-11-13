@@ -23,22 +23,20 @@
 #ifndef SCENE_H
 #define SCENE_H
 
-#include <QGLWidget>
+#include <QGraphicsScene>
 
 /**
  @author Miroslav Bendik <miroslav.bendik@gmail.com>
 */
-class Scene : public QGLWidget
+class Scene : public QGraphicsScene
 {
 		Q_OBJECT
 	public:
-		Scene(QWidget* parent = 0);
+		Scene(QObject* parent = 0);
 		~Scene();
 
 	protected:
-		void initializeGL();
-		void resizeGL(int w, int h);
-		void paintGL();
+		void drawBackground(QPainter *painter, const QRectF &rect);
 
 };
 

@@ -23,11 +23,43 @@
 #include "Scene.h"
 
 #include <QDebug>
+#include <QtOpenGL>
 
-Scene::Scene(QWidget* parent): QGLWidget(parent)
+class SceneDialog: public QDialog
+{
+	public:
+		SceneDialog(const QString &title);
+		virtual ~SceneDialog();
+};
+
+SceneDialog::SceneDialog(const QString &title)
+{
+	QVBoxLayout *layout = new QVBoxLayout;
+	setLayout(layout);
+	setWindowTitle(title);
+}
+
+SceneDialog::~SceneDialog()
+{
+}
+
+Scene::Scene(QObject* parent): QGraphicsScene(parent)
 {
 	/// TODO: Implementovat
-	setMinimumSize(100, 100);
+	//setMinimumSize(100, 100);
+	SceneDialog *dialog = new SceneDialog("Dialog");
+	dialog->setWindowOpacity(0.8);
+
+	dialog->layout()->addWidget(new QLabel("Ukazkovy dialog v 3D scene"));
+
+	addWidget(dialog);
+
+	foreach (QGraphicsItem *item, items()) {
+		item->setFlag(QGraphicsItem::ItemIsMovable);
+		item->setCacheMode(QGraphicsItem::DeviceCoordinateCache);
+
+		item->setPos(20, 30);
+	}
 }
 
 
@@ -35,47 +67,49 @@ Scene::~Scene()
 {
 }
 
-void Scene::initializeGL()
-{
-	qglClearColor(Qt::black);
-	glClearDepth(1.0);
-	glDepthFunc(GL_LESS);
-	glEnable(GL_DEPTH_TEST);
-}
 
-void Scene::resizeGL(int w, int h)
+void Scene::drawBackground(QPainter *painter, const QRectF &)
 {
-	glViewport(0, 0, w, h);
+	if (painter->paintEngine()->type() != QPaintEngine::OpenGL) {
+		qWarning("Potrebujeme ako viewport QGLWidget");
+		return;
+	}
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glMatrixMode(GL_PROJECTION);
+	glPushMatrix();
 	glLoadIdentity();
 
-	float pomer = (float)w / (float)h;
-
+	float pomer = width() / height();
 	glFrustum(1.0 * pomer, -1.0 * pomer, 0.5, -0.5, 1, 1000);
-	glMatrixMode(GL_MODELVIEW);
-}
 
-void Scene::paintGL()
-{
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	qglColor(Qt::red);
+	glMatrixMode(GL_MODELVIEW);
+	glPushMatrix();
 	glLoadIdentity();
-	glTranslatef(-300.0f, 0.0f,-600.0f);
+
+	glTranslatef(-250.0f, 0.0f,-250.0f);
 	glRotatef(85.0f, 1.0f, 0.0f, 0.0f);
 	glRotatef(-11.0f, 0.0f, 0.0f, 1.0f);
+	
+	glColor4f(1.0f, 0.0f, 0.0f, 1.0f);
 	glBegin(GL_LINES);
-		for (int i = 0; i < 51; i++)
-		{
-			glVertex3i(i * 10,  0,  0);
-			glVertex3i(i * 10, 500, 0);
-		}
-		for (int i = 0; i < 51; i++)
-		{
-			glVertex3i(0,  i * 10,  0);
-			glVertex3i(500, i * 10, 0);
-		}
+	for (int i = 0; i < 51; i++)
+	{
+		glVertex3i(i * 10,  0,  0);
+		glVertex3i(i * 10, 500, 0);
+	}
+	for (int i = 0; i < 51; i++)
+	{
+		glVertex3i(0,  i * 10,  0);
+		glVertex3i(500, i * 10, 0);
+	}
 	glEnd();
 	glFlush();
-}
 
+	glPopMatrix();
+
+	glMatrixMode(GL_PROJECTION);
+
+	glPopMatrix();
+}
