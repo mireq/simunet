@@ -23,6 +23,7 @@
 #include "MainWindow.h"
 #include "Scene.h"
 #include "AboutDlg.h"
+#include "SecondaryWindow.h"
 
 #include <QAction>
 #include <QMenuBar>
@@ -47,13 +48,8 @@ MainWindow::MainWindow(QWidget* parent, Qt::WindowFlags flags): QMainWindow(pare
 	setWindowTitle("SimuNet");
 	setupVariables();
 	setupUi();
-	Scene *scene = new Scene();
-	GraphicsView *view = new GraphicsView;
-	view->setScene(scene);
-	view->setViewport(new QGLWidget(QGLFormat(QGL::SampleBuffers)));
-	view->setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
-	view->show();
-	setCentralWidget(view);
+	setupScene();
+	setupSecondaryWindow();
 	statusBar()->showMessage(tr("Ready"), 5000);
 }
 
@@ -72,6 +68,23 @@ void MainWindow::setupUi()
 	setupActions();
 	setupMenus();
 	setupToolBars();
+}
+
+void MainWindow::setupScene()
+{
+	Scene *scene = new Scene();
+	GraphicsView *view = new GraphicsView;
+	view->setScene(scene);
+	view->setViewport(new QGLWidget(QGLFormat(QGL::SampleBuffers)));
+	view->setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
+	view->show();
+	setCentralWidget(view);
+}
+
+void MainWindow::setupSecondaryWindow()
+{
+	m_toolWindow = new SecondaryWindow(this);
+	addDockWidget(Qt::RightDockWidgetArea, m_toolWindow);
 }
 
 void MainWindow::setupActions()

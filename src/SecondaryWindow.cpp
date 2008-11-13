@@ -20,51 +20,16 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#include "SecondaryWindow.h"
 
-#include <QMainWindow>
-
-class QAction;
-class QMenu;
-
-class AboutDlg;
-class SecondaryWindow;
-
-/**
- @author Miroslav Bendik <miroslav.bendik@gmail.com>
-*/
-class MainWindow : public QMainWindow
+SecondaryWindow::SecondaryWindow(QWidget* parent, Qt::WindowFlags flags): QDockWidget(parent, flags)
 {
-		Q_OBJECT
-	public:
-		MainWindow(QWidget* parent = 0, Qt::WindowFlags flags = 0);
-		~MainWindow();
+	setWindowTitle(tr("Tools"));
+}
 
-	protected:
-		void setupVariables();
-		void setupUi();
-		void setupScene();
-		void setupSecondaryWindow();
-		void setupActions();
-		void setupMenus();
-		void setupToolBars();
 
-	protected slots:
-		void about();
+SecondaryWindow::~SecondaryWindow()
+{
+}
 
-	private:
-		//menu
-		QMenu *m_fileMenu;
-		QMenu *m_helpMenu;
 
-		// akcie
-		QAction *m_quitAct;
-		QAction *m_aboutAct;
-
-		// okna
-		AboutDlg *m_aboutDlg;
-		SecondaryWindow *m_toolWindow;
-};
-
-#endif

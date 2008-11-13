@@ -28,15 +28,17 @@ add_definitions("${QT_DEFINITIONS}")
 # zdrojove kody
 set(simunet_SRCS
 	src/simunet.cpp
+	src/AboutDlg.cpp
 	src/MainWindow.cpp
 	src/Scene.cpp
-	src/AboutDlg.cpp)
+	src/SecondaryWindow.cpp)
 
 # hlavickove subory ktore musi spracovat moc
 set(simunet_MOC_HDRS
+	src/AboutDlg.h
 	src/MainWindow.h
 	src/Scene.h
-	src/AboutDlg.h)
+	src/SecondaryWindow.h)
 
 # dialogy
 set(simunet_UIS
