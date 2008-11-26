@@ -45,8 +45,6 @@ SceneDialog::~SceneDialog()
 
 Scene::Scene(QObject* parent): QGraphicsScene(parent)
 {
-	/// TODO: Implementovat
-	//setMinimumSize(100, 100);
 	SceneDialog *dialog = new SceneDialog("Dialog");
 	dialog->setWindowOpacity(0.8);
 

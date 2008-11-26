@@ -45,7 +45,7 @@ class GraphicsView : public QGraphicsView
 
 MainWindow::MainWindow(QWidget* parent, Qt::WindowFlags flags): QMainWindow(parent, flags)
 {	
-	setWindowTitle("SimuNet");
+	setWindowTitle(tr("SimuNet"));
 	setupVariables();
 	setupUi();
 	setupScene();
@@ -74,6 +74,7 @@ void MainWindow::setupScene()
 {
 	Scene *scene = new Scene();
 	GraphicsView *view = new GraphicsView;
+	view->setFrameStyle(QFrame::NoFrame);
 	view->setScene(scene);
 	view->setViewport(new QGLWidget(QGLFormat(QGL::SampleBuffers)));
 	view->setViewportUpdateMode(QGraphicsView::FullViewportUpdate);

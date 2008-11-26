@@ -25,12 +25,29 @@
 
 #include <QApplication>
 #include <QPushButton>
+#include <QTranslator>
+#include <QLocale>
+
+#include <QDebug>
 
 #include "MainWindow.h"
 
 int main(int argc, char *argv[])
 {
 	QApplication app(argc, argv);
+
+	QCoreApplication::setOrganizationName("SimuNet");
+	QCoreApplication::setOrganizationDomain("simunet.eu");
+	QCoreApplication::setApplicationName("SimuNet");
+
+	QTranslator qtTranslator;
+	QTranslator appTranslator;
+
+	qtTranslator.load(QString("qt_") + QLocale::system().name());
+	appTranslator.load(QString("simunet_") + QLocale::system().name());
+
+	app.installTranslator(&qtTranslator);
+	app.installTranslator(&appTranslator);
 
 	MainWindow mainwin;
 	mainwin.show();
