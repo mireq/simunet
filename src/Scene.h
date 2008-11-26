@@ -24,6 +24,7 @@
 #define SCENE_H
 
 #include <QGraphicsScene>
+#include <QtOpenGL>
 
 /**
  @author Miroslav Bendik <miroslav.bendik@gmail.com>
@@ -36,7 +37,13 @@ class Scene : public QGraphicsScene
 		~Scene();
 
 	protected:
+		void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
 		void drawBackground(QPainter *painter, const QRectF &rect);
+
+		void vykreslenieMriezky();
+
+	private:
+		float rotacia;
 
 };
 

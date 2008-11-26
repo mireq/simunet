@@ -23,7 +23,6 @@
 #include "Scene.h"
 
 #include <QDebug>
-#include <QtOpenGL>
 
 class SceneDialog: public QDialog
 {
@@ -43,7 +42,7 @@ SceneDialog::~SceneDialog()
 {
 }
 
-Scene::Scene(QObject* parent): QGraphicsScene(parent)
+Scene::Scene(QObject* parent): QGraphicsScene(parent), rotacia(0.0)
 {
 	SceneDialog *dialog = new SceneDialog("Dialog");
 	dialog->setWindowOpacity(0.8);
@@ -66,12 +65,33 @@ Scene::~Scene()
 }
 
 
+void Scene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
+{
+	QGraphicsScene::mouseMoveEvent(event);
+
+	// kontrola ci sme neklikli na dialog integrovany v opengl okne
+	if (event->isAccepted())
+	{
+		return;
+	}
+
+	if (event->buttons() & Qt::LeftButton)
+	{
+		const QPointF delta = event->scenePos() - event->lastScenePos();
+		rotacia += 90.0 * delta.x() / float(width());
+		event->accept();
+		update();
+	}
+}
+
+
 void Scene::drawBackground(QPainter *painter, const QRectF &)
 {
 	if (painter->paintEngine()->type() != QPaintEngine::OpenGL) {
 		qWarning("Potrebujeme ako viewport QGLWidget");
 		return;
 	}
+
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -80,34 +100,39 @@ void Scene::drawBackground(QPainter *painter, const QRectF &)
 	glLoadIdentity();
 
 	float pomer = width() / height();
-	glFrustum(1.0 * pomer, -1.0 * pomer, 0.5, -0.5, 1, 1000);
+	glFrustum(1.0 * pomer, -1.0 * pomer, 1.0, -1.0, 2.0, 1000.0);
 
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
 	glLoadIdentity();
 
-	glTranslatef(-250.0f, 0.0f,-250.0f);
-	glRotatef(85.0f, 1.0f, 0.0f, 0.0f);
-	glRotatef(-11.0f, 0.0f, 0.0f, 1.0f);
-	
+	//glTranslatef(0.0f, 0.0f, -500.0f);
+	glRotatef(rotacia, 0.0f, 1.0f, 0.0f);
+	glRotatef(90.0, 1.0f, 0.0f, 0.0f);
+
+	vykreslenieMriezky();
+
+	glPopMatrix();
+	glMatrixMode(GL_PROJECTION);
+	glPopMatrix();
+
+	glFlush();
+}
+
+void Scene::vykreslenieMriezky()
+{
+	int vzdialenostZ = -10;
 	glColor4f(1.0f, 0.0f, 0.0f, 1.0f);
 	glBegin(GL_LINES);
-	for (int i = 0; i < 51; i++)
+	for (int i = -50; i < 51; i++)
 	{
-		glVertex3i(i * 10,  0,  0);
-		glVertex3i(i * 10, 500, 0);
+		glVertex3i(i * 10,-500, vzdialenostZ);
+		glVertex3i(i * 10, 500, vzdialenostZ);
 	}
-	for (int i = 0; i < 51; i++)
+	for (int i = -50; i < 51; i++)
 	{
-		glVertex3i(0,  i * 10,  0);
-		glVertex3i(500, i * 10, 0);
+		glVertex3i(-500, i * 10, vzdialenostZ);
+		glVertex3i( 500, i * 10, vzdialenostZ);
 	}
 	glEnd();
-	glFlush();
-
-	glPopMatrix();
-
-	glMatrixMode(GL_PROJECTION);
-
-	glPopMatrix();
 }
