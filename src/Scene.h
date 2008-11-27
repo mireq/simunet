@@ -29,6 +29,9 @@
 /**
  @author Miroslav Bendik <miroslav.bendik@gmail.com>
 */
+
+class SceneAttribDialog;
+
 class Scene : public QGraphicsScene
 {
 		Q_OBJECT
@@ -44,6 +47,7 @@ class Scene : public QGraphicsScene
 
 	private:
 		float rotacia;
+		SceneAttribDialog *dialog;
 
 };
 

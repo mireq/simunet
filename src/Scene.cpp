@@ -24,31 +24,58 @@
 
 #include <QDebug>
 
-class SceneDialog: public QDialog
+class SceneAttribDialog: public QDialog
 {
 	public:
-		SceneDialog(const QString &title);
-		virtual ~SceneDialog();
+		SceneAttribDialog(const QString &title);
+		virtual ~SceneAttribDialog();
+
+		void newPosition(const QPointF &ppisition);
+		void newAngle(float angle);
+	private:
+		QLabel *posText;
+		QLabel *angleText;
 };
 
-SceneDialog::SceneDialog(const QString &title)
+SceneAttribDialog::SceneAttribDialog(const QString &title)
 {
-	QVBoxLayout *layout = new QVBoxLayout;
+	QLabel *posLabel = new QLabel("Position", this);
+	QLabel *angleLabel = new QLabel("Angle", this);
+	posText = new QLabel(this);
+	angleText = new QLabel(this);
+
+	QGridLayout *layout = new QGridLayout;
+	layout->addWidget(posLabel, 0, 0);
+	layout->addWidget(posText, 0, 1);
+	layout->addWidget(angleLabel, 1, 0);
+	layout->addWidget(angleText, 1, 1);
+
 	setLayout(layout);
 	setWindowTitle(title);
 }
 
-SceneDialog::~SceneDialog()
+SceneAttribDialog::~SceneAttribDialog()
 {
 }
 
+void SceneAttribDialog::newPosition(const QPointF &position)
+{
+	QString text = QString::number(position.x(), 'f', 1) + QString(", ") + QString::number(position.y(), 'f', 1);
+	posText->setText(text);
+}
+
+void SceneAttribDialog::newAngle(float angle)
+{
+	QString text = QString::number(angle, 'f', 1);
+	angleText->setText(text);
+}
+
+
+
 Scene::Scene(QObject* parent): QGraphicsScene(parent), rotacia(0.0)
 {
-	SceneDialog *dialog = new SceneDialog("Dialog");
+	dialog = new SceneAttribDialog("Scene attributes");
 	dialog->setWindowOpacity(0.8);
-
-	dialog->layout()->addWidget(new QLabel("Ukazkovy dialog v 3D scene"));
-
 	addWidget(dialog);
 
 	foreach (QGraphicsItem *item, items()) {
@@ -57,6 +84,8 @@ Scene::Scene(QObject* parent): QGraphicsScene(parent), rotacia(0.0)
 
 		item->setPos(20, 30);
 	}
+	dialog->newAngle(0);
+	dialog->newPosition(QPointF(0, 0));
 }
 
 
@@ -79,6 +108,7 @@ void Scene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 	{
 		const QPointF delta = event->scenePos() - event->lastScenePos();
 		rotacia += 90.0 * delta.x() / float(width());
+		dialog->newAngle(rotacia);
 		event->accept();
 		update();
 	}
