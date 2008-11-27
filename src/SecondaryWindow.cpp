@@ -24,6 +24,7 @@
 
 SecondaryWindow::SecondaryWindow(QWidget* parent, Qt::WindowFlags flags): QDockWidget(parent, flags)
 {
+	setObjectName("ToolWindow");
 	setWindowTitle(tr("Tools"));
 }
 

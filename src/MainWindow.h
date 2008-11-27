@@ -49,6 +49,8 @@ class MainWindow : public QMainWindow
 		void setupActions();
 		void setupMenus();
 		void setupToolBars();
+		void restoreWindowState();
+		void saveWindowState();
 
 	protected slots:
 		void about();

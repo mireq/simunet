@@ -44,18 +44,21 @@ class GraphicsView : public QGraphicsView
 };
 
 MainWindow::MainWindow(QWidget* parent, Qt::WindowFlags flags): QMainWindow(parent, flags)
-{	
+{
+	setObjectName("MainWindow");
 	setWindowTitle(tr("SimuNet"));
 	setupVariables();
 	setupUi();
 	setupScene();
 	setupSecondaryWindow();
+	restoreWindowState();
 	statusBar()->showMessage(tr("Ready"), 5000);
 }
 
 
 MainWindow::~MainWindow()
 {
+	saveWindowState();
 }
 
 void MainWindow::setupVariables()
@@ -122,3 +125,20 @@ void MainWindow::about()
 	m_aboutDlg->show();
 }
 
+void MainWindow::restoreWindowState()
+{
+	QSettings settings;
+	settings.beginGroup("MainWindow");
+	restoreState(settings.value("state").toByteArray());
+	resize(settings.value("size", QSize(600, 450)).toSize());
+	settings.endGroup();
+}
+
+void MainWindow::saveWindowState()
+{
+	QSettings settings;
+	settings.beginGroup("MainWindow");
+	settings.setValue("state", saveState());
+	settings.setValue("size", size());
+	settings.endGroup();
+}
