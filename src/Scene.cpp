@@ -22,6 +22,8 @@
  ***************************************************************************/
 #include "Scene.h"
 
+#include <math.h>
+
 #include <QDebug>
 
 class SceneAttribDialog: public QDialog
@@ -70,9 +72,9 @@ void SceneAttribDialog::newAngle(float angle)
 	angleText->setText(text);
 }
 
+//////////////////////////////////////////////
 
-
-Scene::Scene(QObject* parent): QGraphicsScene(parent), rotacia(0.0)
+Scene::Scene(QObject* parent): QGraphicsScene(parent), rotacia(0.0), pozicia(0.0, 0.0)
 {
 	dialog = new SceneAttribDialog("Scene attributes");
 	dialog->setWindowOpacity(0.8);
@@ -84,8 +86,8 @@ Scene::Scene(QObject* parent): QGraphicsScene(parent), rotacia(0.0)
 
 		item->setPos(20, 30);
 	}
-	dialog->newAngle(0);
-	dialog->newPosition(QPointF(0, 0));
+	dialog->newAngle(rotacia);
+	dialog->newPosition(pozicia);
 }
 
 
@@ -114,6 +116,38 @@ void Scene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 	}
 }
 
+void Scene::keyPressEvent(QKeyEvent *event)
+{
+	QGraphicsScene::keyPressEvent(event);
+
+	if (event->isAccepted())
+	{
+		return;
+	}
+
+	float krok = 0.4;
+	int key = event->key();
+	switch (key)
+	{
+		case Qt::Key_Left:
+			event->accept();
+			zmenPoziciu(QPointF(-krok, 0.0));
+			break;
+		case Qt::Key_Right:
+			zmenPoziciu(QPointF(krok, 0.0));
+			event->accept();
+			break;
+		case Qt::Key_Up:
+			event->accept();
+			zmenPoziciu(QPointF(0.0, krok));
+			break;
+		case Qt::Key_Down:
+			event->accept();
+			zmenPoziciu(QPointF(0.0, -krok));
+			break;
+	}
+}
+
 
 void Scene::drawBackground(QPainter *painter, const QRectF &)
 {
@@ -139,6 +173,7 @@ void Scene::drawBackground(QPainter *painter, const QRectF &)
 	//glTranslatef(0.0f, 0.0f, -500.0f);
 	glRotatef(rotacia, 0.0f, 1.0f, 0.0f);
 	glRotatef(90.0, 1.0f, 0.0f, 0.0f);
+	glTranslatef(pozicia.x(), pozicia.y(), 0.0);
 
 	vykreslenieMriezky();
 
@@ -147,6 +182,15 @@ void Scene::drawBackground(QPainter *painter, const QRectF &)
 	glPopMatrix();
 
 	glFlush();
+}
+
+void Scene::zmenPoziciu(const QPointF &rozdiel)
+{
+	float uhol = rotacia * M_PI / 180.0;
+	pozicia.setX(rozdiel.x() * cos(uhol) - rozdiel.y() * sin(uhol) + pozicia.x());
+	pozicia.setY(rozdiel.y() * cos(uhol) + rozdiel.x() * sin(uhol) + pozicia.y());
+	dialog->newPosition(pozicia);
+	update();
 }
 
 void Scene::vykreslenieMriezky()

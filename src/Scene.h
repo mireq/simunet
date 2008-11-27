@@ -41,12 +41,15 @@ class Scene : public QGraphicsScene
 
 	protected:
 		void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
+		void keyPressEvent(QKeyEvent *event);
 		void drawBackground(QPainter *painter, const QRectF &rect);
+		void zmenPoziciu(const QPointF &rozdiel);
 
 		void vykreslenieMriezky();
 
 	private:
 		float rotacia;
+		QPointF pozicia;
 		SceneAttribDialog *dialog;
 
 };
