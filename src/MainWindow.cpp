@@ -48,8 +48,8 @@ MainWindow::MainWindow(QWidget* parent, Qt::WindowFlags flags): QMainWindow(pare
 	setObjectName("MainWindow");
 	setWindowTitle(tr("SimuNet"));
 	setupVariables();
-	setupUi();
 	setupScene();
+	setupUi();
 	setupSecondaryWindow();
 	restoreWindowState();
 	statusBar()->showMessage(tr("Ready"), 5000);
@@ -73,12 +73,40 @@ void MainWindow::setupUi()
 	setupToolBars();
 }
 
+void MainWindow::setupToolBars()
+{
+	m_navigateToolBar = new QToolBar("Navigate Tool Bar");
+	m_navigateToolBar->setObjectName("NavigateToolBar");
+
+	m_navigateRotateAct = new QAction(tr("Rotate"), this);
+	m_navigateMoveAct = new QAction(tr("Move"), this);
+	m_navigateRotateAct->setIcon(QIcon(QPixmap(":rotate.png")));
+	m_navigateMoveAct->setIcon(QIcon(QPixmap(":move.png")));
+
+	m_navigateGroup = new QActionGroup(this);
+	m_navigateGroup->setExclusive(true);
+	m_navigateGroup->addAction(m_navigateRotateAct);
+	m_navigateGroup->addAction(m_navigateMoveAct);
+
+	connect(m_navigateGroup, SIGNAL(triggered(QAction *)), SLOT(sceneNavigationModeActionTriggered(QAction *)));
+
+	m_navigateRotateAct->setCheckable(true);
+	m_navigateMoveAct->setCheckable(true);
+	m_navigateRotateAct->setChecked(true);
+	sceneNavigationModeActionTriggered(m_navigateRotateAct);
+
+	m_navigateToolBar->addAction(m_navigateRotateAct);
+	m_navigateToolBar->addAction(m_navigateMoveAct);
+
+	addToolBar(m_navigateToolBar);
+}
+
 void MainWindow::setupScene()
 {
-	Scene *scene = new Scene();
+	m_scene = new Scene();
 	GraphicsView *view = new GraphicsView;
 	view->setFrameStyle(QFrame::NoFrame);
-	view->setScene(scene);
+	view->setScene(m_scene);
 	view->setViewport(new QGLWidget(QGLFormat(QGL::SampleBuffers)));
 	view->setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
 	view->show();
@@ -112,9 +140,6 @@ void MainWindow::setupMenus()
 	m_helpMenu->addAction(m_aboutAct);
 }
 
-void MainWindow::setupToolBars()
-{
-}
 
 void MainWindow::about()
 {
@@ -123,6 +148,18 @@ void MainWindow::about()
 		m_aboutDlg = new AboutDlg(this);
 	}
 	m_aboutDlg->show();
+}
+
+void MainWindow::sceneNavigationModeActionTriggered(QAction *action)
+{
+	if (action == m_navigateRotateAct)
+	{
+		m_scene->setNavigationMode(Scene::Rotate);
+	}
+	else
+	{
+		m_scene->setNavigationMode(Scene::Move);
+	}
 }
 
 void MainWindow::restoreWindowState()

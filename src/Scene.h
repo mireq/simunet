@@ -36,21 +36,30 @@ class Scene : public QGraphicsScene
 {
 		Q_OBJECT
 	public:
+		enum NavigationMode
+		{
+			Rotate,
+			Move
+		};
+	public:
 		Scene(QObject* parent = 0);
+		void setNavigationMode(NavigationMode mode);
 		~Scene();
 
 	protected:
 		void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
 		void keyPressEvent(QKeyEvent *event);
 		void drawBackground(QPainter *painter, const QRectF &rect);
+		void zmenOtocenie(float rozdiel);
 		void zmenPoziciu(const QPointF &rozdiel);
 
 		void vykreslenieMriezky();
 
 	private:
-		float rotacia;
-		QPointF pozicia;
-		SceneAttribDialog *dialog;
+		float m_rotacia;
+		QPointF m_pozicia;
+		SceneAttribDialog *m_dialog;
+		NavigationMode m_navigationMode;
 
 };
 

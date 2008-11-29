@@ -1,4 +1,6 @@
 <!DOCTYPE RCC><RCC version="1.0">
 <qresource>
+  <file alias="move.png">move.png</file>
+  <file alias="rotate.png">rotate.png</file>
 </qresource>
 </RCC>

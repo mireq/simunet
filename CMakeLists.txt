@@ -58,7 +58,7 @@ qt4_add_resources(simunet_QRC_SRCS ${simunet_QRC})
 qt4_add_translation(lrelease_outputs ${simunet_TRANS})
 
 add_executable(simunet ${simunet_SRCS} ${simunet_MOC_SRCS} ${simunet_UIS_SRCS}
-${fatrat_QRC_SRCS} ${lrelease_outputs})
+${simunet_QRC_SRCS} ${lrelease_outputs})
 target_link_libraries(simunet ${QT_LIBRARIES} ${QT_ADDITIONAL_LIBS})
 
 # odkomentovat pre podrobne vypisy

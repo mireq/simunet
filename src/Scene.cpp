@@ -74,11 +74,11 @@ void SceneAttribDialog::newAngle(float angle)
 
 //////////////////////////////////////////////
 
-Scene::Scene(QObject* parent): QGraphicsScene(parent), rotacia(0.0), pozicia(0.0, 0.0)
+Scene::Scene(QObject* parent): QGraphicsScene(parent), m_rotacia(0.0), m_pozicia(0.0, 0.0)
 {
-	dialog = new SceneAttribDialog("Scene attributes");
-	dialog->setWindowOpacity(0.8);
-	addWidget(dialog);
+	m_dialog = new SceneAttribDialog("Scene attributes");
+	m_dialog->setWindowOpacity(0.8);
+	addWidget(m_dialog);
 
 	foreach (QGraphicsItem *item, items()) {
 		item->setFlag(QGraphicsItem::ItemIsMovable);
@@ -86,13 +86,19 @@ Scene::Scene(QObject* parent): QGraphicsScene(parent), rotacia(0.0), pozicia(0.0
 
 		item->setPos(20, 30);
 	}
-	dialog->newAngle(rotacia);
-	dialog->newPosition(pozicia);
+	m_dialog->newAngle(m_rotacia);
+	m_dialog->newPosition(m_pozicia);
 }
 
 
 Scene::~Scene()
 {
+}
+
+
+void Scene::setNavigationMode(NavigationMode mode)
+{
+	m_navigationMode = mode;
 }
 
 
@@ -109,8 +115,14 @@ void Scene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 	if (event->buttons() & Qt::LeftButton)
 	{
 		const QPointF delta = event->scenePos() - event->lastScenePos();
-		rotacia += 90.0 * delta.x() / float(width());
-		dialog->newAngle(rotacia);
+		if (m_navigationMode == Rotate)
+		{
+			zmenOtocenie(delta.x());
+		}
+		else
+		{
+			zmenPoziciu(0.1 * delta);
+		}
 		event->accept();
 		update();
 	}
@@ -131,10 +143,10 @@ void Scene::keyPressEvent(QKeyEvent *event)
 	{
 		case Qt::Key_Left:
 			event->accept();
-			zmenPoziciu(QPointF(-krok, 0.0));
+			zmenPoziciu(QPointF(krok, 0.0));
 			break;
 		case Qt::Key_Right:
-			zmenPoziciu(QPointF(krok, 0.0));
+			zmenPoziciu(QPointF(-krok, 0.0));
 			event->accept();
 			break;
 		case Qt::Key_Up:
@@ -171,9 +183,9 @@ void Scene::drawBackground(QPainter *painter, const QRectF &)
 	glLoadIdentity();
 
 	//glTranslatef(0.0f, 0.0f, -500.0f);
-	glRotatef(rotacia, 0.0f, 1.0f, 0.0f);
+	glRotatef(m_rotacia, 0.0f, 1.0f, 0.0f);
 	glRotatef(90.0, 1.0f, 0.0f, 0.0f);
-	glTranslatef(pozicia.x(), pozicia.y(), 0.0);
+	glTranslatef(m_pozicia.x(), m_pozicia.y(), 0.0);
 
 	vykreslenieMriezky();
 
@@ -184,12 +196,18 @@ void Scene::drawBackground(QPainter *painter, const QRectF &)
 	glFlush();
 }
 
+void Scene::zmenOtocenie(float rozdiel)
+{
+	m_rotacia += 90.0 * rozdiel / float(width());
+	m_dialog->newAngle(m_rotacia);
+}
+
 void Scene::zmenPoziciu(const QPointF &rozdiel)
 {
-	float uhol = rotacia * M_PI / 180.0;
-	pozicia.setX(rozdiel.x() * cos(uhol) - rozdiel.y() * sin(uhol) + pozicia.x());
-	pozicia.setY(rozdiel.y() * cos(uhol) + rozdiel.x() * sin(uhol) + pozicia.y());
-	dialog->newPosition(pozicia);
+	float uhol = m_rotacia * M_PI / 180.0;
+	m_pozicia.setX(-rozdiel.x() * cos(uhol) - rozdiel.y() * sin(uhol) + m_pozicia.x());
+	m_pozicia.setY(rozdiel.y() * cos(uhol) - rozdiel.x() * sin(uhol) + m_pozicia.y());
+	m_dialog->newPosition(m_pozicia);
 	update();
 }
 

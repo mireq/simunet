@@ -27,9 +27,11 @@
 
 class QAction;
 class QMenu;
+class QActionGroup;
 
 class AboutDlg;
 class SecondaryWindow;
+class Scene;
 
 /**
  @author Miroslav Bendik <miroslav.bendik@gmail.com>
@@ -44,18 +46,20 @@ class MainWindow : public QMainWindow
 	protected:
 		void setupVariables();
 		void setupUi();
+		void setupToolBars();
 		void setupScene();
 		void setupSecondaryWindow();
 		void setupActions();
 		void setupMenus();
-		void setupToolBars();
 		void restoreWindowState();
 		void saveWindowState();
 
 	protected slots:
 		void about();
+		void sceneNavigationModeActionTriggered(QAction *);
 
 	private:
+		Scene *m_scene;
 		//menu
 		QMenu *m_fileMenu;
 		QMenu *m_helpMenu;
@@ -63,6 +67,11 @@ class MainWindow : public QMainWindow
 		// akcie
 		QAction *m_quitAct;
 		QAction *m_aboutAct;
+		// navigateToolBar
+		QToolBar *m_navigateToolBar;
+		QActionGroup *m_navigateGroup;
+		QAction *m_navigateRotateAct;
+		QAction *m_navigateMoveAct;
 
 		// okna
 		AboutDlg *m_aboutDlg;
