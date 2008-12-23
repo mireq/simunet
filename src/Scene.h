@@ -48,6 +48,8 @@ class Scene : public QGraphicsScene
 
 	protected:
 		void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
+		void mousePressEvent(QGraphicsSceneMouseEvent *event);
+		void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 		void keyPressEvent(QKeyEvent *event);
 		void drawBackground(QPainter *painter, const QRectF &rect);
 		void zmenOtocenie(float rozdiel);
@@ -56,6 +58,7 @@ class Scene : public QGraphicsScene
 		void vykreslenieMriezky();
 
 	private:
+		bool m_tahanie;
 		float m_rotacia;
 		QPointF m_pozicia;
 		SceneAttribDialog *m_dialog;

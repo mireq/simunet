@@ -74,7 +74,7 @@ void SceneAttribDialog::newAngle(float angle)
 
 //////////////////////////////////////////////
 
-Scene::Scene(QObject* parent): QGraphicsScene(parent), m_rotacia(0.0), m_pozicia(0.0, 0.0)
+Scene::Scene(QObject* parent): QGraphicsScene(parent), m_tahanie(false), m_rotacia(0.0), m_pozicia(0.0, 0.0)
 {
 	m_dialog = new SceneAttribDialog("Scene attributes");
 	m_dialog->setWindowOpacity(0.8);
@@ -104,7 +104,10 @@ void Scene::setNavigationMode(NavigationMode mode)
 
 void Scene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
-	QGraphicsScene::mouseMoveEvent(event);
+	if (!m_tahanie)
+	{
+		QGraphicsScene::mouseMoveEvent(event);
+	}
 
 	// kontrola ci sme neklikli na dialog integrovany v opengl okne
 	if (event->isAccepted())
@@ -126,6 +129,25 @@ void Scene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 		event->accept();
 		update();
 	}
+}
+
+void Scene::mousePressEvent(QGraphicsSceneMouseEvent *event)
+{
+	QGraphicsScene::mousePressEvent(event);
+	if (event->isAccepted())
+	{
+		return;
+	}
+
+	if (event->buttons() & Qt::LeftButton)
+	{
+		m_tahanie = true;
+	}
+}
+
+void Scene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
+{
+	m_tahanie = false;
 }
 
 void Scene::keyPressEvent(QKeyEvent *event)
