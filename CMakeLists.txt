@@ -28,6 +28,7 @@ configure_file (
   )
 
 set(QT_USE_QTOPENGL 1)
+include(${QT_USE_FILE})
 
 #include(${QT_USE_FILE})
 
@@ -36,7 +37,7 @@ if (NOT QT_QTOPENGL_FOUND)
 endif (NOT QT_QTOPENGL_FOUND)
 
 include_directories("${PROJECT_BINARY_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}/src" "${CMAKE_CURRENT_BINARY_DIR}/src" "${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_CURRENT_BINARY_DIR}" ${QT_INCLUDES})
-add_definitions("${QT_DEFINITIONS}")
+add_definitions(${QT_DEFINITIONS})
 
 # zdrojove kody
 set(simunet_SRCS
@@ -76,7 +77,9 @@ qt4_add_translation(lrelease_outputs ${simunet_TRANS})
 
 add_executable(simunet ${simunet_SRCS} ${simunet_MOC_SRCS} ${simunet_UIS_SRCS}
 ${simunet_QRC_SRCS} ${lrelease_outputs})
-target_link_libraries(simunet ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTOPENGL_LIBRARY})
+target_link_libraries(simunet ${QT_LIBRARIES})
+
+install (TARGETS simunet DESTINATION bin)
 
 # podpora pch z
 # projektu rosegarden
