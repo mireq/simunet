@@ -78,25 +78,25 @@ void MainWindow::setupToolBars()
 	m_navigateToolBar = new QToolBar("Navigate Tool Bar");
 	m_navigateToolBar->setObjectName("NavigateToolBar");
 
-	m_navigateRotateAct = new QAction(tr("Rotate"), this);
 	m_navigateMoveAct = new QAction(tr("Move"), this);
-	m_navigateRotateAct->setIcon(QIcon(QPixmap(":rotate.png")));
+	m_navigateRotateAct = new QAction(tr("Rotate"), this);
 	m_navigateMoveAct->setIcon(QIcon(QPixmap(":move.png")));
+	m_navigateRotateAct->setIcon(QIcon(QPixmap(":rotate.png")));
 
 	m_navigateGroup = new QActionGroup(this);
 	m_navigateGroup->setExclusive(true);
-	m_navigateGroup->addAction(m_navigateRotateAct);
 	m_navigateGroup->addAction(m_navigateMoveAct);
+	m_navigateGroup->addAction(m_navigateRotateAct);
 
 	connect(m_navigateGroup, SIGNAL(triggered(QAction *)), SLOT(sceneNavigationModeActionTriggered(QAction *)));
 
-	m_navigateRotateAct->setCheckable(true);
 	m_navigateMoveAct->setCheckable(true);
-	m_navigateRotateAct->setChecked(true);
-	sceneNavigationModeActionTriggered(m_navigateRotateAct);
+	m_navigateRotateAct->setCheckable(true);
+	m_navigateMoveAct->setChecked(true);
+	sceneNavigationModeActionTriggered(m_navigateMoveAct);
 
-	m_navigateToolBar->addAction(m_navigateRotateAct);
 	m_navigateToolBar->addAction(m_navigateMoveAct);
+	m_navigateToolBar->addAction(m_navigateRotateAct);
 
 	addToolBar(m_navigateToolBar);
 }

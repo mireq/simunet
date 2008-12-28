@@ -115,10 +115,24 @@ void Scene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 		return;
 	}
 
-	if (event->buttons() & Qt::LeftButton)
+	QFlags<Qt::MouseButton> buttons = event->buttons();
+	if (buttons & (Qt::LeftButton | Qt::MidButton))
 	{
 		const QPointF delta = event->scenePos() - event->lastScenePos();
-		if (m_navigationMode == Rotate)
+		NavigationMode mod = m_navigationMode;
+		if (buttons & Qt::MidButton)
+		{
+			if (mod == Rotate)
+			{
+				mod = Move;
+			}
+			else
+			{
+				mod = Rotate;
+			}
+		}
+
+		if (mod == Rotate)
 		{
 			zmenOtocenie(delta.x());
 		}
@@ -126,6 +140,7 @@ void Scene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 		{
 			zmenPoziciu(0.1 * delta);
 		}
+		
 		event->accept();
 		update();
 	}
@@ -139,7 +154,7 @@ void Scene::mousePressEvent(QGraphicsSceneMouseEvent *event)
 		return;
 	}
 
-	if (event->buttons() & Qt::LeftButton)
+	if (event->buttons() & (Qt::LeftButton | Qt::MidButton))
 	{
 		m_tahanie = true;
 	}
