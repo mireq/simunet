@@ -19,6 +19,11 @@ endif(CMAKE_BUILD_TYPE MATCHES Debug)
 # vyzadujeme Qt4
 find_package(Qt4 REQUIRED)
 
+# vyzadujeme python
+find_package(PythonLibs REQUIRED)
+include_directories(${PYTHON_INCLUDE_PATH})
+
+
 set (simunet_VERSION_MAJOR 0)
 set (simunet_VERSION_MINOR 1)
 
@@ -80,10 +85,24 @@ set(simunet_TRANS
 set(simunet_PCH
 	src/pch.h)
 
+set(core_SRCS
+	src/core/SNDevice.cpp
+	src/core/SNSimulate.cpp
+	src/core/SNSimulateHelper.cpp)
+
+set(core_HDRS
+	src/core/SNDevice.h
+	src/core/SNSimulate.h
+	src/core/SNSimulateHelper.h)
+
 qt4_wrap_cpp(simunet_MOC_SRCS ${simunet_MOC_HDRS})
 qt4_wrap_ui(simunet_UIS_SRCS ${simunet_UIS})
 qt4_add_resources(simunet_QRC_SRCS ${simunet_QRC})
 qt4_add_translation(lrelease_outputs ${simunet_TRANS})
+
+add_library(smlib STATIC
+	${core_SRCS}
+	${core_HDRS})
 
 add_executable(simunet
 	${simunet_SRCS}
@@ -93,7 +112,7 @@ add_executable(simunet
 	${lrelease_outputs}
 	${simunet_MOC_HDRS}
 	${simunet_HDRS})
-target_link_libraries(simunet ${QT_LIBRARIES})
+target_link_libraries(simunet ${QT_LIBRARIES} ${PYTHON_LIBRARIES} smlib)
 
 install (TARGETS simunet DESTINATION bin)
 
@@ -118,3 +137,6 @@ if (USE_PCH)
 	add_precompiled_header(simunet_pch src/pch.h)
 	add_dependencies(simunet simunet_pch)
 endif (USE_PCH)
+
+enable_testing()
+add_subdirectory(tests)
