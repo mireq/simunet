@@ -36,27 +36,37 @@ if (NOT QT_QTOPENGL_FOUND)
 	message(FATAL_ERROR "No QT_QTOPENGL")
 endif (NOT QT_QTOPENGL_FOUND)
 
-include_directories("${PROJECT_BINARY_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}/src" "${CMAKE_CURRENT_BINARY_DIR}/src" "${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_CURRENT_BINARY_DIR}" ${QT_INCLUDES})
+include_directories(
+	"${PROJECT_BINARY_DIR}"
+	"${CMAKE_CURRENT_SOURCE_DIR}/src"
+	"${CMAKE_CURRENT_BINARY_DIR}/src"
+	"${CMAKE_CURRENT_SOURCE_DIR}/src/gui"
+	"${CMAKE_CURRENT_BINARY_DIR}/src/gui"
+	"${CMAKE_CURRENT_SOURCE_DIR}"
+	"${CMAKE_CURRENT_BINARY_DIR}"
+	${QT_INCLUDES})
 add_definitions(${QT_DEFINITIONS})
 
 # zdrojove kody
 set(simunet_SRCS
 	src/simunet.cpp
-	src/AboutDlg.cpp
-	src/MainWindow.cpp
-	src/Scene.cpp
-	src/SecondaryWindow.cpp)
+	src/gui/AboutDlg.cpp
+	src/gui/MainWindow.cpp
+	src/gui/Scene.cpp
+	src/gui/SecondaryWindow.cpp)
 
 # hlavickove subory ktore musi spracovat moc
 set(simunet_MOC_HDRS
-	src/AboutDlg.h
-	src/MainWindow.h
-	src/Scene.h
-	src/SecondaryWindow.h)
+	src/gui/AboutDlg.h
+	src/gui/MainWindow.h
+	src/gui/Scene.h
+	src/gui/SecondaryWindow.h)
+
+set(simunet_HDRS)
 
 # dialogy
 set(simunet_UIS
-	src/AboutDlg.ui)
+	src/gui/AboutDlg.ui)
 
 # zdroje
 set(simunet_QRC
@@ -75,8 +85,14 @@ qt4_wrap_ui(simunet_UIS_SRCS ${simunet_UIS})
 qt4_add_resources(simunet_QRC_SRCS ${simunet_QRC})
 qt4_add_translation(lrelease_outputs ${simunet_TRANS})
 
-add_executable(simunet ${simunet_SRCS} ${simunet_MOC_SRCS} ${simunet_UIS_SRCS}
-${simunet_QRC_SRCS} ${lrelease_outputs})
+add_executable(simunet
+	${simunet_SRCS}
+	${simunet_MOC_SRCS}
+	${simunet_UIS_SRCS}
+	${simunet_QRC_SRCS}
+	${lrelease_outputs}
+	${simunet_MOC_HDRS}
+	${simunet_HDRS})
 target_link_libraries(simunet ${QT_LIBRARIES})
 
 install (TARGETS simunet DESTINATION bin)
