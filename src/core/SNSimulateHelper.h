@@ -23,15 +23,21 @@
 #ifndef SNSIMULATEHELPER_H
 #define SNSIMULATEHELPER_H
 
+#include <QThread>
+
 /**
  @author Miroslav Bendik <miroslav.bendik@gmail.com>
 */
-class SNSimulateHelper
+class SNSimulateHelper: public QThread
 {
+	Q_OBJECT
 	public:
 		SNSimulateHelper();
-
 		~SNSimulateHelper();
+		void run();
+		void stop();
+	private:
+		bool m_stop;
 
 };
 

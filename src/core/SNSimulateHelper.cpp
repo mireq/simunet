@@ -22,13 +22,39 @@
  ***************************************************************************/
 #include "SNSimulateHelper.h"
 
+#include <Python.h>
+#include <unistd.h>
+#include <iostream>
+
 SNSimulateHelper::SNSimulateHelper()
+	:m_stop(false)
 {
+	Py_Initialize();
 }
 
 
 SNSimulateHelper::~SNSimulateHelper()
 {
+	std::cout<<"Ukoncujem beh"<<std::endl;
+	Py_Finalize();
+}
+
+void SNSimulateHelper::run()
+{
+	while(1)
+	{
+		std::cout<<"Vlakno"<<std::endl;
+		if (m_stop)
+		{
+			return;
+		}
+		sleep(1);
+	}
+}
+
+void SNSimulateHelper::stop()
+{
+	m_stop = true;
 }
 
 

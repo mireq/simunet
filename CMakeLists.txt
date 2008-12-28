@@ -65,7 +65,8 @@ set(simunet_MOC_HDRS
 	src/gui/AboutDlg.h
 	src/gui/MainWindow.h
 	src/gui/Scene.h
-	src/gui/SecondaryWindow.h)
+	src/gui/SecondaryWindow.h
+	src/core/SNSimulateHelper.h)
 
 set(simunet_HDRS)
 

@@ -24,8 +24,11 @@
 #ifndef SNSIMULATE_H
 #define SNSIMULATE_H
 
-#include <string>
 #include <Python.h>
+#include <string>
+#include <list>
+
+class SNSimulateHelper;
 
 /**
  @author Miroslav Bendik <miroslav.bendik@gmail.com>
@@ -38,8 +41,12 @@ class SNSimulate
 		~SNSimulate();
 		bool stopDevice(uint32_t id);
 		uint32_t startDevice(const std::string &filename);
-		void processFrame(int id, PyObject *data);
-		void telnetResponse(uint32_t id, const char *text, const char *cmd);
+		static void processFrame(uint32_t id, PyObject *data);
+		static void telnetResponse(uint32_t id, const char *text, const char *cmd);
+
+	private:
+		int m_threadCount;
+		std::list<SNSimulateHelper *> m_simulateHelpers;
 
 };
 

@@ -22,20 +22,37 @@
  ***************************************************************************/
 
 #include "SNSimulate.h"
+#include "SNSimulateHelper.h"
 
 using namespace std;
 
-
 SNSimulate::SNSimulate()
 {
+	/// @todo zmenit napevno nastaveny pocet vlakien
+	m_threadCount = 4;
+
+	for (int i = 0; i < m_threadCount; ++i)
+	{
+		SNSimulateHelper *helper = new SNSimulateHelper();
+		m_simulateHelpers.push_back(helper);
+		helper->start();
+	}
 }
 
 
 SNSimulate::~SNSimulate()
 {
+	list<SNSimulateHelper *>::iterator helper;
+	for (helper = m_simulateHelpers.begin(); helper != m_simulateHelpers.end(); ++helper)
+	{
+		(*helper)->stop();
+	}
+	for (helper = m_simulateHelpers.begin(); helper != m_simulateHelpers.end(); ++helper)
+	{
+		(*helper)->wait(1000);
+		delete *helper;
+	}
 }
-
-
 
 
 /*!
@@ -59,7 +76,7 @@ uint32_t SNSimulate::startDevice(const string &filename)
 /*!
     \fn SNSimulate::processFrame(int id, PyObject *data)
  */
-void SNSimulate::processFrame(int id, PyObject *data)
+void SNSimulate::processFrame(uint32_t id, PyObject *data)
 {
     /// @todo implement me
 }
