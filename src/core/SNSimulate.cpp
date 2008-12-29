@@ -23,13 +23,19 @@
 
 #include "SNSimulate.h"
 #include "SNSimulateHelper.h"
+#include "SNDevice.h"
 
 using namespace std;
 
+/*!
+    \fn SNSimulate::SNSimulate()
+    Vytvorenie 4 vlakien SNSimulateHelper
+*/
 SNSimulate::SNSimulate()
 {
 	/// @todo zmenit napevno nastaveny pocet vlakien
 	m_threadCount = 4;
+	m_nextDeviceId = 1;
 
 	for (int i = 0; i < m_threadCount; ++i)
 	{
@@ -37,6 +43,7 @@ SNSimulate::SNSimulate()
 		m_simulateHelpers.push_back(helper);
 		helper->start();
 	}
+	m_nextSimulateHelper = m_simulateHelpers.begin();
 }
 
 
@@ -69,7 +76,14 @@ bool SNSimulate::stopDevice(uint32_t id)
  */
 uint32_t SNSimulate::startDevice(const string &filename)
 {
-    /// @todo implement me
+	SNDevice *device = new SNDevice(filename, m_nextDeviceId);
+	(*m_nextSimulateHelper)->addDevice(device);
+	m_nextDeviceId++;
+	m_nextSimulateHelper++;
+	if (m_nextSimulateHelper == m_simulateHelpers.end())
+	{
+		m_nextSimulateHelper = m_simulateHelpers.begin();
+	}
 }
 
 

@@ -21,11 +21,73 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 #include "SNDevice.h"
+#include "SNExceptions.h"
+
+#include <iostream>
 
 using namespace std;
 
-SNDevice::SNDevice()
+SNDevice::SNDevice(const string &filename, uint32_t deviceId)
 {
+	PyObject *pModuleName, *pModule, *pDeviceClass, *pDevicesDict, *pGlobals;
+	PyObject *pDeviceId, *pDeviceInstance, *pMainModule;
+
+	// import modulu, modul je vzdy v adresari s rovnakym nazvom preto modu.modul
+	pModuleName = PyString_FromString(string(filename + "." + filename).c_str());
+	pModule = PyImport_Import(pModuleName);
+	Py_XDECREF(pModuleName);
+	if (pModule == NULL)
+	{
+		throw SNDeviceImportException(filename);
+	}
+
+	// natiahneme triedu reprezentujucu zariadenie
+	pDeviceClass = PyObject_GetAttrString(pModule, filename.c_str());
+	Py_XDECREF(pModule);
+	if (pDeviceClass == NULL)
+	{
+		throw SNDeviceImportException(filename);
+	}
+
+	// odtestujem ci sme skutocne nacitali triedu
+	if (!PyClass_Check(pDeviceClass))
+	{
+		Py_XDECREF(pDeviceClass);
+		throw SNDeviceImportException(filename);
+	}
+
+	// natiahneme globalnu premennu devices
+	pModuleName = PyString_FromString("__main__");
+	pMainModule = PyImport_Import(pModuleName);
+	Py_XDECREF(pModuleName);
+	if (pMainModule == NULL)
+	{
+		Py_XDECREF(pDeviceClass);
+		throw SNDeviceImportException(filename);
+	}
+	pDevicesDict = PyObject_GetAttrString(pMainModule, "devices");
+	Py_XDECREF(pMainModule);
+	if (pDevicesDict == NULL)
+	{
+		Py_XDECREF(pDeviceClass);
+		throw SNDeviceImportException(filename);
+	}
+
+	// vytvorime novu instanciu zariadenia
+	pDeviceInstance = PyInstance_New(pDeviceClass, NULL, NULL);
+	Py_XDECREF(pDeviceClass);
+	if (pDeviceInstance == NULL)
+	{
+		Py_XDECREF(pDeviceId);
+		Py_XDECREF(pDevicesDict);
+		throw SNDeviceImportException(filename);
+	}
+	pDeviceId = PyInt_FromLong(deviceId);
+
+	// a ulozime ju do asociativneho pola
+	PyDict_SetItem(pDevicesDict, pDeviceId, pDeviceInstance);
+	Py_XDECREF(pDeviceId);
+	Py_XDECREF(pDevicesDict);
 }
 
 

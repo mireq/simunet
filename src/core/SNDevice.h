@@ -32,7 +32,7 @@
 class SNDevice
 {
 	public:
-		SNDevice();
+		SNDevice(const std::string &filename, uint32_t deviceId);
 		~SNDevice();
 		bool processFrame(PyObject *data);
 		bool resetConfig(void);

@@ -47,6 +47,8 @@ class SNSimulate
 	private:
 		int m_threadCount;
 		std::list<SNSimulateHelper *> m_simulateHelpers;
+		std::list<SNSimulateHelper *>::iterator m_nextSimulateHelper;
+		int m_nextDeviceId;
 
 };
 

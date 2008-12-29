@@ -88,11 +88,13 @@ set(simunet_PCH
 
 set(core_SRCS
 	src/core/SNDevice.cpp
+	src/core/SNExceptions.cpp
 	src/core/SNSimulate.cpp
 	src/core/SNSimulateHelper.cpp)
 
 set(core_HDRS
 	src/core/SNDevice.h
+	src/core/SNExceptions.h
 	src/core/SNSimulate.h
 	src/core/SNSimulateHelper.h)
 

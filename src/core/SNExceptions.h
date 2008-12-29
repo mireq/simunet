@@ -20,50 +20,23 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#include "SNSimulateHelper.h"
+#ifndef SNEXCEPTIONS_H
+#define SNEXCEPTIONS_H
 
-#include <Python.h>
-#include <unistd.h>
-#include <iostream>
+#include <string>
 
-SNSimulateHelper::SNSimulateHelper()
-	:m_stop(false)
+/**
+ @author Miroslav Bendik <miroslav.bendik@gmail.com>
+*/
+
+class SNDeviceImportException
 {
-	Py_Initialize();
-	PyRun_SimpleString("import sys");
-	PyRun_SimpleString("import os");
-	PyRun_SimpleString("sys.path.append(os.getcwd())");
-	PyRun_SimpleString("devices = {}");
-}
+	public:
+		SNDeviceImportException(const std::string &a_moduleName);
+		const std::string &moduleName();
+	private:
+		std::string m_moduleName;
+};
 
 
-SNSimulateHelper::~SNSimulateHelper()
-{
-	std::cout<<"Ukoncujem beh"<<std::endl;
-	Py_Finalize();
-}
-
-void SNSimulateHelper::run()
-{
-	while(1)
-	{
-		std::cout<<"Vlakno"<<std::endl;
-		if (m_stop)
-		{
-			return;
-		}
-		sleep(1);
-	}
-}
-
-void SNSimulateHelper::stop()
-{
-	m_stop = true;
-}
-
-void SNSimulateHelper::addDevice(SNDevice *device)
-{
-	m_devices.push_back(device);
-}
-
-
+#endif

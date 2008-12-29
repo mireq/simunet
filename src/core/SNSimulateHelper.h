@@ -24,6 +24,9 @@
 #define SNSIMULATEHELPER_H
 
 #include <QThread>
+#include <list>
+
+class SNDevice;
 
 /**
  @author Miroslav Bendik <miroslav.bendik@gmail.com>
@@ -36,8 +39,10 @@ class SNSimulateHelper: public QThread
 		~SNSimulateHelper();
 		void run();
 		void stop();
+		void addDevice(SNDevice *device);
 	private:
 		bool m_stop;
+		std::list<SNDevice *> m_devices;
 
 };
 
