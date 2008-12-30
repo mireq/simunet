@@ -1,7 +1,8 @@
 project(simunet)
 
 # minimalna verzia cmake
-cmake_minimum_required(VERSION 2.6.0)
+cmake_minimum_required(VERSION 2.4)
+cmake_policy(SET CMP0003 NEW)
 
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
@@ -65,8 +66,7 @@ set(simunet_MOC_HDRS
 	src/gui/AboutDlg.h
 	src/gui/MainWindow.h
 	src/gui/Scene.h
-	src/gui/SecondaryWindow.h
-	src/core/SNSimulateHelper.h)
+	src/gui/SecondaryWindow.h)
 
 set(simunet_HDRS)
 
@@ -98,6 +98,7 @@ set(core_HDRS
 	src/core/SNSimulate.h
 	src/core/SNSimulateHelper.h)
 
+qt4_wrap_cpp(simunet_MOC_SIMULATE_HELPER src/core/SNSimulateHelper.h)
 qt4_wrap_cpp(simunet_MOC_SRCS ${simunet_MOC_HDRS})
 qt4_wrap_ui(simunet_UIS_SRCS ${simunet_UIS})
 qt4_add_resources(simunet_QRC_SRCS ${simunet_QRC})
@@ -105,17 +106,21 @@ qt4_add_translation(lrelease_outputs ${simunet_TRANS})
 
 add_library(smlib STATIC
 	${core_SRCS}
-	${core_HDRS})
+	${core_HDRS}
+	${simunet_MOC_SIMULATE_HELPER}
+)
 
 add_executable(simunet
 	${simunet_SRCS}
 	${simunet_MOC_SRCS}
 	${simunet_UIS_SRCS}
 	${simunet_QRC_SRCS}
-	${lrelease_outputs}
 	${simunet_MOC_HDRS}
-	${simunet_HDRS})
-target_link_libraries(simunet ${QT_LIBRARIES} ${PYTHON_LIBRARIES} smlib)
+	${simunet_HDRS}
+	${lrelease_outputs}
+	${core_HDRS}
+)
+target_link_libraries(simunet smlib ${PYTHON_LIBRARIES} ${QT_LIBRARIES})
 
 install (TARGETS simunet DESTINATION bin)
 
@@ -140,6 +145,32 @@ if (USE_PCH)
 	add_precompiled_header(simunet_pch src/pch.h)
 	add_dependencies(simunet simunet_pch)
 endif (USE_PCH)
+
+install(TARGETS simunet
+	RUNTIME
+	DESTINATION bin)
+
+install(FILES ${core_HDRS}
+	DESTINATION include/simunet)
+
+# cpack
+SET(CMAKE_VERSION "${CMAKE_CACHE_MAJOR_VERSION}.${CMAKE_CACHE_MINOR_VERSION}.${CMAKE_CACHE_RELEASE_VERSION}")
+if("${CMAKE_VERSION}" STRGREATER "2.4")
+	option(USE_CPACK "Use CPack" ON)
+	if(USE_CPACK)
+		set(CPACK_PACKAGE_NAME "SimuNet")
+		set(CPACK_PACKAGE_VENDOR "simunet.eu")
+		set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Network simulator")
+		set(CPACK_PACKAGE_VERSION "0.0.1")
+		set(CPACK_PACKAGE_VERSION_MAJOR "0")
+		set(CPACK_PACKAGE_VERSION_MINOR "0")
+		set(CPACK_PACKAGE_VERSION_PATCH "1")
+#set(CPACK_PACKAGE_INSTALL_DIRECTORY "dir")
+		set(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/README")
+		set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/COPYING")
+		include(CPack)
+	endif(USE_CPACK)
+endif("${CMAKE_VERSION}" STRGREATER "2.4")
 
 enable_testing()
 add_subdirectory(tests)
