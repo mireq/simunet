@@ -1,2 +1,4 @@
 #define simunet_VERSION_MAJOR @simunet_VERSION_MAJOR@
 #define simunet_VERSION_MINOR @simunet_VERSION_MINOR@
+
+#define DEVICES_LOCATION "${CMAKE_INSTALL_PREFIX}/share/simunet/devices"

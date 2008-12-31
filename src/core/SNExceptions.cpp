@@ -35,3 +35,19 @@ const string &SNDeviceImportException::moduleName()
 	return m_moduleName;
 }
 
+SNPythonInterpreterException::SNPythonInterpreterException(const std::string & a_problem, SNPythonInterpreterException::pythonErr a_type)
+{
+	m_problem = a_problem;
+	m_type = a_type;
+}
+
+const std::string & SNPythonInterpreterException::problem()
+{
+	return m_problem;
+}
+
+SNPythonInterpreterException::pythonErr SNPythonInterpreterException::problemType()
+{
+	return m_type;
+}
+

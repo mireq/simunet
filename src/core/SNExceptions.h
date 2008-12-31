@@ -38,5 +38,18 @@ class SNDeviceImportException
 		std::string m_moduleName;
 };
 
+class SNPythonInterpreterException
+{
+	public:
+		enum pythonErr {CREATE, IMPORT, ATTR, CALL, SET};
+
+		SNPythonInterpreterException(const std::string &a_problem, pythonErr a_type);
+		const std::string &problem();
+		pythonErr problemType();
+	private:
+		std::string m_problem;
+		pythonErr m_type;
+};
+
 
 #endif
