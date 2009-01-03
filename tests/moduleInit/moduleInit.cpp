@@ -64,6 +64,7 @@ int main(int argc, char *argv[])
 	{
 		SNDevice test(argv[i], i);
 	}
+	Py_XDECREF(pDevicesDict);
 /*
 	pSysModuleName = PyString_FromString("sys");
 	if (pSysModuleName == NULL)

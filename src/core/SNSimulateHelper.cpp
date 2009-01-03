@@ -81,11 +81,12 @@ SNSimulateHelper::SNSimulateHelper()
 	PyCPPObject pMainName(PyString_FromString("__main__"));
 	PyCPPObject pMainModule(PyImport_Import(pMainName));
 	PyCPPObject pDevicesDict(PyDict_New());
+	pDevicesDict.keepRef();
+	m_pDevicesDict = pDevicesDict;
 	if (PyObject_SetAttrString(pMainModule, "devices", pDevicesDict))
 	{
 		throw SNPythonInterpreterException("devices", SNPythonInterpreterException::SET);
 	}
-	pDevicesDict.keepRef();
 	
 	/*PyRun_SimpleString("import sys");
 	PyRun_SimpleString("import os");
@@ -97,6 +98,7 @@ SNSimulateHelper::SNSimulateHelper()
 SNSimulateHelper::~SNSimulateHelper()
 {
 	std::cout<<"Ukoncujem beh"<<std::endl;
+	Py_XDECREF(m_pDevicesDict);
 	Py_Finalize();
 }
 

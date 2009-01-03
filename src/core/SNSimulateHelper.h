@@ -25,6 +25,7 @@
 
 #include <QThread>
 #include <list>
+#include <Python.h>
 
 class SNDevice;
 
@@ -43,6 +44,7 @@ class SNSimulateHelper: public QThread
 	private:
 		bool m_stop;
 		std::list<SNDevice *> m_devices;
+		PyObject *m_pDevicesDict;
 
 };
 
