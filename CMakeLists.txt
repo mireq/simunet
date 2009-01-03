@@ -87,12 +87,14 @@ set(simunet_PCH
 	src/pch.h)
 
 set(core_SRCS
+	src/core/PyCPPObject.cpp
 	src/core/SNDevice.cpp
 	src/core/SNExceptions.cpp
 	src/core/SNSimulate.cpp
 	src/core/SNSimulateHelper.cpp)
 
 set(core_HDRS
+	src/core/PyCPPObject.h
 	src/core/SNDevice.h
 	src/core/SNExceptions.h
 	src/core/SNSimulate.h

@@ -20,42 +20,52 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef SNEXCEPTIONS_H
-#define SNEXCEPTIONS_H
+#include "PyCPPObject.h"
+#include "SNExceptions.h"
 
-#include <string>
-
-/**
- @author Miroslav Bendik <miroslav.bendik@gmail.com>
-*/
-
-class SNDeviceImportException
+PyCPPObject::PyCPPObject(PyObject *pyobject):m_keepRef(false)
 {
-	public:
-		SNDeviceImportException(const std::string &a_moduleName);
-		const std::string &moduleName();
-	private:
-		std::string m_moduleName;
-};
+	if (pyobject == NULL)
+	{
+		throw new PyObjectNULLException();
+	}
+	m_object = pyobject;
+}
 
-class SNPythonInterpreterException
+
+PyCPPObject::~PyCPPObject()
 {
-	public:
-		enum pythonErr {CREATE, IMPORT, ATTR, CALL, SET};
+	if (m_object != NULL && m_keepRef == false)
+	{
+		Py_XDECREF(m_object);
+	}
+}
 
-		SNPythonInterpreterException(const std::string &a_problem, pythonErr a_type);
-		const std::string &problem();
-		pythonErr problemType();
-	private:
-		std::string m_problem;
-		pythonErr m_type;
-};
 
-class PyObjectNULLException
+PyCPPObject::operator PyObject *()
 {
-	public:
-		PyObjectNULLException();
-};
+	return m_object;
+}
+
+PyObject *PyCPPObject::operator ->()
+{
+	return m_object;
+}
+
+bool PyCPPObject::isClass()
+{
+	return PyClass_Check(m_object);
+}
+
+bool PyCPPObject::isCallable()
+{
+	return PyCallable_Check(m_object);
+}
+
+void PyCPPObject::keepRef()
+{
+	m_keepRef = true;
+}
 
 
-#endif
+

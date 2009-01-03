@@ -51,3 +51,7 @@ SNPythonInterpreterException::pythonErr SNPythonInterpreterException::problemTyp
 	return m_type;
 }
 
+PyObjectNULLException::PyObjectNULLException()
+{
+}
+

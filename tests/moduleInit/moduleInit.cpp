@@ -1,24 +1,70 @@
+#include "core/PyCPPObject.h"
 #include "core/SNDevice.h"
 #include "core/SNExceptions.h"
 #include "config.h"
+#include <iostream>
 #include <Python.h>
 
 using namespace std;
 
 int main(int argc, char *argv[])
 {
-// 	PyRun_SimpleString("import sys");
-// 	PyRun_SimpleString("import os");
-// 	PyRun_SimpleString("sys.path.append(os.getcwd())");
-// 	PyRun_SimpleString("devices = {}");
+/*	PyRun_SimpleString("import sys");
+	PyRun_SimpleString("import os");
+	PyRun_SimpleString("sys.path.append(os.getcwd())");
+	PyRun_SimpleString("devices = {}");
 	PyObject *pSysModuleName, *pOsModuleName;
 	PyObject *pOsModule, *pSysModule;
 	PyObject *pPathObject, *pAppendFunc;
 	PyObject *pGetCwdFunc, *pCwd;
 	PyObject *pMainName, *pMainModule, *pDevicesDict;
 	PyObject *pGetCwdParams, *pAppendParams;
-	PyObject *pDevicesLocation;
+	PyObject *pDevicesLocation;*/
+
 	Py_Initialize();
+	PyCPPObject pSysModuleName(PyString_FromString("sys"));
+	PyCPPObject pSysModule(PyImport_Import(pSysModuleName));
+	PyCPPObject pOsModuleName(PyString_FromString("os"));
+	PyCPPObject pOsModule(PyImport_Import(pOsModuleName));
+	PyCPPObject pPathObject(PyObject_GetAttrString(pSysModule, "path"));
+	PyCPPObject pAppendFunc(PyObject_GetAttrString(pPathObject, "append"));
+	if (!pAppendFunc.isCallable())
+	{
+		throw new SNPythonInterpreterException("append", SNPythonInterpreterException::CALL);
+	}
+	PyCPPObject pGetCwdFunc(PyObject_GetAttrString(pOsModule, "getcwd"));
+	if (!pGetCwdFunc.isCallable())
+	{
+		throw new SNPythonInterpreterException("getcwd", SNPythonInterpreterException::CALL);
+	}
+	PyCPPObject pGetCwdParams(PyTuple_New(0));
+	PyCPPObject pCwd(PyObject_Call(pGetCwdFunc, pGetCwdParams, NULL));
+	PyCPPObject pAppendParams(PyTuple_New(1));
+	if (PyTuple_SetItem(pAppendParams, 0, pCwd))
+	{
+		throw SNPythonInterpreterException("args tuple", SNPythonInterpreterException::SET);
+	}
+	PyObject_Call(pAppendFunc, pAppendParams, NULL);
+	PyCPPObject pDevicesLocation(PyString_FromString(DEVICES_LOCATION));
+	if (PyTuple_SetItem(pAppendParams, 0, pDevicesLocation))
+	{
+		throw SNPythonInterpreterException("args tuple", SNPythonInterpreterException::SET);
+	}
+	PyObject_Call(pAppendFunc, pAppendParams, NULL);
+	// natiahneme globalnu premennu devices
+	PyCPPObject pMainName(PyString_FromString("__main__"));
+	PyCPPObject pMainModule(PyImport_Import(pMainName));
+	PyCPPObject pDevicesDict(PyDict_New());
+	if (PyObject_SetAttrString(pMainModule, "devices", pDevicesDict))
+	{
+		throw SNPythonInterpreterException("devices", SNPythonInterpreterException::SET);
+	}
+	pDevicesDict.keepRef();
+	for (int i = 1; i < argc; ++i)
+	{
+		SNDevice test(argv[i], i);
+	}
+/*
 	pSysModuleName = PyString_FromString("sys");
 	if (pSysModuleName == NULL)
 	{
@@ -146,5 +192,6 @@ int main(int argc, char *argv[])
 	{
 		SNDevice test(argv[i], i);
 	}
+*/
 	Py_Finalize();
 }

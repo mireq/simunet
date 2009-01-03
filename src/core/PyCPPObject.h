@@ -20,42 +20,31 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef SNEXCEPTIONS_H
-#define SNEXCEPTIONS_H
+#ifndef PYCPPOBJECT_H
+#define PYCPPOBJECT_H
 
-#include <string>
+#include <Python.h>
 
 /**
  @author Miroslav Bendik <miroslav.bendik@gmail.com>
 */
-
-class SNDeviceImportException
+class PyCPPObject
 {
 	public:
-		SNDeviceImportException(const std::string &a_moduleName);
-		const std::string &moduleName();
+		PyCPPObject(PyObject *pyobject);
+		~PyCPPObject();
+		operator PyObject *();
+		PyObject *operator ->();
+		bool isClass();
+		bool isCallable();
+		void keepRef();
+
 	private:
-		std::string m_moduleName;
+		PyCPPObject&  operator = (const PyCPPObject& other) { return *this; }
+		PyCPPObject(const PyCPPObject& other) {}
+
+		PyObject *m_object;
+		bool m_keepRef;
 };
-
-class SNPythonInterpreterException
-{
-	public:
-		enum pythonErr {CREATE, IMPORT, ATTR, CALL, SET};
-
-		SNPythonInterpreterException(const std::string &a_problem, pythonErr a_type);
-		const std::string &problem();
-		pythonErr problemType();
-	private:
-		std::string m_problem;
-		pythonErr m_type;
-};
-
-class PyObjectNULLException
-{
-	public:
-		PyObjectNULLException();
-};
-
 
 #endif
