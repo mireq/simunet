@@ -20,52 +20,7 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#include "PyCPPObject.h"
-#include "SNExceptions.h"
 
-#include <iostream>
+#include <Python.h>
 
-PyCPPObject::PyCPPObject(PyObject *pyobject, bool clean)
-{
-	if (pyobject == NULL)
-	{
-		throw new PyObjectNULLException();
-	}
-	m_clean = clean;
-	m_object = pyobject;
-}
-
-
-PyCPPObject::~PyCPPObject()
-{
-	if (m_object != NULL && m_clean == true)
-	{
-		Py_XDECREF(m_object);
-		//PyRun_SimpleString("gc.collect()");
-	}
-}
-
-
-PyCPPObject::operator PyObject *()
-{
-	return m_object;
-}
-
-PyObject *PyCPPObject::operator ->()
-{
-	return m_object;
-}
-
-bool PyCPPObject::isClass()
-{
-	return PyClass_Check(m_object);
-}
-
-bool PyCPPObject::isCallable()
-{
-	return PyCallable_Check(m_object);
-}
-
-
-
-
+PyObject *interpreterInit();

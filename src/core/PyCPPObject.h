@@ -31,20 +31,19 @@
 class PyCPPObject
 {
 	public:
-		PyCPPObject(PyObject *pyobject);
+		PyCPPObject(PyObject *pyobject, bool clean = true);
 		~PyCPPObject();
 		operator PyObject *();
 		PyObject *operator ->();
 		bool isClass();
 		bool isCallable();
-		void keepRef();
 
 	private:
 		PyCPPObject&  operator = (const PyCPPObject& other) { return *this; }
 		PyCPPObject(const PyCPPObject& other) {}
 
 		PyObject *m_object;
-		bool m_keepRef;
+		bool m_clean;
 };
 
 #endif

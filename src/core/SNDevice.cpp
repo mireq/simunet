@@ -34,10 +34,10 @@ SNDevice::SNDevice(const string &filename, uint32_t deviceId)
 	{
 		// import modulu, modul je vzdy v adresari s rovnakym nazvom preto modu.modul
 		PyCPPObject pModuleName(PyString_FromString(string(filename + "." + filename).c_str()));
-		PyCPPObject pModule(PyImport_Import(pModuleName));
+		PyCPPObject pModule(PyImport_Import(pModuleName), false);
 
 		// natiahneme triedu reprezentujucu zariadenie
-		PyCPPObject pDeviceClass(PyObject_GetAttrString(pModule, filename.c_str()));
+		PyCPPObject pDeviceClass(PyObject_GetAttrString(pModule, filename.c_str()), false);
 
 		// odtestujem ci sme skutocne nacitali triedu
 		if (!pDeviceClass.isClass())
@@ -56,6 +56,7 @@ SNDevice::SNDevice(const string &filename, uint32_t deviceId)
 
 		// a ulozime ju do asociativneho pola
 		PyDict_SetItem(pDevicesDict, pDeviceId, pDeviceInstance);
+		PyObject_SetAttrString(pDeviceInstance, "device_id", pDeviceId);
 	}
 	catch (PyObjectNULLException e)
 	{
