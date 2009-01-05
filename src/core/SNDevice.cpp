@@ -48,10 +48,11 @@ SNDevice::SNDevice(const string &filename, uint32_t deviceId)
 		// natiahneme globalnu premennu devices
 		PyCPPObject pMainModuleName(PyString_FromString("__main__"));
 		PyCPPObject pMainModule(PyImport_Import(pMainModuleName));
-		PyCPPObject pDevicesDict(PyObject_GetAttrString(pMainModule, "devices"));
+		PyCPPObject pDevicesDict(PyObject_GetAttrString(pMainModule, "devices"), true);
 
 		// vytvorime novu instanciu zariadenia
-		PyCPPObject pDeviceInstance(PyInstance_New(pDeviceClass, NULL, NULL));
+		PyCPPObject pDeviceInstance(PyInstance_New(pDeviceClass, NULL, NULL), true);
+		m_pDeviceInstance = pDeviceInstance;
 		PyCPPObject pDeviceId(PyInt_FromLong(deviceId));
 
 		// a ulozime ju do asociativneho pola
@@ -62,6 +63,7 @@ SNDevice::SNDevice(const string &filename, uint32_t deviceId)
 	{
 		throw SNDeviceImportException(filename);
 	}
+	m_deviceId = deviceId;
 }
 
 
@@ -75,7 +77,23 @@ SNDevice::~SNDevice()
  */
 bool SNDevice::processFrame(PyObject *data)
 {
-    /// @todo implement me
+	PyCPPObject pProcessFrameFunc(PyObject_GetAttrString(m_pDeviceInstance, "processFrame"), true);
+	if (!pProcessFrameFunc.isCallable())
+	{
+		return false;
+	}
+	PyCPPObject args(PyTuple_New(1));
+	PyTuple_SetItem(args, 0, data);
+	PyCPPObject ret(PyObject_Call(pProcessFrameFunc, args, NULL));
+	if (!PyBool_Check(ret))
+	{
+		return false;
+	}
+	else
+	{
+		return PyObject_IsTrue(ret);
+	}
+	return false;
 }
 
 

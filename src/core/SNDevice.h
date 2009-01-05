@@ -42,6 +42,9 @@ class SNDevice
 		std::string telnetRequest(const std::string &line, char symbol);
 		char * telnetGetControlChars(void);
 
+	private:
+		uint32_t m_deviceId;
+		PyObject * m_pDeviceInstance;
 };
 
 #endif

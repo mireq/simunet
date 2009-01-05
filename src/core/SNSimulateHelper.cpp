@@ -43,7 +43,7 @@ SNSimulateHelper::SNSimulateHelper()
 	PyCPPObject pOsModule(PyImport_Import(pOsModuleName));
 
 	// ziskame referenciu na funkciu sys.path.append
-	PyCPPObject pPathObject(PyObject_GetAttrString(pSysModule, "path"), false);
+	PyCPPObject pPathObject(PyObject_GetAttrString(pSysModule, "path"));
 	PyCPPObject pAppendFunc(PyObject_GetAttrString(pPathObject, "append"));
 	if (!pAppendFunc.isCallable())
 	{
@@ -80,12 +80,16 @@ SNSimulateHelper::SNSimulateHelper()
 	// vytvorime globalnu premennu devices
 	PyCPPObject pMainName(PyString_FromString("__main__"));
 	PyCPPObject pMainModule(PyImport_Import(pMainName));
-	PyCPPObject pDevicesDict(PyDict_New(), false);
+	PyCPPObject pDevicesDict(PyDict_New());
 	m_pDevicesDict = pDevicesDict;
 	if (PyObject_SetAttrString(pMainModule, "devices", pDevicesDict))
 	{
 		throw SNPythonInterpreterException("devices", SNPythonInterpreterException::SET);
 	}
+
+	PyCPPObject pBuiltins(PyObject_GetAttrString(pMainModule, "__builtins__"));
+	PyCPPObject pBuiltinsDict(PyModule_GetDict(pBuiltins));
+	PyRun_String("class SNDevice:\n\tpass", Py_single_input, pBuiltinsDict, pBuiltinsDict);
 	
 	/*PyRun_SimpleString("import sys");
 	PyRun_SimpleString("import os");

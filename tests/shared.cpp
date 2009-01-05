@@ -31,7 +31,7 @@ PyObject *interpreterInit()
 	PyCPPObject pSysModule(PyImport_Import(pSysModuleName));
 	PyCPPObject pOsModuleName(PyString_FromString("os"));
 	PyCPPObject pOsModule(PyImport_Import(pOsModuleName));
-	PyCPPObject pPathObject(PyObject_GetAttrString(pSysModule, "path"), false);
+	PyCPPObject pPathObject(PyObject_GetAttrString(pSysModule, "path"));
 	PyCPPObject pAppendFunc(PyObject_GetAttrString(pPathObject, "append"));
 	if (!pAppendFunc.isCallable())
 	{
@@ -59,10 +59,13 @@ PyObject *interpreterInit()
 	// natiahneme globalnu premennu devices
 	PyCPPObject pMainName(PyString_FromString("__main__"));
 	PyCPPObject pMainModule(PyImport_Import(pMainName));
-	PyCPPObject pDevicesDict(PyDict_New(), false);
+	PyCPPObject pDevicesDict(PyDict_New(), true);
 	if (PyObject_SetAttrString(pMainModule, "devices", pDevicesDict))
 	{
 		throw SNPythonInterpreterException("devices", SNPythonInterpreterException::SET);
 	}
+	PyCPPObject pBuiltins(PyObject_GetAttrString(pMainModule, "__builtins__"));
+	PyCPPObject pBuiltinsDict(PyModule_GetDict(pBuiltins));
+	PyRun_String("class SNDevice:\n\tpass", Py_single_input, pBuiltinsDict, pBuiltinsDict);
 	return pDevicesDict;
 }

@@ -31,7 +31,7 @@
 class PyCPPObject
 {
 	public:
-		PyCPPObject(PyObject *pyobject, bool clean = true);
+		PyCPPObject(PyObject *pyobject, bool clean = false);
 		~PyCPPObject();
 		operator PyObject *();
 		PyObject *operator ->();
