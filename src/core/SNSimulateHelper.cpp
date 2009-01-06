@@ -21,6 +21,7 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 #include "SNSimulateHelper.h"
+#include "SNSimulate.h"
 
 #include <Python.h>
 #include <unistd.h>
@@ -34,16 +35,54 @@ SNSimulateHelper::SNSimulateHelper()
 {
 
 	Py_Initialize();
-	// ziskame referenciu na modul sys
-	PyCPPObject pSysModuleName(PyString_FromString("sys"));
-	PyCPPObject pSysModule(PyImport_Import(pSysModuleName));
+	setPath();
+	createDevicesDictionary();
+	createSNSimulateModule();
+	createBaseClass();
+}
 
-	// ziskame referenciu na modul os
+
+SNSimulateHelper::~SNSimulateHelper()
+{
+	std::cout<<"Ukoncujem beh"<<std::endl;
+	Py_XDECREF(m_pDevicesDict);
+	Py_Finalize();
+}
+
+void SNSimulateHelper::run()
+{
+	while(1)
+	{
+		std::cout<<"Vlakno"<<std::endl;
+		if (m_stop)
+		{
+			return;
+		}
+		sleep(1);
+	}
+}
+
+void SNSimulateHelper::stop()
+{
+	m_stop = true;
+}
+
+void SNSimulateHelper::addDevice(SNDevice *device)
+{
+	m_devices.push_back(device);
+}
+
+/*!
+    \brief Nastavime cesty v ktorych su hladane moduly.
+  */
+void SNSimulateHelper::setPath()
+{
+		// ziskame referenciu na modul os
 	PyCPPObject pOsModuleName(PyString_FromString("os"));
 	PyCPPObject pOsModule(PyImport_Import(pOsModuleName));
 
 	// ziskame referenciu na funkciu sys.path.append
-	PyCPPObject pPathObject(PyObject_GetAttrString(pSysModule, "path"));
+	PyCPPObject pPathObject(PySys_GetObject("path"));
 	PyCPPObject pAppendFunc(PyObject_GetAttrString(pPathObject, "append"));
 	if (!pAppendFunc.isCallable())
 	{
@@ -76,7 +115,13 @@ SNSimulateHelper::SNSimulateHelper()
 		throw SNPythonInterpreterException("args tuple", SNPythonInterpreterException::SET);
 	}
 	PyObject_Call(pAppendFunc, pAppendParams, NULL);
+}
 
+/*!
+    \brief Vytvorenie pythonovskej struktury v ktorej budu udrziavane zariadenia.
+  */
+void SNSimulateHelper::createDevicesDictionary()
+{
 	// vytvorime globalnu premennu devices
 	PyCPPObject pMainName(PyString_FromString("__main__"));
 	PyCPPObject pMainModule(PyImport_Import(pMainName));
@@ -86,46 +131,45 @@ SNSimulateHelper::SNSimulateHelper()
 	{
 		throw SNPythonInterpreterException("devices", SNPythonInterpreterException::SET);
 	}
-
-	PyCPPObject pBuiltins(PyObject_GetAttrString(pMainModule, "__builtins__"));
-	PyCPPObject pBuiltinsDict(PyModule_GetDict(pBuiltins));
-	PyRun_String("class SNDevice:\n\tpass", Py_single_input, pBuiltinsDict, pBuiltinsDict);
-	
-	/*PyRun_SimpleString("import sys");
-	PyRun_SimpleString("import os");
-	PyRun_SimpleString("sys.path.append(os.getcwd())");
-	PyRun_SimpleString("devices = {}");*/
 }
 
-
-SNSimulateHelper::~SNSimulateHelper()
+/*!
+    \brief Vytvorenie prepojenia na c++ triedu SNSimulate
+    Tato funkcia vytvori pythonovsky modul snsimulate ktory sluzi na komunikaciu
+    pythonu s c-rozhranim. Tento modul sa nebude vyuzivat priamo, ale iba
+    z triedy SNDevice cez metody ako sendFrame.
+ */
+void SNSimulateHelper::createSNSimulateModule()
 {
-	std::cout<<"Ukoncujem beh"<<std::endl;
-	Py_XDECREF(m_pDevicesDict);
-	Py_Finalize();
+	Py_InitModule("snsimulate", const_cast<PyMethodDef *>(SNSimulate::SNSimulateMethods));
 }
 
-void SNSimulateHelper::run()
+/*!
+    \brief Vytvorenie zakladnej pythonovskej triedy pre zariadenia (SNDevice)
+  */
+void SNSimulateHelper::createBaseClass()
 {
-	while(1)
-	{
-		std::cout<<"Vlakno"<<std::endl;
-		if (m_stop)
-		{
-			return;
-		}
-		sleep(1);
-	}
-}
-
-void SNSimulateHelper::stop()
-{
-	m_stop = true;
-}
-
-void SNSimulateHelper::addDevice(SNDevice *device)
-{
-	m_devices.push_back(device);
+	PyRun_SimpleString("import snsimulate");
+	PyCPPObject pBuiltinsDict(PyEval_GetBuiltins());
+	PyRun_String("class SNDevice:\n"
+		"\tdef sendFrame(data):\n"
+		"\t\tsnsimulate.sendFrame(self.device_id, data)\n"
+		"\tdef sendTelnet(text, cmd):\n"
+		"\t\tsnsimulate.sendTelnet(self.device_id, text, cmd)\n"
+		"\tdef processFrame(data):\n"
+		"\t\tprint(\"processFrame not implemented\")\n"
+		"\tdef resetConfig():\n"
+		"\t\tprint(\"resetConfig not implemented\")\n"
+		"\tdef setConfig(data):\n"
+		"\t\tprint(\"setConfig not implemented\")\n"
+		"\tdef dumpConfig():\n"
+		"\t\tprint(\"dumpConfig not implemented\")\n"
+		"\tdef httpRequest(url, post):\n"
+		"\t\tprint(\"httpRequest not implemented\")\n"
+		"\tdef telnetRequest(line, symbol):\n"
+		"\t\tprint(\"telnetRequest not implemented\")\n"
+		"\tdef telnetGetControlChars():"
+		"\t\tprint(\"telnetGetControlChars not implemented\")", Py_single_input, pBuiltinsDict, pBuiltinsDict);
 }
 
 

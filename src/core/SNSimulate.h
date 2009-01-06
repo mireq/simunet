@@ -43,13 +43,16 @@ class SNSimulate
 		uint32_t startDevice(const std::string &filename);
 		static void processFrame(uint32_t id, PyObject *data);
 		static void telnetResponse(uint32_t id, const char *text, const char *cmd);
+		static const PyMethodDef SNSimulateMethods[];
 
 	private:
+		static PyObject *processFrameWrapper(PyObject *self, PyObject *args);
+		static PyObject *telnetResponseWrapper(PyObject *self, PyObject *args);
 		int m_threadCount;
 		std::list<SNSimulateHelper *> m_simulateHelpers;
 		std::list<SNSimulateHelper *>::iterator m_nextSimulateHelper;
 		int m_nextDeviceId;
-
 };
+
 
 #endif

@@ -23,4 +23,4 @@
 
 #include <Python.h>
 
-PyObject *interpreterInit();
+void interpreterInit();

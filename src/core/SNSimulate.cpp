@@ -24,8 +24,17 @@
 #include "SNSimulate.h"
 #include "SNSimulateHelper.h"
 #include "SNDevice.h"
+#include "PyCPPObject.h"
+
+#include <iostream>
 
 using namespace std;
+
+const PyMethodDef SNSimulate::SNSimulateMethods[] = {
+	{"sendFrame", SNSimulate::processFrameWrapper, METH_VARARGS, "Odoslanie ramca"},
+	{"sendTelnet", SNSimulate::telnetResponseWrapper, METH_VARARGS, "Odoslanie dat cez telnet"},
+	{NULL, NULL, 0, NULL}
+};
 
 /*!
     \fn SNSimulate::SNSimulate()
@@ -84,6 +93,7 @@ uint32_t SNSimulate::startDevice(const string &filename)
 	{
 		m_nextSimulateHelper = m_simulateHelpers.begin();
 	}
+	return m_nextDeviceId - 1;
 }
 
 
@@ -102,4 +112,44 @@ void SNSimulate::processFrame(uint32_t id, PyObject *data)
 void SNSimulate::telnetResponse(uint32_t id, const char *text, const char *cmd)
 {
     /// @todo implement me
+}
+
+PyObject *SNSimulate::processFrameWrapper(PyObject *self, PyObject *args)
+{
+	if (PyTuple_Size(args) != 2)
+	{
+		return NULL;
+	}
+
+	PyCPPObject pDeviceId(PyTuple_GetItem(args, 0));
+	PyCPPObject pData(PyTuple_GetItem(args, 1));
+
+	uint32_t deviceId = PyLong_AsUnsignedLong(pDeviceId);
+	processFrame(deviceId, pData);
+
+	Py_RETURN_NONE;
+}
+
+PyObject* SNSimulate::telnetResponseWrapper(PyObject * self, PyObject * args)
+{
+	if (PyTuple_Size(args) != 3)
+	{
+		return NULL;
+	}
+
+	PyCPPObject pDeviceId(PyTuple_GetItem(args, 0));
+	PyCPPObject pText(PyTuple_GetItem(args, 1));
+	PyCPPObject pCmd(PyTuple_GetItem(args, 2));
+
+	uint32_t deviceId = PyLong_AsUnsignedLong(pDeviceId);
+	if (!PyString_Check(pText) || !PyString_Check(pCmd))
+	{
+		return NULL;
+	}
+
+	char *text = PyString_AsString(pText);
+	char *cmd  = PyString_AsString(pCmd);
+	telnetResponse(deviceId, text, cmd);
+
+	Py_RETURN_NONE;
 }

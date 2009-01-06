@@ -25,13 +25,11 @@
 #include "core/SNExceptions.h"
 #include "config.h"
 
-PyObject *interpreterInit()
+void interpreterInit()
 {
-	PyCPPObject pSysModuleName(PyString_FromString("sys"));
-	PyCPPObject pSysModule(PyImport_Import(pSysModuleName));
 	PyCPPObject pOsModuleName(PyString_FromString("os"));
 	PyCPPObject pOsModule(PyImport_Import(pOsModuleName));
-	PyCPPObject pPathObject(PyObject_GetAttrString(pSysModule, "path"));
+	PyCPPObject pPathObject(PySys_GetObject("path"));
 	PyCPPObject pAppendFunc(PyObject_GetAttrString(pPathObject, "append"));
 	if (!pAppendFunc.isCallable())
 	{
@@ -64,8 +62,4 @@ PyObject *interpreterInit()
 	{
 		throw SNPythonInterpreterException("devices", SNPythonInterpreterException::SET);
 	}
-	PyCPPObject pBuiltins(PyObject_GetAttrString(pMainModule, "__builtins__"));
-	PyCPPObject pBuiltinsDict(PyModule_GetDict(pBuiltins));
-	PyRun_String("class SNDevice:\n\tpass", Py_single_input, pBuiltinsDict, pBuiltinsDict);
-	return pDevicesDict;
 }

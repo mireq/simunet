@@ -53,7 +53,7 @@ SNDevice::SNDevice(const string &filename, uint32_t deviceId)
 		// vytvorime novu instanciu zariadenia
 		PyCPPObject pDeviceInstance(PyInstance_New(pDeviceClass, NULL, NULL), true);
 		m_pDeviceInstance = pDeviceInstance;
-		PyCPPObject pDeviceId(PyInt_FromLong(deviceId));
+		PyCPPObject pDeviceId(PyLong_FromUnsignedLong(deviceId));
 
 		// a ulozime ju do asociativneho pola
 		PyDict_SetItem(pDevicesDict, pDeviceId, pDeviceInstance);
@@ -102,7 +102,20 @@ bool SNDevice::processFrame(PyObject *data)
  */
 bool SNDevice::resetConfig(void)
 {
-    /// @todo implement me
+	try
+	{
+		PyCPPObject resetConfigFunc(PyObject_GetAttrString(m_pDeviceInstance, "resetConfig"));
+		if (!resetConfigFunc.isCallable())
+		{
+			return false;
+		}
+		PyCPPObject ret(PyObject_Call(resetConfigFunc, NULL, NULL));
+		return (PyObject_IsTrue(ret) == 1);
+	}
+	catch (PyObjectNULLException e)
+	{
+		return false;
+	}
 }
 
 
@@ -111,41 +124,120 @@ bool SNDevice::resetConfig(void)
  */
 bool SNDevice::setConfig(PyObject *data)
 {
-    /// @todo implement me
+	try
+	{
+		PyCPPObject setConfigFunc(PyObject_GetAttrString(m_pDeviceInstance, "setConfig"));
+		if (!setConfigFunc.isCallable())
+		{
+			return false;
+		}
+		PyCPPObject args(PyTuple_New(1));
+		PyTuple_SetItem(args, 0, data);
+		PyCPPObject ret(PyObject_Call(setConfigFunc, args, NULL));
+		return (PyObject_IsTrue(ret) == 1);
+	}
+	catch (PyObjectNULLException e)
+	{
+		return false;
+	}
 }
 
 
 /*!
     \fn SNDevice::dumpConfig(void)
  */
-PyObject * SNDevice::dumpConfig(void)
+PyObject *SNDevice::dumpConfig(void)
 {
-    /// @todo implement me
+	try
+	{
+		PyCPPObject dumpConfigFunc(PyObject_GetAttrString(m_pDeviceInstance, "dumpConfig"));
+		if (!dumpConfigFunc.isCallable())
+		{
+			return NULL;
+		}
+		return PyObject_Call(dumpConfigFunc, NULL, NULL);
+	}
+	catch (PyObjectNULLException e)
+	{
+		return NULL;
+	}
 }
 
 
 /*!
     \fn SNDevice::httpRequest(const string &url, PyObject *post)
  */
-string SNDevice::httpRequest(const string &url, PyObject *post)
+char *SNDevice::httpRequest(const string &url, PyObject *post)
 {
-    /// @todo implement me
+	try
+	{
+		PyCPPObject httpRequestFunc(PyObject_GetAttrString(m_pDeviceInstance, "httpRequest"));
+		if (!httpRequestFunc.isCallable())
+		{
+			return NULL;
+		}
+		PyCPPObject pUrl(PyString_FromString(url.c_str()));
+		PyCPPObject args(PyTuple_New(2));
+
+		PyTuple_SetItem(args, 0, pUrl);
+		PyTuple_SetItem(args, 1, post);
+		PyCPPObject pRet(PyObject_Call(httpRequestFunc, args, NULL));
+		return PyString_AsString(pRet);
+	}
+	catch (PyObjectNULLException e)
+	{
+		return NULL;
+	}
 }
 
 
 /*!
     \fn SNDevice::telnetRequest(const string &line, char symbol)
  */
-string SNDevice::telnetRequest(const string &line, char symbol)
+char *SNDevice::telnetRequest(const string &line, char symbol)
 {
-    /// @todo implement me
+	try
+	{
+		PyCPPObject telnetRequestFunc(PyObject_GetAttrString(m_pDeviceInstance, "telnetRequest"));
+		if (!telnetRequestFunc.isCallable())
+		{
+			return NULL;
+		}
+		PyCPPObject args(PyTuple_New(2));
+
+		PyCPPObject pLine(PyString_FromString(line.c_str()));
+		PyCPPObject pSymbol(PyString_FromFormat("%c", symbol));
+
+		PyTuple_SetItem(args, 0, pLine);
+		PyTuple_SetItem(args, 1, pSymbol);
+
+		PyCPPObject pRet(PyObject_Call(telnetRequestFunc, args, NULL));
+		return PyString_AsString(pRet);
+	}
+	catch (PyObjectNULLException e)
+	{
+		return NULL;
+	}
 }
 
 
 /*!
     \fn SNDevice::telnetGetControlChars(void)
  */
-char * SNDevice::telnetGetControlChars(void)
+char *SNDevice::telnetGetControlChars(void)
 {
-    /// @todo implement me
+	try
+	{
+		PyCPPObject telnetGetControlCharsFunc(PyObject_GetAttrString(m_pDeviceInstance, "telnetGetControlChars"));
+		if (!telnetGetControlCharsFunc.isCallable())
+		{
+			return NULL;
+		}
+		PyCPPObject pRet(PyObject_Call(telnetGetControlCharsFunc, NULL, NULL));
+		return PyString_AsString(pRet);
+	}
+	catch (PyObjectNULLException e)
+	{
+		return NULL;
+	}
 }

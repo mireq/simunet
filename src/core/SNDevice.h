@@ -37,14 +37,14 @@ class SNDevice
 		bool processFrame(PyObject *data);
 		bool resetConfig(void);
 		bool setConfig(PyObject *data);
-		PyObject * dumpConfig(void);
-		std::string httpRequest(const std::string &url, PyObject *post);
-		std::string telnetRequest(const std::string &line, char symbol);
-		char * telnetGetControlChars(void);
+		PyObject *dumpConfig(void);
+		char *httpRequest(const std::string &url, PyObject *post);
+		char *telnetRequest(const std::string &line, char symbol);
+		char *telnetGetControlChars(void);
 
 	private:
 		uint32_t m_deviceId;
-		PyObject * m_pDeviceInstance;
+		PyObject *m_pDeviceInstance;
 };
 
 #endif

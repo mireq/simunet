@@ -10,7 +10,11 @@ int main(int argc, char *argv[])
 	Py_Initialize();
 	PyRun_SimpleString("import gc");
 	PyRun_SimpleString("gc.set_debug(gc.DEBUG_LEAK)");
-	PyObject *pDevicesDict = interpreterInit();
+	interpreterInit();
+
+	PyCPPObject pBuiltinsDict(PyEval_GetBuiltins());
+
+	PyRun_String("class SNDevice:\n\tpass", Py_single_input, pBuiltinsDict, pBuiltinsDict);
 	for (int i = 1; i < argc; ++i)
 	{
 		SNDevice test(argv[i], i);
