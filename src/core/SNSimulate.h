@@ -27,7 +27,9 @@
 #include <Python.h>
 #include <string>
 #include <list>
+#include <map>
 
+class SNDevice;
 class SNSimulateHelper;
 
 /**
@@ -51,6 +53,7 @@ class SNSimulate
 		int m_threadCount;
 		std::list<SNSimulateHelper *> m_simulateHelpers;
 		std::list<SNSimulateHelper *>::iterator m_nextSimulateHelper;
+		std::map<int, SNDevice*> m_devices;
 		int m_nextDeviceId;
 };
 

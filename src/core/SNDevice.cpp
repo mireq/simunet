@@ -80,20 +80,19 @@ bool SNDevice::processFrame(PyObject *data)
 	PyCPPObject pProcessFrameFunc(PyObject_GetAttrString(m_pDeviceInstance, "processFrame"), true);
 	if (!pProcessFrameFunc.isCallable())
 	{
-		return false;
+		return true;
 	}
 	PyCPPObject args(PyTuple_New(1));
 	PyTuple_SetItem(args, 0, data);
 	PyCPPObject ret(PyObject_Call(pProcessFrameFunc, args, NULL));
 	if (!PyBool_Check(ret))
 	{
-		return false;
+		return true;
 	}
 	else
 	{
 		return PyObject_IsTrue(ret);
 	}
-	return false;
 }
 
 
@@ -107,14 +106,14 @@ bool SNDevice::resetConfig(void)
 		PyCPPObject resetConfigFunc(PyObject_GetAttrString(m_pDeviceInstance, "resetConfig"));
 		if (!resetConfigFunc.isCallable())
 		{
-			return false;
+			return true;
 		}
 		PyCPPObject ret(PyObject_Call(resetConfigFunc, NULL, NULL));
 		return (PyObject_IsTrue(ret) == 1);
 	}
 	catch (PyObjectNULLException e)
 	{
-		return false;
+		return true;
 	}
 }
 
@@ -129,7 +128,7 @@ bool SNDevice::setConfig(PyObject *data)
 		PyCPPObject setConfigFunc(PyObject_GetAttrString(m_pDeviceInstance, "setConfig"));
 		if (!setConfigFunc.isCallable())
 		{
-			return false;
+			return true;
 		}
 		PyCPPObject args(PyTuple_New(1));
 		PyTuple_SetItem(args, 0, data);
@@ -138,7 +137,7 @@ bool SNDevice::setConfig(PyObject *data)
 	}
 	catch (PyObjectNULLException e)
 	{
-		return false;
+		return true;
 	}
 }
 

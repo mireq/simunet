@@ -76,7 +76,15 @@ SNSimulate::~SNSimulate()
  */
 bool SNSimulate::stopDevice(uint32_t id)
 {
-    /// @todo implement me
+	map<int, SNDevice*>::iterator dev;
+	dev = m_devices.find(id);
+	if (dev == m_devices.end())
+	{
+		return true;
+	}
+	delete dev->second;
+	m_devices.erase(id);
+	return false;
 }
 
 
@@ -87,6 +95,7 @@ uint32_t SNSimulate::startDevice(const string &filename)
 {
 	SNDevice *device = new SNDevice(filename, m_nextDeviceId);
 	(*m_nextSimulateHelper)->addDevice(device);
+	m_devices[m_nextDeviceId] = device;
 	m_nextDeviceId++;
 	m_nextSimulateHelper++;
 	if (m_nextSimulateHelper == m_simulateHelpers.end())
