@@ -20,57 +20,77 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef SCENE_H
-#define SCENE_H
+#ifndef SNTITLEWIDGET_H
+#define SNTITLEWIDGET_H
 
-#include <QGraphicsScene>
-#include <QtOpenGL>
+#include <QWidget>
+#include <QIcon>
+#include <QString>
+#include <SNIcon.h>
 
-class SceneAttribDialog;
+class QLabel;
 
 /**
  @author Miroslav Bendik <miroslav.bendik@gmail.com>
- @brief Graficka (OpenGL) scena.
+ @brief Widget na zobrazenie titulku / varovania v ramceku
 */
-class Scene : public QGraphicsScene
+class SNTitleWidget : public QWidget
 {
 		Q_OBJECT
 	public:
-
 /*!
- \brief Vymenovane hodnoty navigacneho modu.
-*/
-		enum NavigationMode
+ \brief Typy sprav (rozlisene ikonou).
+ */
+		enum MessageType
 		{
-			Rotate, /*!< Mod otacania (lave tlacitko otacanie, stredne pohyb) */
-			Move    /*!< Mod pohybu (lave tlacitko pohyb, stredne otacanie) */
+			PlainMessage, InfoMessage, WarningMessage, ErrorMessage
 		};
+
 	public:
-		Scene(QObject* parent = 0);
+		SNTitleWidget(QWidget *parent = 0);
+		SNTitleWidget(const QString &text, QWidget *parent = 0);
+		SNTitleWidget(const QString &text, const QIcon &icon, QWidget *parent = 0);
+		SNTitleWidget(const QString &text, const QString &iconName, QWidget *parent = 0);
+		SNTitleWidget(const QString &text, MessageType type = PlainMessage, QWidget *parent = 0);
+		~SNTitleWidget();
+
+	public slots:
+/*!
+ \brief Pomocou setPixmap je mozne pouzit vlastnu ikonu.
+*/
+		void setPixmap(const QString &name);
+		void setPixmap(const QPixmap &pixmap);
+		void setPixmap(const QIcon &icon);
+		void setPixmap(MessageType type);
 
 /*!
- \brief Nastavenie navigacneho modu.
+ \brief Nastavenie textu spravy.
+ \param QString Text spravy
 */
-		void setNavigationMode(NavigationMode mode);
-		~Scene();
+		void setText(const QString &text);
 
-	protected:
-		void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
-		void mousePressEvent(QGraphicsSceneMouseEvent *event);
-		void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
-		void keyPressEvent(QKeyEvent *event);
-		void drawBackground(QPainter *painter, const QRectF &rect);
-		void zmenOtocenie(float rozdiel);
-		void zmenPoziciu(const QPointF &rozdiel);
+/*!
+ \brief Nastavenie komentaru.
+ \param QString Text komentaru.
+ Tato funkcia nastavuje volitelny komentar. Pre zrusenie zobrazenia komentaru
+ treba parameter comment nastavit na NULL (QString())
+*/
+		void setComment(const QString &comment);
 
-		void vykreslenieMriezky();
+/*!
+ \brief Nastavenie casu po ktorom sprava zmizne.
+ \param int Cas v milisekundach. Ak je cas nulovy bude sprava zobrazena permanentne.
+*/
+		void setHideTimeout(int msecs);
 
 	private:
-		bool m_tahanie;
-		float m_rotacia;
-		QPointF m_pozicia;
-		SceneAttribDialog *m_dialog;
-		NavigationMode m_navigationMode;
+		void setupGui();
+
+		QLabel *m_text;
+		QLabel *m_comment;
+		QLabel *m_icon;
+
+		QTimer *m_timer;
 
 };
 

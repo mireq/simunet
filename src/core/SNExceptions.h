@@ -27,30 +27,47 @@
 
 /**
  @author Miroslav Bendik <miroslav.bendik@gmail.com>
+ @brief Vynimka ktora sa vyvolava pri chybe importu zariadenia.
 */
-
 class SNDeviceImportException
 {
 	public:
 		SNDeviceImportException(const std::string &a_moduleName);
+/*!
+ @brief Zistenie nazvu chybneho zariadenia.
+*/
 		const std::string &moduleName();
 	private:
 		std::string m_moduleName;
 };
 
+/**
+ @author Miroslav Bendik <miroslav.bendik@gmail.com>
+ @brief Vynimka sa vykonava pri chybe spoluprace s python intepreterom.
+ */
 class SNPythonInterpreterException
 {
 	public:
 		enum pythonErr {CREATE, IMPORT, ATTR, CALL, SET};
 
 		SNPythonInterpreterException(const std::string &a_problem, pythonErr a_type);
+/*!
+ @brief Popis problemu ktory nastal.
+*/
 		const std::string &problem();
+
+/*!
+ @brief Typ problemu.
+*/
 		pythonErr problemType();
 	private:
 		std::string m_problem;
 		pythonErr m_type;
 };
 
+/**
+ @author Miroslav Bendik <miroslav.bendik@gmail.com>
+ */
 class PyObjectNULLException
 {
 	public:

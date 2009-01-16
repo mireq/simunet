@@ -1,6 +1,11 @@
 <!DOCTYPE RCC><RCC version="1.0">
 <qresource>
+  <file alias="dialog-error.png">dialog-error.png</file>
+  <file alias="dialog-information.png">dialog-information.png</file>
+  <file alias="dialog-warning.png">dialog-warning.png</file>
   <file alias="move.png">move.png</file>
+  <file alias="preferences-system-performance.png">preferences-system-performance.png</file>
   <file alias="rotate.png">rotate.png</file>
+  <file alias="unknown.png">unknown.png</file>
 </qresource>
 </RCC>

@@ -2,7 +2,6 @@
 #include <QPushButton>
 #include <QTranslator>
 #include <QLocale>
-#include <QDebug>
 #include <QAction>
 #include <QMenuBar>
 #include <QMenu>

@@ -24,8 +24,6 @@
 
 #include <math.h>
 
-#include <QDebug>
-
 class SceneAttribDialog: public QDialog
 {
 	public:

@@ -28,6 +28,7 @@
 
 /**
  @author Miroslav Bendik <miroslav.bendik@gmail.com>
+ @brief Okno zobrazujuce informacie o autoroch aplikacie
 */
 
 class AboutDlg : public QDialog, Ui_AboutDlg

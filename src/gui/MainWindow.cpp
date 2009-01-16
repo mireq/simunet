@@ -21,9 +21,13 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 #include "MainWindow.h"
-#include "Scene.h"
 #include "AboutDlg.h"
+#include "ConfigureDlg.h"
+#include "Scene.h"
 #include "SecondaryWindow.h"
+#include "CfgPerformance.h"
+#include "core/SNSimulate.h"
+#include "core/SNConfig.h"
 
 #include <QAction>
 #include <QMenuBar>
@@ -53,16 +57,20 @@ MainWindow::MainWindow(QWidget* parent, Qt::WindowFlags flags): QMainWindow(pare
 	setupSecondaryWindow();
 	restoreWindowState();
 	statusBar()->showMessage(tr("Ready"), 5000);
+	SNConfig config;
+	m_simulate = new SNSimulate(config.threadsCount());
 }
 
 
 MainWindow::~MainWindow()
 {
 	saveWindowState();
+	delete m_simulate;
 }
 
 void MainWindow::setupVariables()
 {
+	m_configureDlg = NULL;
 	m_aboutDlg = NULL;
 }
 
@@ -106,10 +114,9 @@ void MainWindow::setupScene()
 	m_scene = new Scene();
 	GraphicsView *view = new GraphicsView;
 	view->setFrameStyle(QFrame::NoFrame);
-	view->setScene(m_scene);
 	view->setViewport(new QGLWidget(QGLFormat(QGL::SampleBuffers)));
 	view->setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
-	view->show();
+	view->setScene(m_scene);
 	setCentralWidget(view);
 }
 
@@ -124,19 +131,23 @@ void MainWindow::setupActions()
 	m_quitAct = new QAction(tr("&Quit"), this);
 	m_quitAct->setShortcut(QKeySequence(tr("Ctrl+Q")));
 
+	m_configureAct = new QAction(tr("&Configure SimuNet"), this);
+
 	m_aboutAct = new QAction(tr("&About"), this);
 
 	connect(m_quitAct, SIGNAL(triggered()), qApp, SLOT(quit()));
+	connect(m_configureAct, SIGNAL(triggered()), SLOT(configure()));
 	connect(m_aboutAct, SIGNAL(triggered()), SLOT(about()));
 }
 
 void MainWindow::setupMenus()
 {
 	m_fileMenu = menuBar()->addMenu(tr("&File"));
+	m_settingsMenu = menuBar()->addMenu(tr("&Settings"));
 	m_helpMenu = menuBar()->addMenu(tr("&Help"));
 
 	m_fileMenu->addAction(m_quitAct);
-
+	m_settingsMenu->addAction(m_configureAct);
 	m_helpMenu->addAction(m_aboutAct);
 }
 
@@ -147,7 +158,17 @@ void MainWindow::about()
 	{
 		m_aboutDlg = new AboutDlg(this);
 	}
-	m_aboutDlg->show();
+	m_aboutDlg->exec();
+}
+
+void MainWindow::configure()
+{
+	if (m_configureDlg == NULL)
+	{
+		m_configureDlg = new ConfigureDlg(this);
+		m_configureDlg->addPanel(new CfgPerformance());
+	}
+	m_configureDlg->exec();
 }
 
 void MainWindow::sceneNavigationModeActionTriggered(QAction *action)

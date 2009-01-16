@@ -34,17 +34,47 @@ class SNSimulateHelper;
 
 /**
  @author Miroslav Bendik <miroslav.bendik@gmail.com>
+ @brief Trieda zabezpecujuca samotnu simulaciu.
 */
 class SNSimulate
 {
 	public:
-		SNSimulate();
-
+		SNSimulate(int threads);
 		~SNSimulate();
+
+/*!
+ \brief Odstranenie zariadenia zo simulacie.
+ \param id Unikatne identifikacne cislo zariadenia.
+ \return Po uspesnom odstraneni je navratova hodnota false, pri chybe true.
+*/
 		bool stopDevice(uint32_t id);
+
+/*!
+ \brief Pridanie zariadenia do simulacie.
+ \return Navratovou hodnotou je jedinecne identifikacne cislo zariadenia.
+*/
 		uint32_t startDevice(const std::string &filename);
+
+/*!
+ \brief Spracovanie ramca / preposlanie inym zariadeniam.
+ \param id ID zariadenia.
+ \param data Data ktore poslalo zariadenie.
+ Tato staticka metoda zachytava spravy od zariadeni a spracuje ich / preposiela
+ ostatnym zariadeniam.
+*/
 		static void processFrame(uint32_t id, PyObject *data);
+
+/*!
+ \brief Prijatie telnet odpovede od zariadenia.
+ \param id ID zariadenia.
+ \param text Text ktory vypisalo zariadenie.
+ \param cmd Text ktory sa ma pouzit ako prompt.
+*/
 		static void telnetResponse(uint32_t id, const char *text, const char *cmd);
+
+/*!
+ \brief Export metod do pythonu.
+*/
 		static const PyMethodDef SNSimulateMethods[];
 
 	private:

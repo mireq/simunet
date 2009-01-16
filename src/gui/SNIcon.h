@@ -20,57 +20,27 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef SCENE_H
-#define SCENE_H
+#ifndef SNICON_H
+#define SNICON_H
 
-#include <QGraphicsScene>
-#include <QtOpenGL>
-
-class SceneAttribDialog;
+#include <QIcon>
 
 /**
  @author Miroslav Bendik <miroslav.bendik@gmail.com>
- @brief Graficka (OpenGL) scena.
+ @brief Trieda pouzitelna ako nahrada QIcon (kvoli kompatibilite s KDE).
 */
-class Scene : public QGraphicsScene
+class SNIcon : public QIcon
 {
-		Q_OBJECT
 	public:
-
 /*!
- \brief Vymenovane hodnoty navigacneho modu.
+ \brief Konstruktor vytvarajuci ikonu.
+ \param QString Nazov ikony
+ Nazov ikony sa zadava bez uvodneho : a pripony (.png). Nazvy su
+ kompatibilne s KDE4. V pripade, ze sa ziadana ikona nenajde nacita sa
+ unknown.png.
 */
-		enum NavigationMode
-		{
-			Rotate, /*!< Mod otacania (lave tlacitko otacanie, stredne pohyb) */
-			Move    /*!< Mod pohybu (lave tlacitko pohyb, stredne otacanie) */
-		};
-	public:
-		Scene(QObject* parent = 0);
-
-/*!
- \brief Nastavenie navigacneho modu.
-*/
-		void setNavigationMode(NavigationMode mode);
-		~Scene();
-
-	protected:
-		void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
-		void mousePressEvent(QGraphicsSceneMouseEvent *event);
-		void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
-		void keyPressEvent(QKeyEvent *event);
-		void drawBackground(QPainter *painter, const QRectF &rect);
-		void zmenOtocenie(float rozdiel);
-		void zmenPoziciu(const QPointF &rozdiel);
-
-		void vykreslenieMriezky();
-
-	private:
-		bool m_tahanie;
-		float m_rotacia;
-		QPointF m_pozicia;
-		SceneAttribDialog *m_dialog;
-		NavigationMode m_navigationMode;
+		SNIcon(const QString& name);
+		virtual ~SNIcon();
 
 };
 

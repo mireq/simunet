@@ -20,57 +20,75 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef SCENE_H
-#define SCENE_H
+#ifndef CONFIGUREDLG_H
+#define CONFIGUREDLG_H
 
-#include <QGraphicsScene>
-#include <QtOpenGL>
+#include <QDialog>
+#include <QListWidget>
 
-class SceneAttribDialog;
+class SNTitleWidget;
+class QStackedWidget;
+class ConfigPanel;
+class QDialogButtonBox;
 
 /**
  @author Miroslav Bendik <miroslav.bendik@gmail.com>
- @brief Graficka (OpenGL) scena.
+ @brief Konfiguracne okno.
 */
-class Scene : public QGraphicsScene
+class ConfigureDlg : public QDialog
 {
 		Q_OBJECT
 	public:
+		ConfigureDlg(QWidget* parent = 0, Qt::WindowFlags f = 0);
+		~ConfigureDlg();
 
 /*!
- \brief Vymenovane hodnoty navigacneho modu.
+ \brief Pridanie konfiguracneho panelu
 */
-		enum NavigationMode
-		{
-			Rotate, /*!< Mod otacania (lave tlacitko otacanie, stredne pohyb) */
-			Move    /*!< Mod pohybu (lave tlacitko pohyb, stredne otacanie) */
-		};
-	public:
-		Scene(QObject* parent = 0);
+		void addPanel(ConfigPanel *panel);
+
+	public slots:
+/*!
+ \brief Zobrazenie informacie v informacnej casti okna.
+*/
+		void showInfo(const QString &text, int msecs = 0);
+		void showInfo(const QString &text, const QString &comment, int msecs = 0);
 
 /*!
- \brief Nastavenie navigacneho modu.
+ \brief Zobrazenie varovania v informacnej casti okna.
 */
-		void setNavigationMode(NavigationMode mode);
-		~Scene();
+		void showWarning(const QString &text, int msecs = 0);
+		void showWarning(const QString &text, const QString &comment, int msecs = 0);
+
+/*!
+ \brief Zobrazenie chyby v informacnej casti okna.
+*/
+		void showError(const QString &text, int msecs = 0);
+		void showError(const QString &text, const QString &comment, int msecs = 0);
 
 	protected:
-		void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
-		void mousePressEvent(QGraphicsSceneMouseEvent *event);
-		void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
-		void keyPressEvent(QKeyEvent *event);
-		void drawBackground(QPainter *painter, const QRectF &rect);
-		void zmenOtocenie(float rozdiel);
-		void zmenPoziciu(const QPointF &rozdiel);
-
-		void vykreslenieMriezky();
+		void closeEvent(QCloseEvent *e);
+		void showEvent(QShowEvent *e);
 
 	private:
-		bool m_tahanie;
-		float m_rotacia;
-		QPointF m_pozicia;
-		SceneAttribDialog *m_dialog;
-		NavigationMode m_navigationMode;
+		void showMsg(const QString &text, const QString &comment, int msecs);
+		void connectPanel(ConfigPanel *panel);
+		void disconnectPanel(ConfigPanel *panel);
+		ConfigPanel *currentPanel();
+
+		SNTitleWidget *m_titleWidget;
+		QListWidget *m_panelsList;
+		QStackedWidget *m_panel;
+		QDialogButtonBox *m_buttons;
+
+		QListWidgetItem *m_currentItem;
+		QListWidgetItem *m_previousItem;
+
+	private slots:
+		void listSelectionChanged();
+		void onOkClicked();
+		void onCancelClicked();
+		void onApplyClicked();
 
 };
 

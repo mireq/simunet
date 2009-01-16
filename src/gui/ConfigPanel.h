@@ -20,57 +20,50 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef SCENE_H
-#define SCENE_H
+#ifndef CONFIGPANEL_H
+#define CONFIGPANEL_H
 
-#include <QGraphicsScene>
-#include <QtOpenGL>
-
-class SceneAttribDialog;
+#include <QWidget>
+#include "SNIcon.h"
 
 /**
  @author Miroslav Bendik <miroslav.bendik@gmail.com>
- @brief Graficka (OpenGL) scena.
+ @brief Konfiguracny panel.
+ Od tejto triedy sa odvadzaju jednotlive konfiguracne panely.
 */
-class Scene : public QGraphicsScene
+class ConfigPanel : public QWidget
 {
 		Q_OBJECT
 	public:
+		ConfigPanel(QWidget* parent = 0);
+		~ConfigPanel();
 
 /*!
- \brief Vymenovane hodnoty navigacneho modu.
+ \brief Nazov panelu zobrazujuci sa v zozname panelov.
 */
-		enum NavigationMode
-		{
-			Rotate, /*!< Mod otacania (lave tlacitko otacanie, stredne pohyb) */
-			Move    /*!< Mod pohybu (lave tlacitko pohyb, stredne otacanie) */
-		};
-	public:
-		Scene(QObject* parent = 0);
+		virtual QString panelName() const = 0;
 
 /*!
- \brief Nastavenie navigacneho modu.
+ \brief Ikona konfiguracneho panelu.
+ */
+		virtual SNIcon icon() const = 0;
+
+/*!
+ \brief Ulozenie zmien urobenych v konfiguracnom paneli.
+ */
+		virtual void saveChanges() = 0;
+
+/*!
+ \brief Tato funkcia vracia true ak uzivatel neklikol na cancel pri prechode na iny panel.
 */
-		void setNavigationMode(NavigationMode mode);
-		~Scene();
+		virtual bool panelChanged() {return true;};
+		virtual bool panelSelected() {return true;};
 
-	protected:
-		void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
-		void mousePressEvent(QGraphicsSceneMouseEvent *event);
-		void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
-		void keyPressEvent(QKeyEvent *event);
-		void drawBackground(QPainter *painter, const QRectF &rect);
-		void zmenOtocenie(float rozdiel);
-		void zmenPoziciu(const QPointF &rozdiel);
-
-		void vykreslenieMriezky();
-
-	private:
-		bool m_tahanie;
-		float m_rotacia;
-		QPointF m_pozicia;
-		SceneAttribDialog *m_dialog;
-		NavigationMode m_navigationMode;
+	signals:
+		void info(QString msg, QString comment = QString(), int msecs = 0);
+		void warning(QString msg, QString comment = QString(), int msecs = 0);
+		void error(QString msg, QString comment = QString(), int msecs = 0);
+		void changed(bool);
 
 };
 

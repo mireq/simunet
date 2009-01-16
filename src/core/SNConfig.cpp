@@ -20,58 +20,41 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef SCENE_H
-#define SCENE_H
+#include "SNConfig.h"
+#include <QSettings>
 
-#include <QGraphicsScene>
-#include <QtOpenGL>
-
-class SceneAttribDialog;
-
-/**
- @author Miroslav Bendik <miroslav.bendik@gmail.com>
- @brief Graficka (OpenGL) scena.
-*/
-class Scene : public QGraphicsScene
+SNConfig::SNConfig()
 {
-		Q_OBJECT
-	public:
+	m_settings = new QSettings();
+}
 
-/*!
- \brief Vymenovane hodnoty navigacneho modu.
-*/
-		enum NavigationMode
-		{
-			Rotate, /*!< Mod otacania (lave tlacitko otacanie, stredne pohyb) */
-			Move    /*!< Mod pohybu (lave tlacitko pohyb, stredne otacanie) */
-		};
-	public:
-		Scene(QObject* parent = 0);
 
-/*!
- \brief Nastavenie navigacneho modu.
-*/
-		void setNavigationMode(NavigationMode mode);
-		~Scene();
+SNConfig::~SNConfig()
+{
+	delete m_settings;
+}
 
-	protected:
-		void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
-		void mousePressEvent(QGraphicsSceneMouseEvent *event);
-		void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
-		void keyPressEvent(QKeyEvent *event);
-		void drawBackground(QPainter *painter, const QRectF &rect);
-		void zmenOtocenie(float rozdiel);
-		void zmenPoziciu(const QPointF &rozdiel);
+int SNConfig::threadsCount()
+{
+	m_settings->beginGroup("preferences");
+	m_settings->beginGroup("performance");
 
-		void vykreslenieMriezky();
+	int threads = m_settings->value("threads", QVariant(4)).toInt();
 
-	private:
-		bool m_tahanie;
-		float m_rotacia;
-		QPointF m_pozicia;
-		SceneAttribDialog *m_dialog;
-		NavigationMode m_navigationMode;
+	m_settings->endGroup();
+	m_settings->endGroup();
+	return threads;
+}
 
-};
+void SNConfig::setThreadsCount(int threads)
+{
+	m_settings->beginGroup("preferences");
+	m_settings->beginGroup("performance");
 
-#endif
+	m_settings->setValue("threads", threads);
+
+	m_settings->endGroup();
+	m_settings->endGroup();
+}
+
+

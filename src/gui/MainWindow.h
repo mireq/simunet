@@ -30,11 +30,14 @@ class QMenu;
 class QActionGroup;
 
 class AboutDlg;
-class SecondaryWindow;
+class ConfigureDlg;
 class Scene;
+class SecondaryWindow;
+class SNSimulate;
 
 /**
  @author Miroslav Bendik <miroslav.bendik@gmail.com>
+ @brief Hlavne okno aplikacie.
 */
 class MainWindow : public QMainWindow
 {
@@ -56,16 +59,20 @@ class MainWindow : public QMainWindow
 
 	protected slots:
 		void about();
+		void configure();
 		void sceneNavigationModeActionTriggered(QAction *);
 
 	private:
 		Scene *m_scene;
+		SNSimulate *m_simulate;
 		//menu
 		QMenu *m_fileMenu;
+		QMenu *m_settingsMenu;
 		QMenu *m_helpMenu;
 
 		// akcie
 		QAction *m_quitAct;
+		QAction *m_configureAct;
 		QAction *m_aboutAct;
 		// navigateToolBar
 		QToolBar *m_navigateToolBar;
@@ -75,6 +82,7 @@ class MainWindow : public QMainWindow
 
 		// okna
 		AboutDlg *m_aboutDlg;
+		ConfigureDlg *m_configureDlg;
 		SecondaryWindow *m_toolWindow;
 };
 

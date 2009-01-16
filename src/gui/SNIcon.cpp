@@ -20,58 +20,25 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef SCENE_H
-#define SCENE_H
+#include "SNIcon.h"
+#include <QFile>
 
-#include <QGraphicsScene>
-#include <QtOpenGL>
-
-class SceneAttribDialog;
-
-/**
- @author Miroslav Bendik <miroslav.bendik@gmail.com>
- @brief Graficka (OpenGL) scena.
-*/
-class Scene : public QGraphicsScene
+SNIcon::SNIcon(const QString& name)
 {
-		Q_OBJECT
-	public:
+	QString nName = QString(":") + name + QString(".png");
+	if (QFile::exists(nName))
+	{
+		addFile(nName);
+	}
+	else
+	{
+		addFile(":unknown.png");
+	}
+}
 
-/*!
- \brief Vymenovane hodnoty navigacneho modu.
-*/
-		enum NavigationMode
-		{
-			Rotate, /*!< Mod otacania (lave tlacitko otacanie, stredne pohyb) */
-			Move    /*!< Mod pohybu (lave tlacitko pohyb, stredne otacanie) */
-		};
-	public:
-		Scene(QObject* parent = 0);
 
-/*!
- \brief Nastavenie navigacneho modu.
-*/
-		void setNavigationMode(NavigationMode mode);
-		~Scene();
+SNIcon::~SNIcon()
+{
+}
 
-	protected:
-		void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
-		void mousePressEvent(QGraphicsSceneMouseEvent *event);
-		void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
-		void keyPressEvent(QKeyEvent *event);
-		void drawBackground(QPainter *painter, const QRectF &rect);
-		void zmenOtocenie(float rozdiel);
-		void zmenPoziciu(const QPointF &rozdiel);
 
-		void vykreslenieMriezky();
-
-	private:
-		bool m_tahanie;
-		float m_rotacia;
-		QPointF m_pozicia;
-		SceneAttribDialog *m_dialog;
-		NavigationMode m_navigationMode;
-
-};
-
-#endif

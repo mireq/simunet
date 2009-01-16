@@ -38,12 +38,11 @@ const PyMethodDef SNSimulate::SNSimulateMethods[] = {
 
 /*!
     \fn SNSimulate::SNSimulate()
-    Vytvorenie 4 vlakien SNSimulateHelper
+    Vytvorenie n vlakien SNSimulateHelper
 */
-SNSimulate::SNSimulate()
+SNSimulate::SNSimulate(int threads)
 {
-	/// @todo zmenit napevno nastaveny pocet vlakien
-	m_threadCount = 4;
+	m_threadCount = threads;
 	m_nextDeviceId = 1;
 
 	for (int i = 0; i < m_threadCount; ++i)

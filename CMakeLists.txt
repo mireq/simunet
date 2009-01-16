@@ -57,16 +57,26 @@ add_definitions(${QT_DEFINITIONS})
 set(simunet_SRCS
 	src/simunet.cpp
 	src/gui/AboutDlg.cpp
+	src/gui/CfgPerformance.cpp
+	src/gui/ConfigPanel.cpp
+	src/gui/ConfigureDlg.cpp
 	src/gui/MainWindow.cpp
 	src/gui/Scene.cpp
-	src/gui/SecondaryWindow.cpp)
+	src/gui/SecondaryWindow.cpp
+	src/gui/SNIcon.cpp
+	src/gui/SNTitleWidget.cpp)
 
 # hlavickove subory ktore musi spracovat moc
 set(simunet_MOC_HDRS
 	src/gui/AboutDlg.h
+	src/gui/CfgPerformance.h
+	src/gui/ConfigPanel.h
+	src/gui/ConfigureDlg.h
 	src/gui/MainWindow.h
 	src/gui/Scene.h
-	src/gui/SecondaryWindow.h)
+	src/gui/SecondaryWindow.h
+	src/gui/SNIcon.h
+	src/gui/SNTitleWidget.h)
 
 set(simunet_HDRS)
 
@@ -88,6 +98,7 @@ set(simunet_PCH
 
 set(core_SRCS
 	src/core/PyCPPObject.cpp
+	src/core/SNConfig.cpp
 	src/core/SNDevice.cpp
 	src/core/SNExceptions.cpp
 	src/core/SNSimulate.cpp
@@ -95,6 +106,7 @@ set(core_SRCS
 
 set(core_HDRS
 	src/core/PyCPPObject.h
+	src/core/SNConfig.h
 	src/core/SNDevice.h
 	src/core/SNExceptions.h
 	src/core/SNSimulate.h

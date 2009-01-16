@@ -27,6 +27,7 @@
 
 /**
  @author Miroslav Bendik <miroslav.bendik@gmail.com>
+ @brief Sekundarne (oddelitelne) okno na nastroje
 */
 class SecondaryWindow : public QDockWidget
 {

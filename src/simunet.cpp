@@ -28,10 +28,7 @@
 #include <QTranslator>
 #include <QLocale>
 
-#include <QDebug>
-
 #include "MainWindow.h"
-#include "core/SNSimulate.h"
 
 int main(int argc, char *argv[])
 {
@@ -50,7 +47,7 @@ int main(int argc, char *argv[])
 	app.installTranslator(&qtTranslator);
 	app.installTranslator(&appTranslator);
 
-	SNSimulate simulate;
+	//SNSimulate simulate;
 
 	MainWindow mainwin;
 	mainwin.show();
