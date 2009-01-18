@@ -21,9 +21,8 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 #include "SNSimulateHelper.h"
-#include "SNSimulate.h"
+#include "SNDevice.h"
 
-#include <Python.h>
 #include <unistd.h>
 #include <iostream>
 #include "SNExceptions.h"
@@ -141,7 +140,7 @@ void SNSimulateHelper::createDevicesDictionary()
  */
 void SNSimulateHelper::createSNSimulateModule()
 {
-	Py_InitModule("snsimulate", const_cast<PyMethodDef *>(SNSimulate::SNSimulateMethods));
+	Py_InitModule("snsimulate", const_cast<PyMethodDef *>(SNDevice::SNSimulateMethods));
 }
 
 /*!
@@ -153,9 +152,9 @@ void SNSimulateHelper::createBaseClass()
 	PyCPPObject pBuiltinsDict(PyEval_GetBuiltins());
 	PyRun_String("class SNDevice:\n"
 		"\tdef sendFrame(data):\n"
-		"\t\tsnsimulate.sendFrame(self.device_id, data)\n"
+		"\t\tsnsimulate.sendFrame(self.__pSNDevice, self.__device_id, data)\n"
 		"\tdef sendTelnet(text, cmd):\n"
-		"\t\tsnsimulate.sendTelnet(self.device_id, text, cmd)\n"
+		"\t\tsnsimulate.sendTelnet(self.__pSNDevice, self.__device_id, text, cmd)\n"
 		"\tdef processFrame(data):\n"
 		"\t\tprint(\"processFrame not implemented\")\n"
 		"\tdef resetConfig():\n"

@@ -59,10 +59,10 @@ class SNSimulate
  \brief Spracovanie ramca / preposlanie inym zariadeniam.
  \param id ID zariadenia.
  \param data Data ktore poslalo zariadenie.
- Tato staticka metoda zachytava spravy od zariadeni a spracuje ich / preposiela
+ Tato metoda zachytava spravy od zariadeni a spracuje ich / preposiela
  ostatnym zariadeniam.
 */
-		static void processFrame(uint32_t id, PyObject *data);
+		void processFrame(uint32_t id, PyObject *data);
 
 /*!
  \brief Prijatie telnet odpovede od zariadenia.
@@ -70,16 +70,9 @@ class SNSimulate
  \param text Text ktory vypisalo zariadenie.
  \param cmd Text ktory sa ma pouzit ako prompt.
 */
-		static void telnetResponse(uint32_t id, const char *text, const char *cmd);
-
-/*!
- \brief Export metod do pythonu.
-*/
-		static const PyMethodDef SNSimulateMethods[];
+		void telnetResponse(uint32_t id, const char *text, const char *cmd);
 
 	private:
-		static PyObject *processFrameWrapper(PyObject *self, PyObject *args);
-		static PyObject *telnetResponseWrapper(PyObject *self, PyObject *args);
 		int m_threadCount;
 		std::list<SNSimulateHelper *> m_simulateHelpers;
 		std::list<SNSimulateHelper *>::iterator m_nextSimulateHelper;

@@ -75,10 +75,10 @@ set(simunet_MOC_HDRS
 	src/gui/MainWindow.h
 	src/gui/Scene.h
 	src/gui/SecondaryWindow.h
-	src/gui/SNIcon.h
 	src/gui/SNTitleWidget.h)
 
-set(simunet_HDRS)
+set(simunet_HDRS
+	src/gui/SNIcon.h)
 
 # dialogy
 set(simunet_UIS

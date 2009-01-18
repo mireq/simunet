@@ -26,6 +26,8 @@
 #include <Python.h>
 #include <string>
 
+class SNSimulate;
+
 /**
  @author Miroslav Bendik <miroslav.bendik@gmail.com>
  @brief Trieda prepajajuca svet pythonu s C++.
@@ -37,7 +39,7 @@ class SNDevice
  \brief Vytvorenie zariadenia.
  \param filename Adresar so zariadenim (v rovnakom tvare ako pouziva python import).
 */
-		SNDevice(const std::string &filename, uint32_t deviceId);
+		SNDevice(const std::string &filename, uint32_t deviceId, SNSimulate *parent = 0);
 		~SNDevice();
 
 /*!
@@ -79,9 +81,18 @@ class SNDevice
 */
 		char *telnetGetControlChars(void);
 
+/*!
+		\brief Export metod do pythonu.
+ */
+		static const PyMethodDef SNSimulateMethods[];
+
 	private:
 		uint32_t m_deviceId;
 		PyObject *m_pDeviceInstance;
+		SNSimulate *m_simulate;
+		static PyObject *processFrameWrapper(PyObject *self, PyObject *args);
+		static PyObject *telnetResponseWrapper(PyObject *self, PyObject *args);
+
 };
 
 #endif

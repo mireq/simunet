@@ -20,6 +20,7 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
+#include "SNSimulate.h"
 #include "SNDevice.h"
 #include "SNExceptions.h"
 #include "PyCPPObject.h"
@@ -28,8 +29,15 @@
 
 using namespace std;
 
-SNDevice::SNDevice(const string &filename, uint32_t deviceId)
+const PyMethodDef SNDevice::SNSimulateMethods[] = {
+	{"sendFrame", SNDevice::processFrameWrapper, METH_VARARGS, "Odoslanie ramca"},
+	{"sendTelnet", SNDevice::telnetResponseWrapper, METH_VARARGS, "Odoslanie dat cez telnet"},
+	{NULL, NULL, 0, NULL}
+};
+
+SNDevice::SNDevice(const string &filename, uint32_t deviceId, SNSimulate *parent)
 {
+	m_simulate = parent;
 	try
 	{
 		// import modulu, modul je vzdy v adresari s rovnakym nazvom preto modu.modul
@@ -57,7 +65,11 @@ SNDevice::SNDevice(const string &filename, uint32_t deviceId)
 
 		// a ulozime ju do asociativneho pola
 		PyDict_SetItem(pDevicesDict, pDeviceId, pDeviceInstance);
-		PyObject_SetAttrString(pDeviceInstance, "device_id", pDeviceId);
+		string devIdVarName = string("_") + string(filename) + string("__device_id");
+		PyObject_SetAttrString(pDeviceInstance, devIdVarName.c_str(), pDeviceId);
+		string pSNDeviceVarName = string("_") + string(filename) + string("__pSNDevice");
+		PyCPPObject pSNDevice(PyCObject_FromVoidPtr((void *)this, NULL));
+		PyObject_SetAttrString(pDeviceInstance, pSNDeviceVarName.c_str(), pSNDevice);
 	}
 	catch (PyObjectNULLException e)
 	{
@@ -69,6 +81,15 @@ SNDevice::SNDevice(const string &filename, uint32_t deviceId)
 
 SNDevice::~SNDevice()
 {
+	PyCPPObject pDeviceId(PyLong_FromUnsignedLong(m_deviceId));
+
+	PyCPPObject pMainModuleName(PyString_FromString("__main__"));
+	PyCPPObject pMainModule(PyImport_Import(pMainModuleName));
+	PyCPPObject pDevicesDict(PyObject_GetAttrString(pMainModule, "devices"), true);
+	if (PyDict_Contains(pDevicesDict, pDeviceId) == 1)
+	{
+		PyDict_DelItem(pDevicesDict, pDeviceId);
+	}
 }
 
 
@@ -239,4 +260,48 @@ char *SNDevice::telnetGetControlChars(void)
 	{
 		return NULL;
 	}
+}
+
+PyObject *SNDevice::processFrameWrapper(PyObject *self, PyObject *args)
+{
+	if (PyTuple_Size(args) != 2)
+	{
+		return NULL;
+	}
+
+	PyCPPObject pSNDeviceInstance(PyTuple_GetItem(args, 0));
+	PyCPPObject pDeviceId(PyTuple_GetItem(args, 1));
+	PyCPPObject pData(PyTuple_GetItem(args, 2));
+
+	uint32_t deviceId = PyLong_AsUnsignedLong(pDeviceId);
+	SNDevice *dev = (SNDevice *)PyCObject_AsVoidPtr(pSNDeviceInstance);
+	dev->m_simulate->processFrame(deviceId, pData);
+
+	Py_RETURN_NONE;
+}
+
+PyObject* SNDevice::telnetResponseWrapper(PyObject * self, PyObject * args)
+{
+	if (PyTuple_Size(args) != 3)
+	{
+		return NULL;
+	}
+
+	PyCPPObject pSNDeviceInstance(PyTuple_GetItem(args, 0));
+	PyCPPObject pDeviceId(PyTuple_GetItem(args, 1));
+	PyCPPObject pText(PyTuple_GetItem(args, 2));
+	PyCPPObject pCmd(PyTuple_GetItem(args, 3));
+
+	uint32_t deviceId = PyLong_AsUnsignedLong(pDeviceId);
+	if (!PyString_Check(pText) || !PyString_Check(pCmd))
+	{
+		return NULL;
+	}
+
+	char *text = PyString_AsString(pText);
+	char *cmd  = PyString_AsString(pCmd);
+	SNDevice *dev = (SNDevice *)PyCObject_AsVoidPtr(pSNDeviceInstance);
+	dev->m_simulate->telnetResponse(deviceId, text, cmd);
+
+	Py_RETURN_NONE;
 }
