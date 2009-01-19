@@ -65,11 +65,9 @@ SNDevice::SNDevice(const string &filename, uint32_t deviceId, SNSimulate *parent
 
 		// a ulozime ju do asociativneho pola
 		PyDict_SetItem(pDevicesDict, pDeviceId, pDeviceInstance);
-		string devIdVarName = string("_") + string(filename) + string("__device_id");
-		PyObject_SetAttrString(pDeviceInstance, devIdVarName.c_str(), pDeviceId);
-		string pSNDeviceVarName = string("_") + string(filename) + string("__pSNDevice");
+		PyObject_SetAttrString(pDeviceInstance, "deviceId", pDeviceId);
 		PyCPPObject pSNDevice(PyCObject_FromVoidPtr((void *)this, NULL));
-		PyObject_SetAttrString(pDeviceInstance, pSNDeviceVarName.c_str(), pSNDevice);
+		PyObject_SetAttrString(pDeviceInstance, "pSNDevice", pSNDevice);
 	}
 	catch (PyObjectNULLException e)
 	{
@@ -218,7 +216,7 @@ char *SNDevice::telnetRequest(const string &line, char symbol)
 {
 	try
 	{
-		PyCPPObject telnetRequestFunc(PyObject_GetAttrString(m_pDeviceInstance, "telnetRequest"));
+		PyCPPObject telnetRequestFunc(PyObject_GetAttrString(m_pDeviceInstance, "telnetRequest"), true);
 		if (!telnetRequestFunc.isCallable())
 		{
 			return NULL;
@@ -264,7 +262,7 @@ char *SNDevice::telnetGetControlChars(void)
 
 PyObject *SNDevice::processFrameWrapper(PyObject *self, PyObject *args)
 {
-	if (PyTuple_Size(args) != 2)
+	if (PyTuple_Size(args) != 3)
 	{
 		return NULL;
 	}
@@ -275,14 +273,17 @@ PyObject *SNDevice::processFrameWrapper(PyObject *self, PyObject *args)
 
 	uint32_t deviceId = PyLong_AsUnsignedLong(pDeviceId);
 	SNDevice *dev = (SNDevice *)PyCObject_AsVoidPtr(pSNDeviceInstance);
-	dev->m_simulate->processFrame(deviceId, pData);
+	if (dev->m_simulate != NULL)
+	{
+		dev->m_simulate->processFrame(deviceId, pData);
+	}
 
 	Py_RETURN_NONE;
 }
 
-PyObject* SNDevice::telnetResponseWrapper(PyObject * self, PyObject * args)
+PyObject* SNDevice::telnetResponseWrapper(PyObject *self, PyObject *args)
 {
-	if (PyTuple_Size(args) != 3)
+	if (PyTuple_Size(args) != 4)
 	{
 		return NULL;
 	}
@@ -301,7 +302,10 @@ PyObject* SNDevice::telnetResponseWrapper(PyObject * self, PyObject * args)
 	char *text = PyString_AsString(pText);
 	char *cmd  = PyString_AsString(pCmd);
 	SNDevice *dev = (SNDevice *)PyCObject_AsVoidPtr(pSNDeviceInstance);
-	dev->m_simulate->telnetResponse(deviceId, text, cmd);
+	if (dev->m_simulate != NULL)
+	{
+		dev->m_simulate->telnetResponse(deviceId, text, cmd);
+	}
 
 	Py_RETURN_NONE;
 }

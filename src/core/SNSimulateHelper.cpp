@@ -141,6 +141,10 @@ void SNSimulateHelper::createDevicesDictionary()
 void SNSimulateHelper::createSNSimulateModule()
 {
 	Py_InitModule("snsimulate", const_cast<PyMethodDef *>(SNDevice::SNSimulateMethods));
+	PyCPPObject pSNSimulateName(PyString_FromString("snsimulate"));
+	PyCPPObject pSNSimulateModule(PyImport_Import(pSNSimulateName));
+	PyCPPObject pBuiltinsDict(PyEval_GetBuiltins());
+	PyDict_SetItemString(pBuiltinsDict, "snsimulate", pSNSimulateModule);
 }
 
 /*!
@@ -148,26 +152,25 @@ void SNSimulateHelper::createSNSimulateModule()
   */
 void SNSimulateHelper::createBaseClass()
 {
-	PyRun_SimpleString("import snsimulate");
 	PyCPPObject pBuiltinsDict(PyEval_GetBuiltins());
 	PyRun_String("class SNDevice:\n"
-		"\tdef sendFrame(data):\n"
-		"\t\tsnsimulate.sendFrame(self.__pSNDevice, self.__device_id, data)\n"
-		"\tdef sendTelnet(text, cmd):\n"
-		"\t\tsnsimulate.sendTelnet(self.__pSNDevice, self.__device_id, text, cmd)\n"
-		"\tdef processFrame(data):\n"
+		"\tdef sendFrame(self, data):\n"
+		"\t\tsnsimulate.sendFrame(self.pSNDevice, self.deviceId, data)\n"
+		"\tdef sendTelnet(self, text, cmd):\n"
+		"\t\tsnsimulate.sendTelnet(self.pSNDevice, self.deviceId, text, cmd)\n"
+		"\tdef processFrame(self, data):\n"
 		"\t\tprint(\"processFrame not implemented\")\n"
-		"\tdef resetConfig():\n"
+		"\tdef resetConfig(self):\n"
 		"\t\tprint(\"resetConfig not implemented\")\n"
-		"\tdef setConfig(data):\n"
+		"\tdef setConfig(self, data):\n"
 		"\t\tprint(\"setConfig not implemented\")\n"
-		"\tdef dumpConfig():\n"
+		"\tdef dumpConfig(self):\n"
 		"\t\tprint(\"dumpConfig not implemented\")\n"
-		"\tdef httpRequest(url, post):\n"
+		"\tdef httpRequest(self, url, post):\n"
 		"\t\tprint(\"httpRequest not implemented\")\n"
-		"\tdef telnetRequest(line, symbol):\n"
+		"\tdef telnetRequest(self, line, symbol):\n"
 		"\t\tprint(\"telnetRequest not implemented\")\n"
-		"\tdef telnetGetControlChars():"
+		"\tdef telnetGetControlChars(self):"
 		"\t\tprint(\"telnetGetControlChars not implemented\")", Py_single_input, pBuiltinsDict, pBuiltinsDict);
 }
 

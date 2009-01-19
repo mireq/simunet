@@ -29,6 +29,7 @@ PyCPPObject::PyCPPObject(PyObject *pyobject, bool clean)
 {
 	if (pyobject == NULL)
 	{
+		PyErr_Print();
 		throw new PyObjectNULLException();
 	}
 	m_clean = clean;
