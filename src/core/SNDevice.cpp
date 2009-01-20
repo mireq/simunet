@@ -41,11 +41,11 @@ SNDevice::SNDevice(const string &filename, uint32_t deviceId, SNSimulate *parent
 	try
 	{
 		// import modulu, modul je vzdy v adresari s rovnakym nazvom preto modu.modul
-		PyCPPObject pModuleName(PyString_FromString(string(filename + "." + filename).c_str()));
-		PyCPPObject pModule(PyImport_Import(pModuleName), false);
+		PyCPPObject pModuleName(PyString_FromString(string(filename + "." + filename).c_str()), true);
+		PyCPPObject pModule(PyImport_Import(pModuleName), true);
 
 		// natiahneme triedu reprezentujucu zariadenie
-		PyCPPObject pDeviceClass(PyObject_GetAttrString(pModule, filename.c_str()), false);
+		PyCPPObject pDeviceClass(PyObject_GetAttrString(pModule, filename.c_str()));
 
 		// odtestujem ci sme skutocne nacitali triedu
 		if (!pDeviceClass.isClass())
@@ -54,19 +54,19 @@ SNDevice::SNDevice(const string &filename, uint32_t deviceId, SNSimulate *parent
 		}
 
 		// natiahneme globalnu premennu devices
-		PyCPPObject pMainModuleName(PyString_FromString("__main__"));
+		PyCPPObject pMainModuleName(PyString_FromString("__main__"), true);
 		PyCPPObject pMainModule(PyImport_Import(pMainModuleName));
-		PyCPPObject pDevicesDict(PyObject_GetAttrString(pMainModule, "devices"), true);
+		PyCPPObject pDevicesDict(PyObject_GetAttrString(pMainModule, "devices"));
 
 		// vytvorime novu instanciu zariadenia
 		PyCPPObject pDeviceInstance(PyInstance_New(pDeviceClass, NULL, NULL), true);
 		m_pDeviceInstance = pDeviceInstance;
-		PyCPPObject pDeviceId(PyLong_FromUnsignedLong(deviceId));
+		PyCPPObject pDeviceId(PyLong_FromUnsignedLong(deviceId), true);
 
 		// a ulozime ju do asociativneho pola
 		PyDict_SetItem(pDevicesDict, pDeviceId, pDeviceInstance);
 		PyObject_SetAttrString(pDeviceInstance, "deviceId", pDeviceId);
-		PyCPPObject pSNDevice(PyCObject_FromVoidPtr((void *)this, NULL));
+		PyCPPObject pSNDevice(PyCObject_FromVoidPtr((void *)this, NULL), true);
 		PyObject_SetAttrString(pDeviceInstance, "pSNDevice", pSNDevice);
 	}
 	catch (PyObjectNULLException e)
@@ -79,9 +79,9 @@ SNDevice::SNDevice(const string &filename, uint32_t deviceId, SNSimulate *parent
 
 SNDevice::~SNDevice()
 {
-	PyCPPObject pDeviceId(PyLong_FromUnsignedLong(m_deviceId));
+	PyCPPObject pDeviceId(PyLong_FromUnsignedLong(m_deviceId), true);
 
-	PyCPPObject pMainModuleName(PyString_FromString("__main__"));
+	PyCPPObject pMainModuleName(PyString_FromString("__main__"), true);
 	PyCPPObject pMainModule(PyImport_Import(pMainModuleName));
 	PyCPPObject pDevicesDict(PyObject_GetAttrString(pMainModule, "devices"), true);
 	if (PyDict_Contains(pDevicesDict, pDeviceId) == 1)
@@ -101,7 +101,7 @@ bool SNDevice::processFrame(PyObject *data)
 	{
 		return true;
 	}
-	PyCPPObject args(PyTuple_New(1));
+	PyCPPObject args(PyTuple_New(1), true);
 	PyTuple_SetItem(args, 0, data);
 	PyCPPObject ret(PyObject_Call(pProcessFrameFunc, args, NULL));
 	if (!PyBool_Check(ret))
@@ -149,7 +149,7 @@ bool SNDevice::setConfig(PyObject *data)
 		{
 			return true;
 		}
-		PyCPPObject args(PyTuple_New(1));
+		PyCPPObject args(PyTuple_New(1), true);
 		PyTuple_SetItem(args, 0, data);
 		PyCPPObject ret(PyObject_Call(setConfigFunc, args, NULL));
 		return (PyObject_IsTrue(ret) == 1);
@@ -195,7 +195,7 @@ char *SNDevice::httpRequest(const string &url, PyObject *post)
 			return NULL;
 		}
 		PyCPPObject pUrl(PyString_FromString(url.c_str()));
-		PyCPPObject args(PyTuple_New(2));
+		PyCPPObject args(PyTuple_New(2), true);
 
 		PyTuple_SetItem(args, 0, pUrl);
 		PyTuple_SetItem(args, 1, post);
@@ -221,7 +221,7 @@ char *SNDevice::telnetRequest(const string &line, char symbol)
 		{
 			return NULL;
 		}
-		PyCPPObject args(PyTuple_New(2));
+		PyCPPObject args(PyTuple_New(2), true);
 
 		PyCPPObject pLine(PyString_FromString(line.c_str()));
 		PyCPPObject pSymbol(PyString_FromFormat("%c", symbol));
@@ -230,7 +230,14 @@ char *SNDevice::telnetRequest(const string &line, char symbol)
 		PyTuple_SetItem(args, 1, pSymbol);
 
 		PyCPPObject pRet(PyObject_Call(telnetRequestFunc, args, NULL));
-		return PyString_AsString(pRet);
+		if (!PyString_Check(pRet))
+		{
+			return NULL;
+		}
+		else
+		{
+			return PyString_AsString(pRet);
+		}
 	}
 	catch (PyObjectNULLException e)
 	{

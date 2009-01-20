@@ -39,10 +39,10 @@ PyCPPObject::PyCPPObject(PyObject *pyobject, bool clean)
 
 PyCPPObject::~PyCPPObject()
 {
+	
 	if (m_object != NULL && m_clean == true)
 	{
 		Py_XDECREF(m_object);
-		//PyRun_SimpleString("gc.collect()");
 	}
 }
 
