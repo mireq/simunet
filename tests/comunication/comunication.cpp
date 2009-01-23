@@ -27,6 +27,7 @@
 #include <Python.h>
 
 #include <iostream>
+#include <map>
 
 using namespace std;
 
@@ -47,6 +48,7 @@ PyObject *processFrameWrapper(PyObject *self, PyObject *args)
 	cout<<"id:"<<deviceId<<endl;
 	cout<<"data:"<<PyString_AsString(pData)<<endl;
 	dev->telnetRequest("line", 'c');
+
 	/*if (dev->m_simulate != NULL)
 	{
 		dev->m_simulate->processFrame(deviceId, pData);
@@ -62,7 +64,7 @@ PyObject* telnetResponseWrapper(PyObject *self, PyObject *args)
 		return NULL;
 	}
 
-	//PyCPPObject pSNDeviceInstance(PyTuple_GetItem(args, 0));
+	PyCPPObject pSNDeviceInstance(PyTuple_GetItem(args, 0));
 	PyCPPObject pDeviceId(PyTuple_GetItem(args, 1));
 	PyCPPObject pText(PyTuple_GetItem(args, 2));
 	PyCPPObject pCmd(PyTuple_GetItem(args, 3));
@@ -75,8 +77,25 @@ PyObject* telnetResponseWrapper(PyObject *self, PyObject *args)
 
 	char *text = PyString_AsString(pText);
 	char *cmd  = PyString_AsString(pCmd);
+
 	cout<<"telnet:"<<deviceId<<":"<<text<<":"<<cmd<<endl;
-	/*SNDevice *dev = (SNDevice *)PyCObject_AsVoidPtr(pSNDeviceInstance);
+	SNDevice *dev = (SNDevice *)PyCObject_AsVoidPtr(pSNDeviceInstance);
+	dev->resetConfig();
+
+	PyCPPObject pConfig(PyString_FromString("config"));
+	dev->setConfig(pConfig);
+	PyCPPObject pConfigDump(dev->dumpConfig(), true);
+	cout<<"dump:"<<PyString_AsString(pConfigDump)<<endl;
+
+	//PyCPPObject pPost(PyDict_New(), true);
+	//PyDict_SetItemString(pPost, "name", PyCPPObject(PyString_FromString("value"), true));
+	map<string,string> pPost;
+	pPost["name"] = "value";
+	cout<<dev->httpRequest("url", pPost)<<endl;
+	cout<<dev->telnetGetControlChars()<<endl;
+
+	
+	/*
 	if (dev->m_simulate != NULL)
 	{
 		dev->m_simulate->telnetResponse(deviceId, text, cmd);

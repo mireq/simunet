@@ -25,6 +25,7 @@
 
 #include <Python.h>
 #include <string>
+#include <map>
 
 class SNSimulate;
 
@@ -68,6 +69,7 @@ class SNDevice
  \param post Post data ktore mu posielame.
 */
 		char *httpRequest(const std::string &url, PyObject *post);
+		char *httpRequest(const std::string &url, const std::map<std::string, std::string> post);
 
 /*!
  \brief Odoslanie vstupneho riadku z telnetu a symbolu ktory prenos odstartoval.

@@ -13,4 +13,4 @@ add_test(ModuleInit2 moduleInitTest testmodule testmodule)
 set_tests_properties(ModuleInit2 PROPERTIES PASS_REGULAR_EXPRESSION "init\nframe1\nframe2\ndel 1\ninit\nframe1\nframe2\ndel 2")
 
 add_test(comunication comunicationTest testmodule testmodule)
-set_tests_properties(comunication PROPERTIES PASS_REGULAR_EXPRESSION "init\nframe\nid:1\ndata:emarf\ntelnet:line:c\ntelnet:1:enil:cmd\ndel 1\ninit\nframe\nid:2\ndata:emarf\ntelnet:line:c\ntelnet:2:enil:cmd\ndel 2")
+set_tests_properties(comunication PROPERTIES PASS_REGULAR_EXPRESSION "init\nframe\nid:1\ndata:emarf\ntelnet:line:c\ntelnet:1:enil:cmd\nreset\ncfg:config\ndump:config\nhr:url:name:value\nhtmlrecv\nabc\ndel 1\ninit\nframe\nid:2\ndata:emarf\ntelnet:line:c\ntelnet:2:enil:cmd\nreset\ncfg:config\ndump:config\nhr:url:name:value\nhtmlrecv\nabc\ndel 2")

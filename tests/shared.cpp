@@ -29,7 +29,8 @@ void interpreterInit()
 {
 	PyCPPObject pOsModuleName(PyString_FromString("os"));
 	PyCPPObject pOsModule(PyImport_Import(pOsModuleName));
-	PyCPPObject pPathObject(PySys_GetObject("path"));
+	char funcName[5] = "path";
+	PyCPPObject pPathObject(PySys_GetObject(funcName));
 	PyCPPObject pAppendFunc(PyObject_GetAttrString(pPathObject, "append"));
 	if (!pAppendFunc.isCallable())
 	{

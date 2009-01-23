@@ -122,12 +122,13 @@ bool SNDevice::resetConfig(void)
 {
 	try
 	{
-		PyCPPObject resetConfigFunc(PyObject_GetAttrString(m_pDeviceInstance, "resetConfig"));
+		PyCPPObject resetConfigFunc(PyObject_GetAttrString(m_pDeviceInstance, "resetConfig"), true);
 		if (!resetConfigFunc.isCallable())
 		{
 			return true;
 		}
-		PyCPPObject ret(PyObject_Call(resetConfigFunc, NULL, NULL));
+		PyCPPObject resetArgs(PyTuple_New(0), true);
+		PyCPPObject ret(PyObject_Call(resetConfigFunc, resetArgs, NULL));
 		return (PyObject_IsTrue(ret) == 1);
 	}
 	catch (PyObjectNULLException e)
@@ -144,7 +145,7 @@ bool SNDevice::setConfig(PyObject *data)
 {
 	try
 	{
-		PyCPPObject setConfigFunc(PyObject_GetAttrString(m_pDeviceInstance, "setConfig"));
+		PyCPPObject setConfigFunc(PyObject_GetAttrString(m_pDeviceInstance, "setConfig"), true);
 		if (!setConfigFunc.isCallable())
 		{
 			return true;
@@ -168,12 +169,13 @@ PyObject *SNDevice::dumpConfig(void)
 {
 	try
 	{
-		PyCPPObject dumpConfigFunc(PyObject_GetAttrString(m_pDeviceInstance, "dumpConfig"));
+		PyCPPObject dumpConfigFunc(PyObject_GetAttrString(m_pDeviceInstance, "dumpConfig"), true);
 		if (!dumpConfigFunc.isCallable())
 		{
 			return NULL;
 		}
-		return PyObject_Call(dumpConfigFunc, NULL, NULL);
+		PyCPPObject dumpArgs(PyTuple_New(0), true);
+		return PyObject_Call(dumpConfigFunc, dumpArgs, NULL);
 	}
 	catch (PyObjectNULLException e)
 	{
@@ -189,7 +191,7 @@ char *SNDevice::httpRequest(const string &url, PyObject *post)
 {
 	try
 	{
-		PyCPPObject httpRequestFunc(PyObject_GetAttrString(m_pDeviceInstance, "httpRequest"));
+		PyCPPObject httpRequestFunc(PyObject_GetAttrString(m_pDeviceInstance, "httpRequest"), 2);
 		if (!httpRequestFunc.isCallable())
 		{
 			return NULL;
@@ -201,6 +203,24 @@ char *SNDevice::httpRequest(const string &url, PyObject *post)
 		PyTuple_SetItem(args, 1, post);
 		PyCPPObject pRet(PyObject_Call(httpRequestFunc, args, NULL));
 		return PyString_AsString(pRet);
+	}
+	catch (PyObjectNULLException e)
+	{
+		return NULL;
+	}
+}
+
+char *SNDevice::httpRequest(const std::string &url, const map<string,string> post)
+{
+	try
+	{
+		PyCPPObject pPost(PyDict_New(), true);
+		map<string,string>::const_iterator postIterator;
+		for (postIterator = post.begin(); postIterator != post.end(); ++postIterator)
+		{
+			PyDict_SetItemString(pPost, postIterator->first.c_str(), PyCPPObject(PyString_FromString(postIterator->second.c_str()), true));
+		}
+		return httpRequest(url, pPost);
 	}
 	catch (PyObjectNULLException e)
 	{
@@ -253,12 +273,13 @@ char *SNDevice::telnetGetControlChars(void)
 {
 	try
 	{
-		PyCPPObject telnetGetControlCharsFunc(PyObject_GetAttrString(m_pDeviceInstance, "telnetGetControlChars"));
+		PyCPPObject telnetGetControlCharsFunc(PyObject_GetAttrString(m_pDeviceInstance, "telnetGetControlChars"), true);
 		if (!telnetGetControlCharsFunc.isCallable())
 		{
 			return NULL;
 		}
-		PyCPPObject pRet(PyObject_Call(telnetGetControlCharsFunc, NULL, NULL));
+		PyCPPObject args(PyTuple_New(0), true);
+		PyCPPObject pRet(PyObject_Call(telnetGetControlCharsFunc, args, NULL));
 		return PyString_AsString(pRet);
 	}
 	catch (PyObjectNULLException e)

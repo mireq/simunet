@@ -81,7 +81,8 @@ void SNSimulateHelper::setPath()
 	PyCPPObject pOsModule(PyImport_Import(pOsModuleName));
 
 	// ziskame referenciu na funkciu sys.path.append
-	PyCPPObject pPathObject(PySys_GetObject("path"));
+	char funcName[5] = "path";
+	PyCPPObject pPathObject(PySys_GetObject(funcName));
 	PyCPPObject pAppendFunc(PyObject_GetAttrString(pPathObject, "append"));
 	if (!pAppendFunc.isCallable())
 	{
