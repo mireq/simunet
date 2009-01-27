@@ -23,11 +23,10 @@
 #include "MainWindow.h"
 #include "AboutDlg.h"
 #include "ConfigureDlg.h"
+#include "DevicesListModel.h"
 #include "Scene.h"
 #include "SecondaryWindow.h"
 #include "CfgPerformance.h"
-#include "core/SNSimulate.h"
-#include "core/SNConfig.h"
 
 #include <QAction>
 #include <QMenuBar>
@@ -57,15 +56,21 @@ MainWindow::MainWindow(QWidget* parent, Qt::WindowFlags flags): QMainWindow(pare
 	setupSecondaryWindow();
 	restoreWindowState();
 	statusBar()->showMessage(tr("Ready"), 5000);
-	SNConfig config;
-	m_simulate = new SNSimulate(config.threadsCount());
+	//SNConfig config;
+	//m_simulate = new SNSimulate(config.threadsCount());
+	m_devicesModel = new DevicesListModel(this);
+	m_toolWindow->setModel(m_devicesModel);
+	for (int i = 0; i < 10; ++i)
+	{
+		m_devicesModel->startDevice("router");
+	}
 }
 
 
 MainWindow::~MainWindow()
 {
 	saveWindowState();
-	delete m_simulate;
+	//delete m_simulate;
 }
 
 void MainWindow::setupVariables()

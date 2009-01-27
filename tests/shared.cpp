@@ -34,12 +34,12 @@ void interpreterInit()
 	PyCPPObject pAppendFunc(PyObject_GetAttrString(pPathObject, "append"));
 	if (!pAppendFunc.isCallable())
 	{
-		throw new SNPythonInterpreterException("append", SNPythonInterpreterException::CALL);
+		throw SNPythonInterpreterException("append", SNPythonInterpreterException::CALL);
 	}
 	PyCPPObject pGetCwdFunc(PyObject_GetAttrString(pOsModule, "getcwd"));
 	if (!pGetCwdFunc.isCallable())
 	{
-		throw new SNPythonInterpreterException("getcwd", SNPythonInterpreterException::CALL);
+		throw SNPythonInterpreterException("getcwd", SNPythonInterpreterException::CALL);
 	}
 	PyCPPObject pGetCwdParams(PyTuple_New(0));
 	PyCPPObject pCwd(PyObject_Call(pGetCwdFunc, pGetCwdParams, NULL));

@@ -60,6 +60,7 @@ set(simunet_SRCS
 	src/gui/CfgPerformance.cpp
 	src/gui/ConfigPanel.cpp
 	src/gui/ConfigureDlg.cpp
+	src/gui/DevicesListModel.cpp
 	src/gui/MainWindow.cpp
 	src/gui/Scene.cpp
 	src/gui/SecondaryWindow.cpp
@@ -72,6 +73,7 @@ set(simunet_MOC_HDRS
 	src/gui/CfgPerformance.h
 	src/gui/ConfigPanel.h
 	src/gui/ConfigureDlg.h
+	src/gui/DevicesListModel.h
 	src/gui/MainWindow.h
 	src/gui/Scene.h
 	src/gui/SecondaryWindow.h

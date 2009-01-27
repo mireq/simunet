@@ -74,6 +74,7 @@ SNDevice::SNDevice(const string &filename, uint32_t deviceId, SNSimulate *parent
 		throw SNDeviceImportException(filename);
 	}
 	m_deviceId = deviceId;
+	std::cout<<std::flush;
 }
 
 
@@ -88,6 +89,7 @@ SNDevice::~SNDevice()
 	{
 		PyDict_DelItem(pDevicesDict, pDeviceId);
 	}
+	std::cout<<std::flush;
 }
 
 

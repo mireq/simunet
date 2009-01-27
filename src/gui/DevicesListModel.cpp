@@ -2,7 +2,7 @@
  *   Simunet - Computer Network Simulator                                  *
  *   http://simunet.eu/                                                    *
  *                                                                         *
- *   Copyright (C) 2008 by Miroslav Bendik                                 *
+ *   Copyright (C) 2009 by Miroslav Bendik                                 *
  *   miroslav.bendik@gmail.com                                             *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -20,38 +20,84 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef SECONDARYWINDOW_H
-#define SECONDARYWINDOW_H
+#include "DevicesListModel.h"
 
-#include <QDockWidget>
+#include "SNIcon.h"
+#include "core/SNConfig.h"
+#include "core/SNSimulate.h"
 
-class DevicesListModel;
-class QListView;
-class QTabWidget;
-class QAction;
+using namespace std;
 
-/**
- @author Miroslav Bendik <miroslav.bendik@gmail.com>
- @brief Sekundarne (oddelitelne) okno na nastroje
-*/
-class SecondaryWindow : public QDockWidget
+DevicesListModel::DevicesListModel(QObject* parent): QAbstractListModel(parent)
 {
-		Q_OBJECT
-	public:
-		SecondaryWindow(QWidget* parent = 0, Qt::WindowFlags flags = 0);
-		~SecondaryWindow();
-		void setModel(DevicesListModel *model);
+	SNConfig config;
+	m_simulate = new SNSimulate(config.threadsCount());
+}
 
-	private slots:
-		void showContextMenu(const QPoint &point);
 
-	private:
-		QAction *m_newAct;
-		QAction *m_deleteAct;
-		QListView *m_list;
-		DevicesListModel *m_model;
-		QTabWidget *m_tabWidget;
+DevicesListModel::~DevicesListModel()
+{
+	delete m_simulate;
+}
 
-};
+int DevicesListModel::rowCount(const QModelIndex &parent) const
+{
+	return m_deviceIds.count();
+}
 
-#endif
+QVariant DevicesListModel::data(const QModelIndex &index, int role) const
+{
+	if (!index.isValid())
+	{
+		return QVariant();
+	}
+
+	if (index.row() >= m_deviceIds.count())
+	{
+		return QVariant();
+	}
+
+	if (role == Qt::DisplayRole)
+	{
+		return QVariant(QString("Zariadenie %1").arg(m_deviceIds[index.row()]));
+	}
+	else if (role == Qt::UserRole)
+	{
+		return QVariant(m_deviceIds[index.row()]);
+	}
+	else if (role == Qt::DecorationRole)
+	{
+		return QVariant(SNIcon("preferences-system-performance"));
+	}
+	else
+	{
+		return QVariant();
+	}
+}
+
+uint32_t DevicesListModel::startDevice(const string & filename)
+{
+	uint32_t devId = m_simulate->startDevice(filename);
+	beginInsertRows(QModelIndex(), m_deviceIds.count(), m_deviceIds.count());
+	m_deviceIds.append(devId);
+	insertRow(m_deviceIds.count());
+	endInsertRows();
+	return devId;
+}
+
+bool DevicesListModel::stopDevice(uint32_t id)
+{
+	bool ret = m_simulate->stopDevice(id);
+	if (!ret)
+	{
+		int i = m_deviceIds.indexOf(id);
+		if (i == -1)
+		{
+			return ret;
+		}
+		m_deviceIds.remove(i);
+	}
+	return ret;
+}
+
+

@@ -73,6 +73,11 @@ class SNSimulate
 		void telnetResponse(uint32_t id, const char *text, const char *cmd);
 
 	private:
+		void setPath();
+		void createDevicesDictionary();
+		void createSNSimulateModule();
+		void createBaseClass();
+
 		int m_threadCount;
 		std::list<SNSimulateHelper *> m_simulateHelpers;
 		std::list<SNSimulateHelper *>::iterator m_nextSimulateHelper;

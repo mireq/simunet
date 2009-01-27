@@ -2,7 +2,7 @@
  *   Simunet - Computer Network Simulator                                  *
  *   http://simunet.eu/                                                    *
  *                                                                         *
- *   Copyright (C) 2008 by Miroslav Bendik                                 *
+ *   Copyright (C) 2009 by Miroslav Bendik                                 *
  *   miroslav.bendik@gmail.com                                             *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -20,37 +20,32 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef SECONDARYWINDOW_H
-#define SECONDARYWINDOW_H
+#ifndef DEVICESLISTMODEL_H
+#define DEVICESLISTMODEL_H
 
-#include <QDockWidget>
+#include <QAbstractListModel>
+#include <QVector>
+#include <string>
 
-class DevicesListModel;
-class QListView;
-class QTabWidget;
-class QAction;
+class SNSimulate;
 
 /**
  @author Miroslav Bendik <miroslav.bendik@gmail.com>
- @brief Sekundarne (oddelitelne) okno na nastroje
 */
-class SecondaryWindow : public QDockWidget
+class DevicesListModel : public QAbstractListModel
 {
 		Q_OBJECT
 	public:
-		SecondaryWindow(QWidget* parent = 0, Qt::WindowFlags flags = 0);
-		~SecondaryWindow();
-		void setModel(DevicesListModel *model);
+		DevicesListModel(QObject* parent = 0);
+		~DevicesListModel();
 
-	private slots:
-		void showContextMenu(const QPoint &point);
-
+		int rowCount(const QModelIndex &parent = QModelIndex()) const;
+		QVariant data(const QModelIndex &index, int role) const;
+		uint32_t startDevice(const std::string &filename);
+		bool stopDevice(uint32_t id);
 	private:
-		QAction *m_newAct;
-		QAction *m_deleteAct;
-		QListView *m_list;
-		DevicesListModel *m_model;
-		QTabWidget *m_tabWidget;
+		QVector<uint32_t> m_deviceIds;
+		SNSimulate *m_simulate;
 
 };
 

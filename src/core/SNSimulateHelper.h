@@ -54,13 +54,11 @@ class SNSimulateHelper: public QThread
 */
 		void addDevice(SNDevice *device);
 	private:
-		void setPath();
-		void createDevicesDictionary();
-		void createSNSimulateModule();
-		void createBaseClass();
 		bool m_stop;
 		std::list<SNDevice *> m_devices;
 		PyObject *m_pDevicesDict;
+		static PyThreadState *m_mainThreadState;
+		PyThreadState *m_threadState;
 
 };
 

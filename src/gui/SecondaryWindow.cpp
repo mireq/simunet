@@ -22,15 +22,73 @@
  ***************************************************************************/
 #include "SecondaryWindow.h"
 
-SecondaryWindow::SecondaryWindow(QWidget* parent, Qt::WindowFlags flags): QDockWidget(parent, flags)
+#include <QTabWidget>
+#include <QVBoxLayout>
+#include <QListView>
+#include <QAction>
+#include <QMenu>
+#include "DevicesListModel.h"
+
+SecondaryWindow::SecondaryWindow(QWidget* parent, Qt::WindowFlags flags): QDockWidget(parent, flags), m_list(NULL), m_model(NULL)
 {
 	setObjectName("ToolWindow");
 	setWindowTitle(tr("Tools"));
+
+	m_tabWidget = new QTabWidget();
+	m_tabWidget->setTabPosition(QTabWidget::West);
+	setWidget(m_tabWidget);
+
+	m_newAct = new QAction("New", this);
+	m_deleteAct = new QAction("Delete", this);
+
+	//QWidget *m_devicesWidget = new QWidget();
+	//tabWidget->addTab(devicesWidget, tr("Devices"));
 }
 
 
 SecondaryWindow::~SecondaryWindow()
 {
+}
+
+void SecondaryWindow::setModel(DevicesListModel *model)
+{
+	if (m_list == NULL)
+	{
+		m_model = model;
+		m_list = new QListView();
+		m_list->setIconSize(QSize(32, 32));
+		m_list->setUniformItemSizes(true);
+		m_list->setModel(model);
+		m_list->setContextMenuPolicy(Qt::CustomContextMenu);
+		connect(m_list, SIGNAL(customContextMenuRequested(const QPoint &)),
+			this, SLOT(showContextMenu(const QPoint &)));
+		m_tabWidget->addTab(m_list, tr("Devices"));
+	}
+}
+
+void SecondaryWindow::showContextMenu(const QPoint &point)
+{
+	if (m_list != NULL && m_model != NULL)
+	{
+		QList<QAction *> actions;
+		QModelIndex index = m_list->indexAt(point);
+		actions.append(m_newAct);
+		if (index.isValid()) {
+			actions.append(m_deleteAct);
+		}
+		if (actions.count() > 0)
+		{
+			QAction *triggered = QMenu::exec(actions, m_list->mapToGlobal(point));
+			if (triggered == m_newAct)
+			{
+				m_model->startDevice("router");
+			}
+			if (triggered == m_deleteAct)
+			{
+				m_model->stopDevice(index.data(Qt::UserRole).toInt());
+			}
+		}
+	}
 }
 
 

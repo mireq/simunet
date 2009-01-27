@@ -31,9 +31,9 @@ class QActionGroup;
 
 class AboutDlg;
 class ConfigureDlg;
+class DevicesListModel;
 class Scene;
 class SecondaryWindow;
-class SNSimulate;
 
 /**
  @author Miroslav Bendik <miroslav.bendik@gmail.com>
@@ -63,8 +63,8 @@ class MainWindow : public QMainWindow
 		void sceneNavigationModeActionTriggered(QAction *);
 
 	private:
+		DevicesListModel *m_devicesModel;
 		Scene *m_scene;
-		SNSimulate *m_simulate;
 		//menu
 		QMenu *m_fileMenu;
 		QMenu *m_settingsMenu;

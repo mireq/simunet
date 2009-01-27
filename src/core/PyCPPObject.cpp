@@ -30,7 +30,7 @@ PyCPPObject::PyCPPObject(PyObject *pyobject, bool clean)
 	if (pyobject == NULL)
 	{
 		PyErr_Print();
-		throw new PyObjectNULLException();
+		throw PyObjectNULLException();
 	}
 	m_clean = clean;
 	m_object = pyobject;
