@@ -28,6 +28,7 @@
 #include <QAction>
 #include <QMenu>
 #include "DevicesListModel.h"
+#include "DeviceSettingsDlg.h"
 
 SecondaryWindow::SecondaryWindow(QWidget* parent, Qt::WindowFlags flags): QDockWidget(parent, flags), m_list(NULL), m_model(NULL)
 {
@@ -39,6 +40,7 @@ SecondaryWindow::SecondaryWindow(QWidget* parent, Qt::WindowFlags flags): QDockW
 	setWidget(m_tabWidget);
 
 	m_newAct = new QAction("New", this);
+	m_settingsAct = new QAction("Settings", this);
 	m_deleteAct = new QAction("Delete", this);
 
 	//QWidget *m_devicesWidget = new QWidget();
@@ -74,6 +76,7 @@ void SecondaryWindow::showContextMenu(const QPoint &point)
 		QModelIndex index = m_list->indexAt(point);
 		actions.append(m_newAct);
 		if (index.isValid()) {
+			actions.append(m_settingsAct);
 			actions.append(m_deleteAct);
 		}
 		if (actions.count() > 0)
@@ -83,7 +86,13 @@ void SecondaryWindow::showContextMenu(const QPoint &point)
 			{
 				m_model->startDevice("router");
 			}
-			if (triggered == m_deleteAct)
+			else if (triggered == m_settingsAct)
+			{
+				DeviceSettingsDlg *dlg = new DeviceSettingsDlg(this);
+				dlg->exec();
+				delete dlg;
+			}
+			else if (triggered == m_deleteAct)
 			{
 				m_model->stopDevice(index.data(Qt::UserRole).toInt());
 			}

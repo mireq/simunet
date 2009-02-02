@@ -34,13 +34,18 @@ configure_file (
   )
 
 set(QT_USE_QTOPENGL 1)
+set(QT_USE_QTWEBKIT 1)
 include(${QT_USE_FILE})
 
 #include(${QT_USE_FILE})
 
 if (NOT QT_QTOPENGL_FOUND)
-	message(FATAL_ERROR "No QT_QTOPENGL")
+	message(FATAL_ERROR "No QT_QTWEBKIT")
 endif (NOT QT_QTOPENGL_FOUND)
+
+if (NOT QT_QTWEBKIT_FOUND)
+	message(FATAL_ERROR "No QT_QTWEBKIT")
+endif (NOT QT_QTWEBKIT_FOUND)
 
 include_directories(
 	"${PROJECT_BINARY_DIR}"
@@ -61,11 +66,13 @@ set(simunet_SRCS
 	src/gui/ConfigPanel.cpp
 	src/gui/ConfigureDlg.cpp
 	src/gui/DevicesListModel.cpp
+	src/gui/DeviceSettingsDlg.cpp
 	src/gui/MainWindow.cpp
 	src/gui/Scene.cpp
 	src/gui/SecondaryWindow.cpp
 	src/gui/SNIcon.cpp
-	src/gui/SNTitleWidget.cpp)
+	src/gui/SNTitleWidget.cpp
+	src/gui/TelnetWidget.cpp)
 
 # hlavickove subory ktore musi spracovat moc
 set(simunet_MOC_HDRS
@@ -74,10 +81,12 @@ set(simunet_MOC_HDRS
 	src/gui/ConfigPanel.h
 	src/gui/ConfigureDlg.h
 	src/gui/DevicesListModel.h
+	src/gui/DeviceSettingsDlg.h
 	src/gui/MainWindow.h
 	src/gui/Scene.h
 	src/gui/SecondaryWindow.h
-	src/gui/SNTitleWidget.h)
+	src/gui/SNTitleWidget.h
+	src/gui/TelnetWidget.h)
 
 set(simunet_HDRS
 	src/gui/SNIcon.h)

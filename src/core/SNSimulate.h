@@ -62,7 +62,7 @@ class SNSimulate
  Tato metoda zachytava spravy od zariadeni a spracuje ich / preposiela
  ostatnym zariadeniam.
 */
-		void processFrame(uint32_t id, PyObject *data);
+		void frameResponse(uint32_t id, PyObject *data);
 
 /*!
  \brief Prijatie telnet odpovede od zariadenia.
@@ -71,6 +71,13 @@ class SNSimulate
  \param cmd Text ktory sa ma pouzit ako prompt.
 */
 		void telnetResponse(uint32_t id, const char *text, const char *cmd);
+
+/*!
+ \brief Ziskanie referencie na zariadenie
+ \param id ID zariadenia
+ \return Navratovou hodotou je referencia zariadenia ak existuje, NULL ak neexistuje.
+*/
+		SNDevice *device(uint32_t id);
 
 	private:
 		void setPath();

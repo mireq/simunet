@@ -30,7 +30,7 @@
 using namespace std;
 
 const PyMethodDef SNDevice::SNSimulateMethods[] = {
-	{"sendFrame", SNDevice::processFrameWrapper, METH_VARARGS, "Odoslanie ramca"},
+	{"sendFrame", SNDevice::frameResponseWrapper, METH_VARARGS, "Odoslanie ramca"},
 	{"sendTelnet", SNDevice::telnetResponseWrapper, METH_VARARGS, "Odoslanie dat cez telnet"},
 	{NULL, NULL, 0, NULL}
 };
@@ -290,7 +290,7 @@ char *SNDevice::telnetGetControlChars(void)
 	}
 }
 
-PyObject *SNDevice::processFrameWrapper(PyObject *self, PyObject *args)
+PyObject *SNDevice::frameResponseWrapper(PyObject *self, PyObject *args)
 {
 	if (PyTuple_Size(args) != 3)
 	{
@@ -305,7 +305,7 @@ PyObject *SNDevice::processFrameWrapper(PyObject *self, PyObject *args)
 	SNDevice *dev = (SNDevice *)PyCObject_AsVoidPtr(pSNDeviceInstance);
 	if (dev->m_simulate != NULL)
 	{
-		dev->m_simulate->processFrame(deviceId, pData);
+		dev->m_simulate->frameResponse(deviceId, pData);
 	}
 
 	Py_RETURN_NONE;

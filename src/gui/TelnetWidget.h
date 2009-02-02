@@ -2,7 +2,7 @@
  *   Simunet - Computer Network Simulator                                  *
  *   http://simunet.eu/                                                    *
  *                                                                         *
- *   Copyright (C) 2008 by Miroslav Bendik                                 *
+ *   Copyright (C) 2009 by Miroslav Bendik                                 *
  *   miroslav.bendik@gmail.com                                             *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -20,39 +20,41 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef SECONDARYWINDOW_H
-#define SECONDARYWINDOW_H
+#ifndef TELNETWIDGET_H
+#define TELNETWIDGET_H
 
-#include <QDockWidget>
+#include <QWidget>
+#include <QTextCharFormat>
 
-class DevicesListModel;
-class QListView;
-class QTabWidget;
-class QAction;
+class QPlainTextEdit;
+class TelnetEventFilter;
 
 /**
  @author Miroslav Bendik <miroslav.bendik@gmail.com>
- @brief Sekundarne (oddelitelne) okno na nastroje
 */
-class SecondaryWindow : public QDockWidget
+class TelnetWidget : public QWidget
 {
 		Q_OBJECT
 	public:
-		SecondaryWindow(QWidget* parent = 0, Qt::WindowFlags flags = 0);
-		~SecondaryWindow();
-		void setModel(DevicesListModel *model);
-
-	private slots:
-		void showContextMenu(const QPoint &point);
-
+		TelnetWidget(QWidget* parent = 0);
+		~TelnetWidget();
+	protected:
+		void keyPressEvnet(QKeyEvent *ev);
 	private:
-		QAction *m_newAct;
-		QAction *m_settingsAct;
-		QAction *m_deleteAct;
-		QListView *m_list;
-		DevicesListModel *m_model;
-		QTabWidget *m_tabWidget;
+		QFont m_font;
+		QTextCharFormat m_format;
+		QPlainTextEdit *m_document;
+		friend class TelnetEventFilter;
+};
 
+class TelnetEventFilter : public QObject
+{
+		Q_OBJECT
+	public:
+		TelnetEventFilter(TelnetWidget *obj = 0);
+		~TelnetEventFilter();
+	protected:
+		bool eventFilter(QObject *obj, QEvent *event);
 };
 
 #endif

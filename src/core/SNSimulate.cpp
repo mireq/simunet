@@ -132,7 +132,7 @@ uint32_t SNSimulate::startDevice(const string &filename)
 /*!
     \fn SNSimulate::processFrame(int id, PyObject *data)
  */
-void SNSimulate::processFrame(uint32_t id, PyObject *data)
+void SNSimulate::frameResponse(uint32_t id, PyObject *data)
 {
     /// @todo implement me
 }
@@ -274,5 +274,13 @@ void SNSimulate::createBaseClass()
 }
 
 
-
-
+SNDevice *SNSimulate::device(uint32_t id)
+{
+	map<int, SNDevice*>::iterator dev;
+	dev = m_devices.find(id);
+	if (dev == m_devices.end())
+	{
+		return NULL;
+	}
+	return dev->second;
+}

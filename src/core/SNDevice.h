@@ -92,7 +92,7 @@ class SNDevice
 		uint32_t m_deviceId;
 		PyObject *m_pDeviceInstance;
 		SNSimulate *m_simulate;
-		static PyObject *processFrameWrapper(PyObject *self, PyObject *args);
+		static PyObject *frameResponseWrapper(PyObject *self, PyObject *args);
 		static PyObject *telnetResponseWrapper(PyObject *self, PyObject *args);
 
 };
