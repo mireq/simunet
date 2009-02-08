@@ -38,9 +38,8 @@ class TelnetWidget : public QWidget
 	public:
 		TelnetWidget(QWidget* parent = 0);
 		~TelnetWidget();
-	protected:
-		void keyPressEvnet(QKeyEvent *ev);
 	private:
+		const char *getControlChars() const;
 		QFont m_font;
 		QTextCharFormat m_format;
 		QPlainTextEdit *m_document;

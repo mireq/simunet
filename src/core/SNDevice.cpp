@@ -59,7 +59,8 @@ SNDevice::SNDevice(const string &filename, uint32_t deviceId, SNSimulate *parent
 		PyCPPObject pDevicesDict(PyObject_GetAttrString(pMainModule, "devices"));
 
 		// vytvorime novu instanciu zariadenia
-		PyCPPObject pDeviceInstance(PyInstance_New(pDeviceClass, NULL, NULL), true);
+		//PyCPPObject pDeviceInstance(PyInstance_New(pDeviceClass, NULL, NULL), true);
+		PyCPPObject pDeviceInstance(PyInstance_NewRaw(pDeviceClass, NULL), true);
 		m_pDeviceInstance = pDeviceInstance;
 		PyCPPObject pDeviceId(PyLong_FromUnsignedLong(deviceId), true);
 
@@ -68,6 +69,10 @@ SNDevice::SNDevice(const string &filename, uint32_t deviceId, SNSimulate *parent
 		PyObject_SetAttrString(pDeviceInstance, "deviceId", pDeviceId);
 		PyCPPObject pSNDevice(PyCObject_FromVoidPtr((void *)this, NULL), true);
 		PyObject_SetAttrString(pDeviceInstance, "pSNDevice", pSNDevice);
+
+		PyCPPObject constructor(PyObject_GetAttrString(pDeviceInstance, "__init__"), true);
+		PyCPPObject args(PyTuple_New(0));
+		PyObject_Call(constructor, args, NULL);
 	}
 	catch (PyObjectNULLException e)
 	{

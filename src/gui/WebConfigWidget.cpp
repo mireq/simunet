@@ -2,7 +2,7 @@
  *   Simunet - Computer Network Simulator                                  *
  *   http://simunet.eu/                                                    *
  *                                                                         *
- *   Copyright (C) 2008 by Miroslav Bendik                                 *
+ *   Copyright (C) 2009 by Miroslav Bendik                                 *
  *   miroslav.bendik@gmail.com                                             *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -20,67 +20,15 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#include "SNSimulateHelper.h"
-#include "SNDevice.h"
+#include "WebConfigWidget.h"
 
-#include <unistd.h>
-#include <iostream>
-#include "SNExceptions.h"
-#include "PyCPPObject.h"
-#include "config.h"
-
-PyThreadState *SNSimulateHelper::m_mainThreadState = NULL;
-
-SNSimulateHelper::SNSimulateHelper()
-	:m_stop(false)
+WebConfigWidget::WebConfigWidget(QWidget* parent): QWidget(parent)
 {
-	if (m_mainThreadState == NULL)
-	{
-		m_mainThreadState = PyThreadState_Get();
-		PyEval_ReleaseLock();
-	}
-	PyEval_AcquireLock();
-	PyInterpreterState *mainInterpreterState = m_mainThreadState->interp;
-	m_threadState = PyThreadState_New(mainInterpreterState);
-	PyThreadState_Swap(m_mainThreadState);
-	PyEval_ReleaseLock();
 }
 
 
-SNSimulateHelper::~SNSimulateHelper()
+WebConfigWidget::~WebConfigWidget()
 {
-	PyEval_AcquireLock();
-	PyThreadState_Swap(m_mainThreadState);
-	PyThreadState_Clear(m_threadState);
-	PyThreadState_Delete(m_threadState);
-	PyThreadState_Swap(m_mainThreadState);
-	PyEval_ReleaseLock();
 }
 
-void SNSimulateHelper::run()
-{
-	while(1)
-	{
-		//std::cout<<"Vlakno"<<std::endl;
-		/*PyEval_AcquireLock();
-		PyThreadState_Swap(m_threadState);
-		PyThreadState_Swap(m_mainThreadState);
-		PyEval_ReleaseLock();*/
-		if (m_stop)
-		{
-			return;
-		}
-		sleep(1);
-	}
-}
-
-void SNSimulateHelper::stop()
-{
-	m_stop = true;
-}
-
-void SNSimulateHelper::addDevice(SNDevice *device)
-{
-	m_devices.push_back(device);
-}
 

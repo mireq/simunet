@@ -58,22 +58,10 @@ TelnetWidget::~TelnetWidget()
 {
 }
 
-void TelnetWidget::keyPressEvnet(QKeyEvent *ev)
+const char *TelnetWidget::getControlChars() const
 {
-	QWidget::keyPressEvent(ev);
-	if (!ev->isAccepted())
-	{
-		if (!m_document->textCursor().atEnd())
-		{
-			m_document->moveCursor(QTextCursor::End);
-			m_document->setCurrentCharFormat(m_format);
-		}
-		m_document->textCursor().insertText(ev->text());
-		m_document->ensureCursorVisible();
-		ev->accept();
-	}
+	return "\n?";
 }
-
 
 TelnetEventFilter::TelnetEventFilter(TelnetWidget *obj) : QObject(obj)
 {
@@ -87,9 +75,11 @@ bool TelnetEventFilter::eventFilter(QObject *obj, QEvent *event)
 {
 	if (event->type() == QEvent::KeyPress)
 	{
+		TelnetWidget *w = static_cast<TelnetWidget *>(parent());
+
 		QKeyEvent *ev = static_cast<QKeyEvent *>(event);
 		int key = ev->key();
-		TelnetWidget *w = static_cast<TelnetWidget *>(parent());
+
 		QPlainTextEdit *doc = w->m_document;
 		doc->textCursor().clearSelection();
 		if (!doc->textCursor().atEnd())
@@ -97,7 +87,6 @@ bool TelnetEventFilter::eventFilter(QObject *obj, QEvent *event)
 			doc->moveCursor(QTextCursor::End);
 			doc->ensureCursorVisible();
 		}
-
 		if (key == Qt::Key_Up || key == Qt::Key_Down)
 		{
 			return true;
@@ -118,9 +107,24 @@ bool TelnetEventFilter::eventFilter(QObject *obj, QEvent *event)
 				return false;
 			}
 		}
-		else if (key == Qt::Key_Return)
+		else
 		{
-			qDebug()<<doc->textCursor().block().text();
+			const char *controlChars = w->getControlChars();
+			QString keyText = ev->text();
+			char c;
+			while ((c = *controlChars) != 0)
+			{
+				if (c == '\n' && key == Qt::Key_Return)
+				{
+					qDebug()<<doc->textCursor().block().text();
+				}
+				else if (!keyText.isNull() && keyText == QString(c))
+				{
+					qDebug()<<doc->textCursor().block().text();
+					return true;
+				}
+				controlChars++;
+			}
 		}
 		return false;
 	}

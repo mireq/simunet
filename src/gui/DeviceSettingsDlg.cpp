@@ -23,12 +23,19 @@
 #include "DeviceSettingsDlg.h"
 
 #include "TelnetWidget.h"
+#include "WebConfigWidget.h"
 #include <QVBoxLayout>
+#include <QTabWidget>
 
 DeviceSettingsDlg::DeviceSettingsDlg(QWidget* parent): QDialog(parent)
 {
 	QVBoxLayout *layout = new QVBoxLayout(this);
-	layout->addWidget(new TelnetWidget);
+	QTabWidget *tabs = new QTabWidget;
+	WebConfigWidget *wc = new WebConfigWidget;
+	TelnetWidget *tw = new TelnetWidget;
+	tabs->addTab(wc, tr("Web config"));
+	tabs->addTab(tw, tr("Telnet"));
+	layout->addWidget(tabs);
 }
 
 

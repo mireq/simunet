@@ -72,7 +72,8 @@ set(simunet_SRCS
 	src/gui/SecondaryWindow.cpp
 	src/gui/SNIcon.cpp
 	src/gui/SNTitleWidget.cpp
-	src/gui/TelnetWidget.cpp)
+	src/gui/TelnetWidget.cpp
+	src/gui/WebConfigWidget.cpp)
 
 # hlavickove subory ktore musi spracovat moc
 set(simunet_MOC_HDRS
@@ -86,7 +87,8 @@ set(simunet_MOC_HDRS
 	src/gui/Scene.h
 	src/gui/SecondaryWindow.h
 	src/gui/SNTitleWidget.h
-	src/gui/TelnetWidget.h)
+	src/gui/TelnetWidget.h
+	src/gui/WebConfigWidget.h)
 
 set(simunet_HDRS
 	src/gui/SNIcon.h)
