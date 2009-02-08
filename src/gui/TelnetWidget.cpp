@@ -34,17 +34,17 @@
 
 TelnetWidget::TelnetWidget(QWidget* parent): QWidget(parent)
 {
-	QVBoxLayout *layout = new QVBoxLayout(this);
-	m_document = new QPlainTextEdit();
 	m_font.setFamily("courier");
 	m_font.setStyleHint(QFont::Courier);
 	m_format.setFont(m_font);
-	//m_document->setAcceptRichText(false);
+
+	m_document = new QPlainTextEdit();
 	m_document->setCurrentCharFormat(m_format);
 	m_document->textCursor().insertText("---\n");
 	m_document->installEventFilter(new TelnetEventFilter(this));
 	m_document->setTextInteractionFlags(Qt::TextEditable|Qt::TextSelectableByMouse);
-	//m_document->setReadOnly(false);
+
+	QVBoxLayout *layout = new QVBoxLayout(this);
 	layout->addWidget(m_document);
 
 	QPalette palette;
@@ -58,9 +58,31 @@ TelnetWidget::~TelnetWidget()
 {
 }
 
+void TelnetWidget::write(const QString &text)
+{
+	m_document->textCursor().insertText(text);
+}
+
+void TelnetWidget::showEvent(QShowEvent *event)
+{
+	m_document->setFocus();
+}
+
+void TelnetWidget::sendLineEvent(char controlChar)
+{
+	if (controlChar == '\n')
+	{
+		qDebug()<<m_currentLine;
+	}
+	else
+	{
+		qDebug()<<m_currentLine<<controlChar;
+	}
+}
+
 const char *TelnetWidget::getControlChars() const
 {
-	return "\n?";
+	return "?";
 }
 
 TelnetEventFilter::TelnetEventFilter(TelnetWidget *obj) : QObject(obj)
@@ -93,37 +115,50 @@ bool TelnetEventFilter::eventFilter(QObject *obj, QEvent *event)
 		}
 		else if (key == Qt::Key_Left || key == Qt::Key_Right)
 		{
-			return false;
+			return true;
 		}
 		else if (key == Qt::Key_Backspace)
 		{
 			// nepovolime backspace na zaciatku raidku
-			if (doc->textCursor().atBlockStart())
+			int size = w->m_currentLine.size();
+			if (size > 0)
 			{
-				return true;
+				w->m_currentLine.remove(size - 1, 1);
+				return false;
 			}
 			else
 			{
-				return false;
+				return true;
 			}
 		}
 		else
 		{
+			if (key == Qt::Key_Return || key == Qt::Key_Enter)
+			{
+				w->sendLineEvent('\n');
+				w->m_currentLine.clear();
+				return false;
+			}
+
+			// prejdeme kontrolne znaky, ak najdeme zhodu odosleme text
 			const char *controlChars = w->getControlChars();
 			QString keyText = ev->text();
 			char c;
 			while ((c = *controlChars) != 0)
 			{
-				if (c == '\n' && key == Qt::Key_Return)
+				
+				if (!keyText.isEmpty() && keyText.at(0).isPrint() && keyText == QString(c))
 				{
-					qDebug()<<doc->textCursor().block().text();
-				}
-				else if (!keyText.isNull() && keyText == QString(c))
-				{
-					qDebug()<<doc->textCursor().block().text();
+					w->sendLineEvent(c);
 					return true;
 				}
 				controlChars++;
+			}
+
+			// pridame znak do aktualne editovaneho riadku
+			if (!keyText.isEmpty() && keyText.at(0).isPrint())
+			{
+				w->m_currentLine.append(keyText);
 			}
 		}
 		return false;

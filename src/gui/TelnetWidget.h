@@ -38,11 +38,17 @@ class TelnetWidget : public QWidget
 	public:
 		TelnetWidget(QWidget* parent = 0);
 		~TelnetWidget();
+	public slots:
+		void write(const QString &text);
+	protected:
+		void showEvent(QShowEvent *event);
+		void sendLineEvent(char controlChar);
 	private:
 		const char *getControlChars() const;
 		QFont m_font;
 		QTextCharFormat m_format;
 		QPlainTextEdit *m_document;
+		QString m_currentLine;
 		friend class TelnetEventFilter;
 };
 
