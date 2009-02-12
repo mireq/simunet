@@ -35,6 +35,7 @@ configure_file (
 
 set(QT_USE_QTOPENGL 1)
 set(QT_USE_QTWEBKIT 1)
+set(QT_USE_QTNETWORK 1)
 include(${QT_USE_FILE})
 
 #include(${QT_USE_FILE})
@@ -73,6 +74,7 @@ set(simunet_SRCS
 	src/gui/SNIcon.cpp
 	src/gui/SNTitleWidget.cpp
 	src/gui/TelnetWidget.cpp
+	src/gui/WebConfigPage.cpp
 	src/gui/WebConfigWidget.cpp)
 
 # hlavickove subory ktore musi spracovat moc
@@ -88,6 +90,7 @@ set(simunet_MOC_HDRS
 	src/gui/SecondaryWindow.h
 	src/gui/SNTitleWidget.h
 	src/gui/TelnetWidget.h
+	src/gui/WebConfigPage.h
 	src/gui/WebConfigWidget.h)
 
 set(simunet_HDRS
@@ -97,6 +100,7 @@ set(simunet_HDRS
 set(simunet_UIS
 	src/gui/AboutDlg.ui)
 
+#ADD_DEPENDENCIES(${LIB} updateEOglext)
 # zdroje
 set(simunet_QRC
 	gfx/resources.qrc)

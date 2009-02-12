@@ -24,6 +24,11 @@
 #define WEBCONFIGWIDGET_H
 
 #include <QWidget>
+#include <QString>
+
+class QWebView;
+class QLabel;
+class QSplitter;
 
 /**
  @author Miroslav Bendik <miroslav.bendik@gmail.com>
@@ -33,8 +38,22 @@ class WebConfigWidget : public QWidget
 		Q_OBJECT
 	public:
 		WebConfigWidget(QWidget* parent = 0);
-
 		~WebConfigWidget();
+		void render(const QString &string);
+	public slots:
+		void setPageTitle(const QString &title);
+		void setUrl(const QString &url);
+	private:
+		void saveWindowState();
+		void restoreWindowState();
+	private slots:
+		void loadFinished();
+		void addJavascriptObject();
+	private:
+		QSplitter *m_splitter;
+		QWebView *m_view;
+		QLabel *m_titleLabel;
+		QString m_webConfigJs;
 
 };
 

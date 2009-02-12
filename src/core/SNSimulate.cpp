@@ -41,7 +41,7 @@ SNSimulate::SNSimulate(int threads)
 	Py_Initialize();
 
 	// inicializacia vlakien
-	PyEval_InitThreads();
+	//PyEval_InitThreads();
 
 	PyRun_SimpleString("import gc");
 	PyRun_SimpleString("gc.set_debug(gc.DEBUG_LEAK)");
@@ -89,7 +89,7 @@ SNSimulate::~SNSimulate()
 		m_simulateHelpers.erase(helper);
 	}
 	PyRun_SimpleString("print(gc.garbage)");
-	PyEval_AcquireLock();
+	//PyEval_AcquireLock();
 	Py_Finalize();
 }
 

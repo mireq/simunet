@@ -20,38 +20,22 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef DEVICESETTINGSDLG_H
-#define DEVICESETTINGSDLG_H
+#ifndef WEBCONFIGPAGE_H
+#define WEBCONFIGPAGE_H
 
-#include <QDialog>
-
-class QStatusBar;
-class QPushButton;
-class QTreeWidget;
-class QSplitter;
+#include <QWebPage>
 
 /**
  @author Miroslav Bendik <miroslav.bendik@gmail.com>
 */
-class DeviceSettingsDlg : public QDialog
+class WebConfigPage : public QWebPage
 {
 		Q_OBJECT
 	public:
-		DeviceSettingsDlg(QWidget* parent = 0);
-		~DeviceSettingsDlg();
-		QStatusBar *statusBar();
-	private:
-		void saveWindowState();
-		void restoreWindowState();
-	private slots:
-		void currentTabItemChanged(int index);
-		void showJsErrors();
-	private:
-		QStatusBar *m_statusBar;
-		QPushButton *m_errorButton;
-		QTreeWidget *m_errorsTree;
-		QSplitter *m_splitter;
-		bool m_errorsVisible;
+		WebConfigPage(QWidget *parent = 0);
+
+		~WebConfigPage();
+
 };
 
 #endif
