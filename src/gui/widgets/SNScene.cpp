@@ -20,15 +20,15 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#include "Scene.h"
+#include "SNScene.h"
 
 #include <math.h>
 
-class SceneAttribDialog: public QDialog
+class SNSceneAttribDialog: public QDialog
 {
 	public:
-		SceneAttribDialog(const QString &title);
-		virtual ~SceneAttribDialog();
+		SNSceneAttribDialog(const QString &title);
+		virtual ~SNSceneAttribDialog();
 
 		void newPosition(const QPointF &ppisition);
 		void newAngle(float angle);
@@ -37,7 +37,7 @@ class SceneAttribDialog: public QDialog
 		QLabel *angleText;
 };
 
-SceneAttribDialog::SceneAttribDialog(const QString &title)
+SNSceneAttribDialog::SNSceneAttribDialog(const QString &title)
 {
 	QLabel *posLabel = new QLabel("Position", this);
 	QLabel *angleLabel = new QLabel("Angle", this);
@@ -54,17 +54,17 @@ SceneAttribDialog::SceneAttribDialog(const QString &title)
 	setWindowTitle(title);
 }
 
-SceneAttribDialog::~SceneAttribDialog()
+SNSceneAttribDialog::~SNSceneAttribDialog()
 {
 }
 
-void SceneAttribDialog::newPosition(const QPointF &position)
+void SNSceneAttribDialog::newPosition(const QPointF &position)
 {
 	QString text = QString::number(position.x(), 'f', 1) + QString(", ") + QString::number(position.y(), 'f', 1);
 	posText->setText(text);
 }
 
-void SceneAttribDialog::newAngle(float angle)
+void SNSceneAttribDialog::newAngle(float angle)
 {
 	QString text = QString::number(angle, 'f', 1);
 	angleText->setText(text);
@@ -72,9 +72,9 @@ void SceneAttribDialog::newAngle(float angle)
 
 //////////////////////////////////////////////
 
-Scene::Scene(QObject* parent): QGraphicsScene(parent), m_tahanie(false), m_rotacia(0.0), m_pozicia(0.0, 0.0)
+SNScene::SNScene(QObject* parent): QGraphicsScene(parent), m_tahanie(false), m_rotacia(0.0), m_pozicia(0.0, 0.0)
 {
-	m_dialog = new SceneAttribDialog("Scene attributes");
+	m_dialog = new SNSceneAttribDialog("SNScene attributes");
 	m_dialog->setWindowOpacity(0.8);
 	addWidget(m_dialog);
 
@@ -89,18 +89,18 @@ Scene::Scene(QObject* parent): QGraphicsScene(parent), m_tahanie(false), m_rotac
 }
 
 
-Scene::~Scene()
+SNScene::~SNScene()
 {
 }
 
 
-void Scene::setNavigationMode(NavigationMode mode)
+void SNScene::setNavigationMode(NavigationMode mode)
 {
 	m_navigationMode = mode;
 }
 
 
-void Scene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
+void SNScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
 	if (!m_tahanie)
 	{
@@ -144,7 +144,7 @@ void Scene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 	}
 }
 
-void Scene::mousePressEvent(QGraphicsSceneMouseEvent *event)
+void SNScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
 	QGraphicsScene::mousePressEvent(event);
 	if (event->isAccepted())
@@ -158,12 +158,12 @@ void Scene::mousePressEvent(QGraphicsSceneMouseEvent *event)
 	}
 }
 
-void Scene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
+void SNScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
 	m_tahanie = false;
 }
 
-void Scene::keyPressEvent(QKeyEvent *event)
+void SNScene::keyPressEvent(QKeyEvent *event)
 {
 	QGraphicsScene::keyPressEvent(event);
 
@@ -196,7 +196,7 @@ void Scene::keyPressEvent(QKeyEvent *event)
 }
 
 
-void Scene::drawBackground(QPainter *painter, const QRectF &)
+void SNScene::drawBackground(QPainter *painter, const QRectF &)
 {
 	if (painter->paintEngine()->type() != QPaintEngine::OpenGL) {
 		qWarning("Potrebujeme ako viewport QGLWidget");
@@ -231,13 +231,13 @@ void Scene::drawBackground(QPainter *painter, const QRectF &)
 	glFlush();
 }
 
-void Scene::zmenOtocenie(float rozdiel)
+void SNScene::zmenOtocenie(float rozdiel)
 {
 	m_rotacia += 90.0 * rozdiel / float(width());
 	m_dialog->newAngle(m_rotacia);
 }
 
-void Scene::zmenPoziciu(const QPointF &rozdiel)
+void SNScene::zmenPoziciu(const QPointF &rozdiel)
 {
 	float uhol = m_rotacia * M_PI / 180.0;
 	m_pozicia.setX(-rozdiel.x() * cos(uhol) - rozdiel.y() * sin(uhol) + m_pozicia.x());
@@ -246,7 +246,7 @@ void Scene::zmenPoziciu(const QPointF &rozdiel)
 	update();
 }
 
-void Scene::vykreslenieMriezky()
+void SNScene::vykreslenieMriezky()
 {
 	int vzdialenostZ = -10;
 	glColor4f(1.0f, 0.0f, 0.0f, 1.0f);

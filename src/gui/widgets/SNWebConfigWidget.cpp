@@ -20,8 +20,8 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#include "WebConfigWidget.h"
-#include "WebConfigPage.h"
+#include "SNWebConfigWidget.h"
+#include "SNWebConfigPage.h"
 
 #include <QtGui>
 #include <QtWebKit>
@@ -29,7 +29,7 @@
 
 #include <QDebug>
 
-WebConfigWidget::WebConfigWidget(QWidget* parent): QWidget(parent)
+SNWebConfigWidget::SNWebConfigWidget(QWidget* parent): QWidget(parent)
 {
 	QGridLayout *layout = new QGridLayout;
 	setLayout(layout);
@@ -54,17 +54,17 @@ WebConfigWidget::WebConfigWidget(QWidget* parent): QWidget(parent)
 	m_splitter->addWidget(tree);
 
 	m_view = new QWebView;
-	WebConfigPage *page = new WebConfigPage(this);
+	SNWebConfigPage *page = new SNWebConfigPage(this);
 	m_view->setPage(page);
 	connect(m_view->page(), SIGNAL(loadFinished(bool)), SLOT(loadFinished()));
 	connect(m_view->page()->mainFrame(), SIGNAL(javaScriptWindowObjectCleared()), this, SLOT(addJavascriptObject()));
 
-	QFile webConfigJsFile(":webconfig.js");
+	QFile webConfigJsFile(":web/webconfig.js");
 	if (!webConfigJsFile.open(QIODevice::ReadOnly | QIODevice::Text))
 		return;
 	m_webConfigJs = QString::fromUtf8(webConfigJsFile.readAll());
 	
-	QFile exampleFile(":examplesettings.html");
+	QFile exampleFile(":web/examplesettings.html");
 	if (!exampleFile.open(QIODevice::ReadOnly | QIODevice::Text))
 		return;
 	m_view->setHtml(QString::fromUtf8(exampleFile.readAll()));
@@ -74,28 +74,28 @@ WebConfigWidget::WebConfigWidget(QWidget* parent): QWidget(parent)
 }
 
 
-WebConfigWidget::~WebConfigWidget()
+SNWebConfigWidget::~SNWebConfigWidget()
 {
 	saveWindowState();
 }
 
-void WebConfigWidget::render(const QString &string)
+void SNWebConfigWidget::render(const QString &string)
 {
 	m_view->setHtml(string);
 }
 
 
-void WebConfigWidget::setPageTitle(const QString &title)
+void SNWebConfigWidget::setPageTitle(const QString &title)
 {
 	m_titleLabel->setText(title);
 }
 
-void WebConfigWidget::setUrl(const QString &url)
+void SNWebConfigWidget::setUrl(const QString &url)
 {
 	qDebug()<<url;
 }
 
-void WebConfigWidget::saveWindowState()
+void SNWebConfigWidget::saveWindowState()
 {
 	QSettings settings;
 	settings.beginGroup("DeviceSettingsWindow");
@@ -103,7 +103,7 @@ void WebConfigWidget::saveWindowState()
 	settings.endGroup();
 }
 
-void WebConfigWidget::restoreWindowState()
+void SNWebConfigWidget::restoreWindowState()
 {
 	QSettings settings;
 	settings.beginGroup("DeviceSettingsWindow");
@@ -111,14 +111,14 @@ void WebConfigWidget::restoreWindowState()
 	settings.endGroup();
 }
 
-void WebConfigWidget::loadFinished()
+void SNWebConfigWidget::loadFinished()
 {
 	QWebPage *page = m_view->page();
 	QWebFrame *frame = page->mainFrame();
 	frame->evaluateJavaScript(m_webConfigJs);
 }
 
-void WebConfigWidget::addJavascriptObject()
+void SNWebConfigWidget::addJavascriptObject()
 {
 	m_view->page()->mainFrame()->addToJavaScriptWindowObject("webConfigWidget", this);
 }

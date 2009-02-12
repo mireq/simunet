@@ -2,7 +2,7 @@
  *   Simunet - Computer Network Simulator                                  *
  *   http://simunet.eu/                                                    *
  *                                                                         *
- *   Copyright (C) 2008 by Miroslav Bendik                                 *
+ *   Copyright (C) 2009 by Miroslav Bendik                                 *
  *   miroslav.bendik@gmail.com                                             *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -20,57 +20,32 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef SCENE_H
-#define SCENE_H
+#ifndef DEVICESLISTMODEL_H
+#define DEVICESLISTMODEL_H
 
-#include <QGraphicsScene>
-#include <QtOpenGL>
+#include <QAbstractListModel>
+#include <QVector>
+#include <string>
 
-class SceneAttribDialog;
+class SNSimulate;
 
 /**
  @author Miroslav Bendik <miroslav.bendik@gmail.com>
- @brief Graficka (OpenGL) scena.
 */
-class Scene : public QGraphicsScene
+class SNDevicesListModel : public QAbstractListModel
 {
 		Q_OBJECT
 	public:
+		SNDevicesListModel(QObject* parent = 0);
+		~SNDevicesListModel();
 
-/*!
- \brief Vymenovane hodnoty navigacneho modu.
-*/
-		enum NavigationMode
-		{
-			Rotate, /*!< Mod otacania (lave tlacitko otacanie, stredne pohyb) */
-			Move    /*!< Mod pohybu (lave tlacitko pohyb, stredne otacanie) */
-		};
-	public:
-		Scene(QObject* parent = 0);
-
-/*!
- \brief Nastavenie navigacneho modu.
-*/
-		void setNavigationMode(NavigationMode mode);
-		~Scene();
-
-	protected:
-		void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
-		void mousePressEvent(QGraphicsSceneMouseEvent *event);
-		void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
-		void keyPressEvent(QKeyEvent *event);
-		void drawBackground(QPainter *painter, const QRectF &rect);
-		void zmenOtocenie(float rozdiel);
-		void zmenPoziciu(const QPointF &rozdiel);
-
-		void vykreslenieMriezky();
-
+		int rowCount(const QModelIndex &parent = QModelIndex()) const;
+		QVariant data(const QModelIndex &index, int role) const;
+		uint32_t startDevice(const std::string &filename);
+		bool stopDevice(uint32_t id);
 	private:
-		bool m_tahanie;
-		float m_rotacia;
-		QPointF m_pozicia;
-		SceneAttribDialog *m_dialog;
-		NavigationMode m_navigationMode;
+		QVector<uint32_t> m_deviceIds;
+		SNSimulate *m_simulate;
 
 };
 

@@ -23,8 +23,9 @@
 #include "MainWindow.h"
 #include "AboutDlg.h"
 #include "ConfigureDlg.h"
-#include "DevicesListModel.h"
-#include "Scene.h"
+#include "SNDevicesListModel.h"
+#include "SNScene.h"
+#include "SNIcon.h"
 #include "SecondaryWindow.h"
 #include "CfgPerformance.h"
 
@@ -51,14 +52,14 @@ MainWindow::MainWindow(QWidget* parent, Qt::WindowFlags flags): QMainWindow(pare
 	setObjectName("MainWindow");
 	setWindowTitle(tr("SimuNet"));
 	setupVariables();
-	setupScene();
+	setupSNScene();
 	setupUi();
 	setupSecondaryWindow();
 	restoreWindowState();
 	statusBar()->showMessage(tr("Ready"), 5000);
 	//SNConfig config;
 	//m_simulate = new SNSimulate(config.threadsCount());
-	m_devicesModel = new DevicesListModel(this);
+	m_devicesModel = new SNDevicesListModel(this);
 	m_toolWindow->setModel(m_devicesModel);
 	for (int i = 0; i < 10; ++i)
 	{
@@ -93,8 +94,8 @@ void MainWindow::setupToolBars()
 
 	m_navigateMoveAct = new QAction(tr("Move"), this);
 	m_navigateRotateAct = new QAction(tr("Rotate"), this);
-	m_navigateMoveAct->setIcon(QIcon(QPixmap(":move.png")));
-	m_navigateRotateAct->setIcon(QIcon(QPixmap(":rotate.png")));
+	m_navigateMoveAct->setIcon(SNIcon("move", false));
+	m_navigateRotateAct->setIcon(SNIcon("rotate", false));
 
 	m_navigateGroup = new QActionGroup(this);
 	m_navigateGroup->setExclusive(true);
@@ -114,9 +115,9 @@ void MainWindow::setupToolBars()
 	addToolBar(m_navigateToolBar);
 }
 
-void MainWindow::setupScene()
+void MainWindow::setupSNScene()
 {
-	m_scene = new Scene();
+	m_scene = new SNScene();
 	GraphicsView *view = new GraphicsView;
 	view->setFrameStyle(QFrame::NoFrame);
 	view->setViewport(new QGLWidget(QGLFormat(QGL::SampleBuffers)));
@@ -180,11 +181,11 @@ void MainWindow::sceneNavigationModeActionTriggered(QAction *action)
 {
 	if (action == m_navigateRotateAct)
 	{
-		m_scene->setNavigationMode(Scene::Rotate);
+		m_scene->setNavigationMode(SNScene::Rotate);
 	}
 	else
 	{
-		m_scene->setNavigationMode(Scene::Move);
+		m_scene->setNavigationMode(SNScene::Move);
 	}
 }
 

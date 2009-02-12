@@ -20,46 +20,16 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef TELNETWIDGET_H
-#define TELNETWIDGET_H
+#include "SNWebConfigPage.h"
 
-#include <QWidget>
-#include <QTextCharFormat>
-
-class QPlainTextEdit;
-class TelnetEventFilter;
-
-/**
- @author Miroslav Bendik <miroslav.bendik@gmail.com>
-*/
-class TelnetWidget : public QWidget
+SNWebConfigPage::SNWebConfigPage(QWidget *parent)
+		: QWebPage(parent)
 {
-		Q_OBJECT
-	public:
-		TelnetWidget(QWidget* parent = 0);
-		~TelnetWidget();
-	public slots:
-		void write(const QString &text);
-	protected:
-		void showEvent(QShowEvent *event);
-		void sendLineEvent(char controlChar);
-	private:
-		const char *getControlChars() const;
-		QFont m_font;
-		QTextCharFormat m_format;
-		QPlainTextEdit *m_document;
-		QString m_currentLine;
-		friend class TelnetEventFilter;
-};
+}
 
-class TelnetEventFilter : public QObject
+
+SNWebConfigPage::~SNWebConfigPage()
 {
-		Q_OBJECT
-	public:
-		TelnetEventFilter(TelnetWidget *obj = 0);
-		~TelnetEventFilter();
-	protected:
-		bool eventFilter(QObject *obj, QEvent *event);
-};
+}
 
-#endif
+

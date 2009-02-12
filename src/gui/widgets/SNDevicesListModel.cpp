@@ -20,7 +20,7 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#include "DevicesListModel.h"
+#include "SNDevicesListModel.h"
 
 #include "SNIcon.h"
 #include "core/SNConfig.h"
@@ -28,24 +28,24 @@
 
 using namespace std;
 
-DevicesListModel::DevicesListModel(QObject* parent): QAbstractListModel(parent)
+SNDevicesListModel::SNDevicesListModel(QObject* parent): QAbstractListModel(parent)
 {
 	SNConfig config;
 	m_simulate = new SNSimulate(config.threadsCount());
 }
 
 
-DevicesListModel::~DevicesListModel()
+SNDevicesListModel::~SNDevicesListModel()
 {
 	delete m_simulate;
 }
 
-int DevicesListModel::rowCount(const QModelIndex &parent) const
+int SNDevicesListModel::rowCount(const QModelIndex &parent) const
 {
 	return m_deviceIds.count();
 }
 
-QVariant DevicesListModel::data(const QModelIndex &index, int role) const
+QVariant SNDevicesListModel::data(const QModelIndex &index, int role) const
 {
 	if (!index.isValid())
 	{
@@ -75,7 +75,7 @@ QVariant DevicesListModel::data(const QModelIndex &index, int role) const
 	}
 }
 
-uint32_t DevicesListModel::startDevice(const string & filename)
+uint32_t SNDevicesListModel::startDevice(const string & filename)
 {
 	uint32_t devId = m_simulate->startDevice(filename);
 	beginInsertRows(QModelIndex(), m_deviceIds.count(), m_deviceIds.count());
@@ -85,7 +85,7 @@ uint32_t DevicesListModel::startDevice(const string & filename)
 	return devId;
 }
 
-bool DevicesListModel::stopDevice(uint32_t id)
+bool SNDevicesListModel::stopDevice(uint32_t id)
 {
 	bool ret = m_simulate->stopDevice(id);
 	if (!ret)

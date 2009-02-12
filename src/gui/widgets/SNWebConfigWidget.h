@@ -2,7 +2,7 @@
  *   Simunet - Computer Network Simulator                                  *
  *   http://simunet.eu/                                                    *
  *                                                                         *
- *   Copyright (C) 2008 by Miroslav Bendik                                 *
+ *   Copyright (C) 2009 by Miroslav Bendik                                 *
  *   miroslav.bendik@gmail.com                                             *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -20,41 +20,40 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef CFGPERFORMANCE_H
-#define CFGPERFORMANCE_H
+#ifndef WEBCONFIGWIDGET_H
+#define WEBCONFIGWIDGET_H
 
 #include <QWidget>
-#include "SNIcon.h"
-#include "ConfigPanel.h"
+#include <QString>
 
-class QSpinBox;
+class QWebView;
+class QLabel;
+class QSplitter;
 
 /**
  @author Miroslav Bendik <miroslav.bendik@gmail.com>
- @brief Konfiguracia vykonu aplikacie
 */
-class CfgPerformance : public ConfigPanel
+class SNWebConfigWidget : public QWidget
 {
 		Q_OBJECT
 	public:
-		CfgPerformance(QWidget* parent = 0);
-		~CfgPerformance();
-		QString panelName() const;
-		SNIcon icon() const;
-		bool panelChanged();
-		bool panelSelected();
-		void saveChanges();
-
+		SNWebConfigWidget(QWidget* parent = 0);
+		~SNWebConfigWidget();
+		void render(const QString &string);
+	public slots:
+		void setPageTitle(const QString &title);
+		void setUrl(const QString &url);
 	private:
-		void readConfig();
-		bool settingsChanged();
-		void dropChanges();
-
-		QSpinBox *m_threadsCount;
-		int m_sThreadsCount;
-
+		void saveWindowState();
+		void restoreWindowState();
 	private slots:
-		void updateThreads(int newValue);
+		void loadFinished();
+		void addJavascriptObject();
+	private:
+		QSplitter *m_splitter;
+		QWebView *m_view;
+		QLabel *m_titleLabel;
+		QString m_webConfigJs;
 
 };
 

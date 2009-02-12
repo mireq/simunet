@@ -48,57 +48,67 @@ if (NOT QT_QTWEBKIT_FOUND)
 	message(FATAL_ERROR "No QT_QTWEBKIT")
 endif (NOT QT_QTWEBKIT_FOUND)
 
+set (SUBDIRS
+	src
+	src/gui
+	src/gui/dialogs
+	src/gui/widgets)
+
 include_directories(
 	"${PROJECT_BINARY_DIR}"
-	"${CMAKE_CURRENT_SOURCE_DIR}/src"
-	"${CMAKE_CURRENT_BINARY_DIR}/src"
-	"${CMAKE_CURRENT_SOURCE_DIR}/src/gui"
-	"${CMAKE_CURRENT_BINARY_DIR}/src/gui"
 	"${CMAKE_CURRENT_SOURCE_DIR}"
 	"${CMAKE_CURRENT_BINARY_DIR}"
 	${QT_INCLUDES})
-add_definitions(${QT_DEFINITIONS})
+
+foreach(SUBDIR ${SUBDIRS})
+	include_directories(
+		"${CMAKE_CURRENT_SOURCE_DIR}/${SUBDIR}"
+		"${CMAKE_CURRENT_BINARY_DIR}/${SUBDIR}"
+	)
+endforeach(SUBDIR)
+
+#add_definitions(${QT_DEFINITIONS})
 
 # zdrojove kody
 set(simunet_SRCS
 	src/simunet.cpp
-	src/gui/AboutDlg.cpp
-	src/gui/CfgPerformance.cpp
-	src/gui/ConfigPanel.cpp
-	src/gui/ConfigureDlg.cpp
-	src/gui/DevicesListModel.cpp
-	src/gui/DeviceSettingsDlg.cpp
-	src/gui/MainWindow.cpp
-	src/gui/Scene.cpp
-	src/gui/SecondaryWindow.cpp
-	src/gui/SNIcon.cpp
-	src/gui/SNTitleWidget.cpp
-	src/gui/TelnetWidget.cpp
-	src/gui/WebConfigPage.cpp
-	src/gui/WebConfigWidget.cpp)
+	src/gui/dialogs/AboutDlg.cpp
+	src/gui/dialogs/CfgPerformance.cpp
+	src/gui/dialogs/ConfigureDlg.cpp
+	src/gui/dialogs/DeviceSettingsDlg.cpp
+	src/gui/dialogs/MainWindow.cpp
+	src/gui/dialogs/SecondaryWindow.cpp
+	src/gui/widgets/SNConfigPanel.cpp
+	src/gui/widgets/SNDevicesListModel.cpp
+	src/gui/widgets/SNIcon.cpp
+	src/gui/widgets/SNScene.cpp
+	src/gui/widgets/SNTelnetWidget.cpp
+	src/gui/widgets/SNTitleWidget.cpp
+	src/gui/widgets/SNWebConfigPage.cpp
+	src/gui/widgets/SNWebConfigWidget.cpp)
 
 # hlavickove subory ktore musi spracovat moc
 set(simunet_MOC_HDRS
-	src/gui/AboutDlg.h
-	src/gui/CfgPerformance.h
-	src/gui/ConfigPanel.h
-	src/gui/ConfigureDlg.h
-	src/gui/DevicesListModel.h
-	src/gui/DeviceSettingsDlg.h
-	src/gui/MainWindow.h
-	src/gui/Scene.h
-	src/gui/SecondaryWindow.h
-	src/gui/SNTitleWidget.h
-	src/gui/TelnetWidget.h
-	src/gui/WebConfigPage.h
-	src/gui/WebConfigWidget.h)
+	src/gui/dialogs/AboutDlg.h
+	src/gui/dialogs/CfgPerformance.h
+	src/gui/dialogs/ConfigureDlg.h
+	src/gui/dialogs/DeviceSettingsDlg.h
+	src/gui/dialogs/MainWindow.h
+	src/gui/dialogs/SecondaryWindow.h
+	src/gui/widgets/SNConfigPanel.h
+	src/gui/widgets/SNDevicesListModel.h
+	src/gui/widgets/SNScene.h
+	src/gui/widgets/SNTitleWidget.h
+	src/gui/widgets/SNTelnetWidget.h
+	src/gui/widgets/SNWebConfigPage.h
+	src/gui/widgets/SNWebConfigWidget.h)
 
 set(simunet_HDRS
-	src/gui/SNIcon.h)
+	src/gui/widgets/SNIcon.h)
 
 # dialogy
 set(simunet_UIS
-	src/gui/AboutDlg.ui)
+	src/gui/dialogs/AboutDlg.ui)
 
 #ADD_DEPENDENCIES(${LIB} updateEOglext)
 # zdroje
@@ -204,7 +214,6 @@ if("${CMAKE_VERSION}" STRGREATER "2.4")
 		set(CPACK_COMPONENT_INCLUDES_DISPLAY_NAME "Includes")
 		set(CPACK_COMPONENT_INCLUDES_DESCRIPTION
 		  "Header files")
-
 		set(CPACK_COMPONENTS_ALL ${CPACK_COMPONENTS_ALL} app includes)
 		set(CPACK_COMPONENT_APP_HIDDEN ON)
 		set(CPACK_COMPONENT_APP_REQUIRED ON)

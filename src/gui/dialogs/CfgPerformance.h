@@ -20,50 +20,41 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef CONFIGPANEL_H
-#define CONFIGPANEL_H
+#ifndef CFGPERFORMANCE_H
+#define CFGPERFORMANCE_H
 
 #include <QWidget>
 #include "SNIcon.h"
+#include "SNConfigPanel.h"
+
+class QSpinBox;
 
 /**
  @author Miroslav Bendik <miroslav.bendik@gmail.com>
- @brief Konfiguracny panel.
- Od tejto triedy sa odvadzaju jednotlive konfiguracne panely.
+ @brief Konfiguracia vykonu aplikacie
 */
-class ConfigPanel : public QWidget
+class CfgPerformance : public SNConfigPanel
 {
 		Q_OBJECT
 	public:
-		ConfigPanel(QWidget* parent = 0);
-		~ConfigPanel();
+		CfgPerformance(QWidget* parent = 0);
+		~CfgPerformance();
+		QString panelName() const;
+		SNIcon icon() const;
+		bool panelChanged();
+		bool panelSelected();
+		void saveChanges();
 
-/*!
- \brief Nazov panelu zobrazujuci sa v zozname panelov.
-*/
-		virtual QString panelName() const = 0;
+	private:
+		void readConfig();
+		bool settingsChanged();
+		void dropChanges();
 
-/*!
- \brief Ikona konfiguracneho panelu.
- */
-		virtual SNIcon icon() const = 0;
+		QSpinBox *m_threadsCount;
+		int m_sThreadsCount;
 
-/*!
- \brief Ulozenie zmien urobenych v konfiguracnom paneli.
- */
-		virtual void saveChanges() = 0;
-
-/*!
- \brief Tato funkcia vracia true ak uzivatel neklikol na cancel pri prechode na iny panel.
-*/
-		virtual bool panelChanged() {return true;};
-		virtual bool panelSelected() {return true;};
-
-	signals:
-		void info(QString msg, QString comment = QString(), int msecs = 0);
-		void warning(QString msg, QString comment = QString(), int msecs = 0);
-		void error(QString msg, QString comment = QString(), int msecs = 0);
-		void changed(bool);
+	private slots:
+		void updateThreads(int newValue);
 
 };
 

@@ -27,7 +27,7 @@
 #include <QListView>
 #include <QAction>
 #include <QMenu>
-#include "DevicesListModel.h"
+#include "SNDevicesListModel.h"
 #include "DeviceSettingsDlg.h"
 
 SecondaryWindow::SecondaryWindow(QWidget* parent, Qt::WindowFlags flags): QDockWidget(parent, flags), m_list(NULL), m_model(NULL)
@@ -52,7 +52,7 @@ SecondaryWindow::~SecondaryWindow()
 {
 }
 
-void SecondaryWindow::setModel(DevicesListModel *model)
+void SecondaryWindow::setModel(SNDevicesListModel *model)
 {
 	if (m_list == NULL)
 	{

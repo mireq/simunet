@@ -28,13 +28,13 @@
 /**
  @author Miroslav Bendik <miroslav.bendik@gmail.com>
 */
-class WebConfigPage : public QWebPage
+class SNWebConfigPage : public QWebPage
 {
 		Q_OBJECT
 	public:
-		WebConfigPage(QWidget *parent = 0);
+		SNWebConfigPage(QWidget *parent = 0);
 
-		~WebConfigPage();
+		~SNWebConfigPage();
 
 };
 

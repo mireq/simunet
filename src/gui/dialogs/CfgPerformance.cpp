@@ -29,7 +29,7 @@
 #include <QSpinBox>
 #include <QSettings>
 
-CfgPerformance::CfgPerformance(QWidget* parent): ConfigPanel(parent)
+CfgPerformance::CfgPerformance(QWidget* parent): SNConfigPanel(parent)
 {
 	QFormLayout *layout = new QFormLayout(this);
 	m_threadsCount = new QSpinBox();

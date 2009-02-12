@@ -25,7 +25,7 @@
 
 #include <QDockWidget>
 
-class DevicesListModel;
+class SNDevicesListModel;
 class QListView;
 class QTabWidget;
 class QAction;
@@ -40,7 +40,7 @@ class SecondaryWindow : public QDockWidget
 	public:
 		SecondaryWindow(QWidget* parent = 0, Qt::WindowFlags flags = 0);
 		~SecondaryWindow();
-		void setModel(DevicesListModel *model);
+		void setModel(SNDevicesListModel *model);
 
 	private slots:
 		void showContextMenu(const QPoint &point);
@@ -50,7 +50,7 @@ class SecondaryWindow : public QDockWidget
 		QAction *m_settingsAct;
 		QAction *m_deleteAct;
 		QListView *m_list;
-		DevicesListModel *m_model;
+		SNDevicesListModel *m_model;
 		QTabWidget *m_tabWidget;
 
 };

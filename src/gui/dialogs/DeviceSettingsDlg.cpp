@@ -22,8 +22,8 @@
  ***************************************************************************/
 #include "DeviceSettingsDlg.h"
 
-#include "TelnetWidget.h"
-#include "WebConfigWidget.h"
+#include "SNTelnetWidget.h"
+#include "SNWebConfigWidget.h"
 #include <QBoxLayout>
 
 #include <QTabWidget>
@@ -41,8 +41,8 @@ DeviceSettingsDlg::DeviceSettingsDlg(QWidget* parent): QDialog(parent), m_errors
 	m_errorButton = new QPushButton(tr("Show javascript errors"));
 	m_errorsTree = new QTreeWidget;
 	m_splitter = new QSplitter(this);
-	WebConfigWidget *wc = new WebConfigWidget;
-	TelnetWidget *tw = new TelnetWidget;
+	SNWebConfigWidget *wc = new SNWebConfigWidget;
+	SNTelnetWidget *tw = new SNTelnetWidget;
 	QTabWidget *tabs = new QTabWidget;
 	QBoxLayout *layout = new QBoxLayout(QBoxLayout::TopToBottom, this);
 

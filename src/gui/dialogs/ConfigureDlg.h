@@ -20,70 +20,76 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#ifndef CONFIGUREDLG_H
+#define CONFIGUREDLG_H
 
-#include <QMainWindow>
+#include <QDialog>
+#include <QListWidget>
 
-class QAction;
-class QMenu;
-class QActionGroup;
-
-class AboutDlg;
-class ConfigureDlg;
-class DevicesListModel;
-class Scene;
-class SecondaryWindow;
+class SNTitleWidget;
+class QStackedWidget;
+class SNConfigPanel;
+class QDialogButtonBox;
 
 /**
  @author Miroslav Bendik <miroslav.bendik@gmail.com>
- @brief Hlavne okno aplikacie.
+ @brief Konfiguracne okno.
 */
-class MainWindow : public QMainWindow
+class ConfigureDlg : public QDialog
 {
 		Q_OBJECT
 	public:
-		MainWindow(QWidget* parent = 0, Qt::WindowFlags flags = 0);
-		~MainWindow();
+		ConfigureDlg(QWidget* parent = 0, Qt::WindowFlags f = 0);
+		~ConfigureDlg();
+
+/*!
+ \brief Pridanie konfiguracneho panelu
+*/
+		void addPanel(SNConfigPanel *panel);
+
+	public slots:
+/*!
+ \brief Zobrazenie informacie v informacnej casti okna.
+*/
+		void showInfo(const QString &text, int msecs = 0);
+		void showInfo(const QString &text, const QString &comment, int msecs = 0);
+
+/*!
+ \brief Zobrazenie varovania v informacnej casti okna.
+*/
+		void showWarning(const QString &text, int msecs = 0);
+		void showWarning(const QString &text, const QString &comment, int msecs = 0);
+
+/*!
+ \brief Zobrazenie chyby v informacnej casti okna.
+*/
+		void showError(const QString &text, int msecs = 0);
+		void showError(const QString &text, const QString &comment, int msecs = 0);
 
 	protected:
-		void setupVariables();
-		void setupUi();
-		void setupToolBars();
-		void setupScene();
-		void setupSecondaryWindow();
-		void setupActions();
-		void setupMenus();
-		void restoreWindowState();
-		void saveWindowState();
-
-	protected slots:
-		void about();
-		void configure();
-		void sceneNavigationModeActionTriggered(QAction *);
+		void closeEvent(QCloseEvent *e);
+		void showEvent(QShowEvent *e);
 
 	private:
-		DevicesListModel *m_devicesModel;
-		Scene *m_scene;
-		//menu
-		QMenu *m_fileMenu;
-		QMenu *m_settingsMenu;
-		QMenu *m_helpMenu;
+		void showMsg(const QString &text, const QString &comment, int msecs);
+		void connectPanel(SNConfigPanel *panel);
+		void disconnectPanel(SNConfigPanel *panel);
+		SNConfigPanel *currentPanel();
 
-		// akcie
-		QAction *m_quitAct;
-		QAction *m_configureAct;
-		QAction *m_aboutAct;
-		// navigateToolBar
-		QToolBar *m_navigateToolBar;
-		QActionGroup *m_navigateGroup;
-		QAction *m_navigateRotateAct;
-		QAction *m_navigateMoveAct;
+		SNTitleWidget *m_titleWidget;
+		QListWidget *m_panelsList;
+		QStackedWidget *m_panel;
+		QDialogButtonBox *m_buttons;
 
-		// okna
-		AboutDlg *m_aboutDlg;
-		ConfigureDlg *m_configureDlg;
-		SecondaryWindow *m_toolWindow;
+		QListWidgetItem *m_currentItem;
+		QListWidgetItem *m_previousItem;
+
+	private slots:
+		void listSelectionChanged();
+		void onOkClicked();
+		void onCancelClicked();
+		void onApplyClicked();
+
 };
 
 #endif

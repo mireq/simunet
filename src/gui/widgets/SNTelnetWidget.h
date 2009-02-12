@@ -2,7 +2,7 @@
  *   Simunet - Computer Network Simulator                                  *
  *   http://simunet.eu/                                                    *
  *                                                                         *
- *   Copyright (C) 2008 by Miroslav Bendik                                 *
+ *   Copyright (C) 2009 by Miroslav Bendik                                 *
  *   miroslav.bendik@gmail.com                                             *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -20,76 +20,38 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef CONFIGUREDLG_H
-#define CONFIGUREDLG_H
+#ifndef TELNETWIDGET_H
+#define TELNETWIDGET_H
 
-#include <QDialog>
-#include <QListWidget>
+#include <QWidget>
+#include <QTextCharFormat>
 
-class SNTitleWidget;
-class QStackedWidget;
-class ConfigPanel;
-class QDialogButtonBox;
+class QPlainTextEdit;
+class SNTelnetEventFilter;
 
 /**
  @author Miroslav Bendik <miroslav.bendik@gmail.com>
- @brief Konfiguracne okno.
 */
-class ConfigureDlg : public QDialog
+class SNTelnetWidget : public QWidget
 {
 		Q_OBJECT
 	public:
-		ConfigureDlg(QWidget* parent = 0, Qt::WindowFlags f = 0);
-		~ConfigureDlg();
-
-/*!
- \brief Pridanie konfiguracneho panelu
-*/
-		void addPanel(ConfigPanel *panel);
-
+		SNTelnetWidget(QWidget* parent = 0);
+		~SNTelnetWidget();
 	public slots:
-/*!
- \brief Zobrazenie informacie v informacnej casti okna.
-*/
-		void showInfo(const QString &text, int msecs = 0);
-		void showInfo(const QString &text, const QString &comment, int msecs = 0);
-
-/*!
- \brief Zobrazenie varovania v informacnej casti okna.
-*/
-		void showWarning(const QString &text, int msecs = 0);
-		void showWarning(const QString &text, const QString &comment, int msecs = 0);
-
-/*!
- \brief Zobrazenie chyby v informacnej casti okna.
-*/
-		void showError(const QString &text, int msecs = 0);
-		void showError(const QString &text, const QString &comment, int msecs = 0);
-
+		void write(const QString &text);
 	protected:
-		void closeEvent(QCloseEvent *e);
-		void showEvent(QShowEvent *e);
-
+		void showEvent(QShowEvent *event);
+		void sendLineEvent(char controlChar);
 	private:
-		void showMsg(const QString &text, const QString &comment, int msecs);
-		void connectPanel(ConfigPanel *panel);
-		void disconnectPanel(ConfigPanel *panel);
-		ConfigPanel *currentPanel();
-
-		SNTitleWidget *m_titleWidget;
-		QListWidget *m_panelsList;
-		QStackedWidget *m_panel;
-		QDialogButtonBox *m_buttons;
-
-		QListWidgetItem *m_currentItem;
-		QListWidgetItem *m_previousItem;
-
-	private slots:
-		void listSelectionChanged();
-		void onOkClicked();
-		void onCancelClicked();
-		void onApplyClicked();
-
+		const char *getControlChars() const;
+		bool eventFilter(QObject *obj, QEvent *event);
+		QFont m_font;
+		QTextCharFormat m_format;
+		QPlainTextEdit *m_document;
+		QString m_currentLine;
+		friend class SNTelnetEventFilter;
 };
+
 
 #endif

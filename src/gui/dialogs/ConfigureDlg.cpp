@@ -20,7 +20,7 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#include "ConfigPanel.h"
+#include "SNConfigPanel.h"
 #include "ConfigureDlg.h"
 #include "SNTitleWidget.h"
 
@@ -79,7 +79,7 @@ ConfigureDlg::~ConfigureDlg()
 {
 }
 
-void ConfigureDlg::addPanel(ConfigPanel *panel)
+void ConfigureDlg::addPanel(SNConfigPanel *panel)
 {
 	QListWidgetItem *newItem = new QListWidgetItem();
 	newItem->setData(Qt::DisplayRole, panel->panelName());
@@ -136,7 +136,7 @@ void ConfigureDlg::closeEvent(QCloseEvent *e)
 	{
 		return;
 	}
-	ConfigPanel *panel = static_cast<ConfigPanel *>(w);
+	SNConfigPanel *panel = static_cast<SNConfigPanel *>(w);
 	if (!panel->panelChanged())
 	{
 		e->ignore();
@@ -161,7 +161,7 @@ void ConfigureDlg::showMsg(const QString &text, const QString &comment, int msec
 	m_titleWidget->setHideTimeout(msecs);
 }
 
-void ConfigureDlg::connectPanel(ConfigPanel *panel)
+void ConfigureDlg::connectPanel(SNConfigPanel *panel)
 {
 	connect(panel, SIGNAL(info(QString, QString, int)), SLOT(showInfo(QString, QString, int)));
 	connect(panel, SIGNAL(warning(QString, QString, int)), SLOT(showWarning(QString, QString, int)));
@@ -169,14 +169,14 @@ void ConfigureDlg::connectPanel(ConfigPanel *panel)
 	connect(panel, SIGNAL(changed(bool)), m_buttons->button(QDialogButtonBox::Apply), SLOT(setEnabled(bool)));
 }
 
-void ConfigureDlg::disconnectPanel(ConfigPanel *panel)
+void ConfigureDlg::disconnectPanel(SNConfigPanel *panel)
 {
 	panel->disconnect();
 }
 
-ConfigPanel *ConfigureDlg::currentPanel()
+SNConfigPanel *ConfigureDlg::currentPanel()
 {
-	return static_cast<ConfigPanel *>(m_panel->currentWidget());
+	return static_cast<SNConfigPanel *>(m_panel->currentWidget());
 }
 
 void ConfigureDlg::listSelectionChanged()
@@ -194,7 +194,7 @@ void ConfigureDlg::listSelectionChanged()
 	if (pom != NULL)
 	{
 		int prevRow = m_panelsList->row(pom);
-		ConfigPanel *panel = static_cast<ConfigPanel *>(m_panel->widget(prevRow));
+		SNConfigPanel *panel = static_cast<SNConfigPanel *>(m_panel->widget(prevRow));
 		changePanel = panel->panelChanged();
 	}
 
@@ -204,12 +204,12 @@ void ConfigureDlg::listSelectionChanged()
 		if (pom != NULL)
 		{
 			int prevRow = m_panelsList->row(pom);
-			ConfigPanel *prevPanel = static_cast<ConfigPanel *>(m_panel->widget(prevRow));
+			SNConfigPanel *prevPanel = static_cast<SNConfigPanel *>(m_panel->widget(prevRow));
 			disconnectPanel(prevPanel);
 		}
 
 		int currRow = m_panelsList->row(m_currentItem);
-		ConfigPanel *panel = static_cast<ConfigPanel *>(m_panel->widget(currRow));
+		SNConfigPanel *panel = static_cast<SNConfigPanel *>(m_panel->widget(currRow));
 		connectPanel(panel);
 		panel->panelSelected();
 		m_panel->setCurrentIndex(currRow);

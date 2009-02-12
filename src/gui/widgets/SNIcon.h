@@ -2,7 +2,7 @@
  *   Simunet - Computer Network Simulator                                  *
  *   http://simunet.eu/                                                    *
  *                                                                         *
- *   Copyright (C) 2009 by Miroslav Bendik                                 *
+ *   Copyright (C) 2008 by Miroslav Bendik                                 *
  *   miroslav.bendik@gmail.com                                             *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -20,41 +20,29 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef WEBCONFIGWIDGET_H
-#define WEBCONFIGWIDGET_H
+#ifndef SNICON_H
+#define SNICON_H
 
-#include <QWidget>
-#include <QString>
-
-class QWebView;
-class QLabel;
-class QSplitter;
+#include <QIcon>
 
 /**
  @author Miroslav Bendik <miroslav.bendik@gmail.com>
+ @brief Trieda pouzitelna ako nahrada QIcon (kvoli kompatibilite s KDE).
 */
-class WebConfigWidget : public QWidget
+class SNIcon : public QIcon
 {
-		Q_OBJECT
 	public:
-		WebConfigWidget(QWidget* parent = 0);
-		~WebConfigWidget();
-		void render(const QString &string);
-	public slots:
-		void setPageTitle(const QString &title);
-		void setUrl(const QString &url);
+/*!
+ \brief Konstruktor vytvarajuci ikonu.
+ \param QString Nazov ikony
+ Nazov ikony sa zadava bez uvodneho : a pripony (.png). Nazvy su
+ kompatibilne s KDE4. V pripade, ze sa ziadana ikona nenajde nacita sa
+ unknown.png.
+*/
+		SNIcon(const QString& name, bool showUnknownIcon = true);
+		virtual ~SNIcon();
 	private:
-		void saveWindowState();
-		void restoreWindowState();
-	private slots:
-		void loadFinished();
-		void addJavascriptObject();
-	private:
-		QSplitter *m_splitter;
-		QWebView *m_view;
-		QLabel *m_titleLabel;
-		QString m_webConfigJs;
-
+		static const int m_size[7];
 };
 
 #endif

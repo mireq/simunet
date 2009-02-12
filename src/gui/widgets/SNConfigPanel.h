@@ -2,7 +2,7 @@
  *   Simunet - Computer Network Simulator                                  *
  *   http://simunet.eu/                                                    *
  *                                                                         *
- *   Copyright (C) 2009 by Miroslav Bendik                                 *
+ *   Copyright (C) 2008 by Miroslav Bendik                                 *
  *   miroslav.bendik@gmail.com                                             *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -20,32 +20,50 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef DEVICESLISTMODEL_H
-#define DEVICESLISTMODEL_H
+#ifndef CONFIGPANEL_H
+#define CONFIGPANEL_H
 
-#include <QAbstractListModel>
-#include <QVector>
-#include <string>
-
-class SNSimulate;
+#include <QWidget>
+#include "SNIcon.h"
 
 /**
  @author Miroslav Bendik <miroslav.bendik@gmail.com>
+ @brief Konfiguracny panel.
+ Od tejto triedy sa odvadzaju jednotlive konfiguracne panely.
 */
-class DevicesListModel : public QAbstractListModel
+class SNConfigPanel : public QWidget
 {
 		Q_OBJECT
 	public:
-		DevicesListModel(QObject* parent = 0);
-		~DevicesListModel();
+		SNConfigPanel(QWidget* parent = 0);
+		~SNConfigPanel();
 
-		int rowCount(const QModelIndex &parent = QModelIndex()) const;
-		QVariant data(const QModelIndex &index, int role) const;
-		uint32_t startDevice(const std::string &filename);
-		bool stopDevice(uint32_t id);
-	private:
-		QVector<uint32_t> m_deviceIds;
-		SNSimulate *m_simulate;
+/*!
+ \brief Nazov panelu zobrazujuci sa v zozname panelov.
+*/
+		virtual QString panelName() const = 0;
+
+/*!
+ \brief Ikona konfiguracneho panelu.
+ */
+		virtual SNIcon icon() const = 0;
+
+/*!
+ \brief Ulozenie zmien urobenych v konfiguracnom paneli.
+ */
+		virtual void saveChanges() = 0;
+
+/*!
+ \brief Tato funkcia vracia true ak uzivatel neklikol na cancel pri prechode na iny panel.
+*/
+		virtual bool panelChanged() {return true;};
+		virtual bool panelSelected() {return true;};
+
+	signals:
+		void info(QString msg, QString comment = QString(), int msecs = 0);
+		void warning(QString msg, QString comment = QString(), int msecs = 0);
+		void error(QString msg, QString comment = QString(), int msecs = 0);
+		void changed(bool);
 
 };
 

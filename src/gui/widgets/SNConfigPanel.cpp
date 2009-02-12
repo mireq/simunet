@@ -20,25 +20,16 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#include "SNIcon.h"
-#include <QFile>
+#include "SNConfigPanel.h"
 
-SNIcon::SNIcon(const QString& name)
-{
-	QString nName = QString(":") + name + QString(".png");
-	if (QFile::exists(nName))
-	{
-		addFile(nName);
-	}
-	else
-	{
-		addFile(":unknown.png");
-	}
-}
-
-
-SNIcon::~SNIcon()
+SNConfigPanel::SNConfigPanel(QWidget* parent): QWidget(parent)
 {
 }
+
+
+SNConfigPanel::~SNConfigPanel()
+{
+}
+
 
 
