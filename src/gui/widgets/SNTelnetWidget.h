@@ -20,14 +20,13 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef TELNETWIDGET_H
-#define TELNETWIDGET_H
+#ifndef SNTELNETWIDGET_H
+#define SNTELNETWIDGET_H
 
 #include <QWidget>
 #include <QTextCharFormat>
 
 class QPlainTextEdit;
-class SNTelnetEventFilter;
 
 /**
  @author Miroslav Bendik <miroslav.bendik@gmail.com>
@@ -50,7 +49,6 @@ class SNTelnetWidget : public QWidget
 		QTextCharFormat m_format;
 		QPlainTextEdit *m_document;
 		QString m_currentLine;
-		friend class SNTelnetEventFilter;
 };
 
 

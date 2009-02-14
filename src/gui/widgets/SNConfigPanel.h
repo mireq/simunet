@@ -20,8 +20,8 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef CONFIGPANEL_H
-#define CONFIGPANEL_H
+#ifndef SNCONFIGPANEL_H
+#define SNCONFIGPANEL_H
 
 #include <QWidget>
 #include "SNIcon.h"

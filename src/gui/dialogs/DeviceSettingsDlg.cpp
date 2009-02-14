@@ -32,31 +32,47 @@
 #include <QTreeWidget>
 #include <QSplitter>
 #include <QSettings>
+#include <QStatusTipEvent>
+#include <QWebView>
+#include <QProgressBar>
 
 #include <QDebug>
 
-DeviceSettingsDlg::DeviceSettingsDlg(QWidget* parent): QDialog(parent), m_errorsVisible(false)
+DeviceSettingsDlg::DeviceSettingsDlg(QWidget* parent): QDialog(parent), m_errorsVisible(false), m_loadProgressVisible(false)
 {
 	m_statusBar = new QStatusBar;
 	m_errorButton = new QPushButton(tr("Show javascript errors"));
+	m_loadProgress = new QProgressBar;
 	m_errorsTree = new QTreeWidget;
-	m_splitter = new QSplitter(this);
-	SNWebConfigWidget *wc = new SNWebConfigWidget;
+	m_webConfig = new SNWebConfigWidget;
 	SNTelnetWidget *tw = new SNTelnetWidget;
 	QTabWidget *tabs = new QTabWidget;
 	QBoxLayout *layout = new QBoxLayout(QBoxLayout::TopToBottom, this);
 
+	m_loadProgress->setFixedWidth(150);
+	m_loadProgress->hide();
+	m_statusBar->addPermanentWidget(m_loadProgress);
 	m_statusBar->addPermanentWidget(m_errorButton);
+	connect(m_webConfig, SIGNAL(jsErrorsAvitable(bool)), SLOT(setErrorsAvitable(bool)));
+	connect(m_webConfig->page(), SIGNAL(linkHovered(QString, QString, QString)), SLOT(showWebLink(QString, QString, QString)));
+	connect(m_webConfig->page(), SIGNAL(loadStarted()), SLOT(showProgressBar()));
+	connect(m_webConfig->page(), SIGNAL(loadFinished(bool)), SLOT(hideProgressBar()));
+	connect(m_webConfig->page(), SIGNAL(loadProgress(int)), SLOT(setProgress(int)));
 
-	m_splitter->setOrientation(Qt::Vertical);
-	tabs->addTab(wc, tr("Web config"));
+	if (m_webConfig->errorsCount() == 0)
+	{
+		setErrorsAvitable(false);
+	}
+	else
+	{
+		setErrorsAvitable(true);
+	}
+
+	tabs->addTab(m_webConfig, tr("Web config"));
 	tabs->addTab(tw, tr("Telnet"));
 
-	m_splitter->addWidget(tabs);
-	m_splitter->addWidget(m_errorsTree);
-	m_splitter->setCollapsible(0, false);
 	layout->setMargin(0);
-	layout->addWidget(m_splitter);
+	layout->addWidget(tabs);
 	layout->addWidget(m_statusBar, 0);
 
 	m_errorsTree->hide();
@@ -64,7 +80,7 @@ DeviceSettingsDlg::DeviceSettingsDlg(QWidget* parent): QDialog(parent), m_errors
 	restoreWindowState();
 
 	connect(tabs, SIGNAL(currentChanged(int)), SLOT(currentTabItemChanged(int)));
-	connect(m_errorButton, SIGNAL(clicked()), SLOT(showJsErrors()));
+	connect(m_errorButton, SIGNAL(clicked()), SLOT(switchJsErrors()));
 }
 
 
@@ -78,14 +94,24 @@ QStatusBar *DeviceSettingsDlg::statusBar()
 	return m_statusBar;
 }
 
+bool DeviceSettingsDlg::event(QEvent *event)
+{
+	if (event->type() == QEvent::StatusTip)
+	{
+		m_statusBar->showMessage(static_cast<QStatusTipEvent *>(event)->tip());
+		return true;
+	}
+	return QDialog::event(event);
+}
+
 void DeviceSettingsDlg::saveWindowState()
 {
+	if (size() == m_initialSize)
+	{
+		return;
+	}
 	QSettings settings;
 	settings.beginGroup("DeviceSettingsWindow");
-	if (m_errorsVisible)
-	{
-		settings.setValue("hsplitterstate", m_splitter->saveState());
-	}
 	settings.setValue("size", size());
 	settings.endGroup();
 }
@@ -94,8 +120,8 @@ void DeviceSettingsDlg::restoreWindowState()
 {
 	QSettings settings;
 	settings.beginGroup("DeviceSettingsWindow");
-	resize(settings.value("size", QSize(500, 400)).toSize());
-	m_splitter->restoreState(settings.value("hsplitterstate").toByteArray());
+	m_initialSize = settings.value("size", QSize(500, 400)).toSize();
+	resize(m_initialSize);
 	settings.endGroup();
 }
 
@@ -104,31 +130,80 @@ void DeviceSettingsDlg::currentTabItemChanged(int index)
 	if (index == 0)
 	{
 		m_statusBar->show();
-		m_errorsTree->show();
 	}
 	else
 	{
 		m_statusBar->hide();
-		m_errorsTree->hide();
+	}
+}
+
+void DeviceSettingsDlg::switchJsErrors()
+{
+	if (m_errorsVisible)
+	{
+		hideJsErrors();
+	}
+	else
+	{
+		showJsErrors();
 	}
 }
 
 void DeviceSettingsDlg::showJsErrors()
 {
-	if (m_errorsVisible)
+	m_webConfig->setErrorsVisible(true);
+	m_errorsVisible = true;
+}
+
+void DeviceSettingsDlg::hideJsErrors()
+{
+	m_webConfig->setErrorsVisible(false);
+	m_errorsVisible = false;
+}
+
+
+void DeviceSettingsDlg::setErrorsAvitable(bool avitable)
+{
+	m_errorButton->setVisible(avitable);
+	if (!avitable)
 	{
-		QSettings settings;
-		settings.beginGroup("DeviceSettingsWindow");
-		settings.setValue("hsplitterstate", m_splitter->saveState());
-		settings.endGroup();
-		m_errorsTree->hide();
-		m_errorsVisible = false;
+		hideJsErrors();
+	}
+}
+
+void DeviceSettingsDlg::showWebLink(const QString &link, const QString &title, const QString &content)
+{
+	if (!title.isNull())
+	{
+		m_statusBar->showMessage(title + QString(":") + link);
 	}
 	else
 	{
-		m_errorsTree->show();
-		m_errorsVisible = true;
+		m_statusBar->showMessage(link);
 	}
 }
+
+
+void DeviceSettingsDlg::setProgress(int progress)
+{
+	if (!m_loadProgressVisible)
+	{
+		showProgressBar();
+	}
+	m_loadProgress->setValue(progress);
+}
+
+void DeviceSettingsDlg::showProgressBar()
+{
+	m_loadProgress->show();
+	m_loadProgressVisible = true;
+}
+
+void DeviceSettingsDlg::hideProgressBar()
+{
+	m_loadProgress->hide();
+	m_loadProgressVisible = false;
+}
+
 
 

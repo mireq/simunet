@@ -20,8 +20,8 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef WEBCONFIGPAGE_H
-#define WEBCONFIGPAGE_H
+#ifndef SNWEBCONFIGPAGE_H
+#define SNWEBCONFIGPAGE_H
 
 #include <QWebPage>
 
@@ -33,8 +33,12 @@ class SNWebConfigPage : public QWebPage
 		Q_OBJECT
 	public:
 		SNWebConfigPage(QWidget *parent = 0);
-
 		~SNWebConfigPage();
+	protected:
+		void javaScriptConsoleMessage(const QString &message, int lineNumber, const QString &sourceID);
+		bool acceptNavigationRequest(QWebFrame *frame, const QNetworkRequest &request, NavigationType type);
+	signals:
+		void javaScriptError(QString, int);
 
 };
 

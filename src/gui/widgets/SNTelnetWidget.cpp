@@ -34,6 +34,7 @@
 
 SNTelnetWidget::SNTelnetWidget(QWidget* parent): QWidget(parent)
 {
+	setObjectName("TelnetConfig");
 	m_font.setFamily("courier");
 	m_font.setStyleHint(QFont::Courier);
 	m_format.setFont(m_font);
@@ -94,11 +95,8 @@ bool SNTelnetWidget::eventFilter(QObject *obj, QEvent *event)
 		int key = ev->key();
 
 		m_document->textCursor().clearSelection();
-		if (!m_document->textCursor().atEnd())
-		{
-			m_document->moveCursor(QTextCursor::End);
-			m_document->ensureCursorVisible();
-		}
+		m_document->moveCursor(QTextCursor::End);
+		m_document->ensureCursorVisible();
 		if (key == Qt::Key_Up || key == Qt::Key_Down)
 		{
 			return true;

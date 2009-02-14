@@ -6,15 +6,35 @@
   <title>Settings</title>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 </head>
-<body>
+<div>
 <h1>Tralala</h1>
-<ul id="menu">
-  <li><a href="eee">Položka</a></li>
-  <li><a href="uuu?ee">Položka</a>
-    <ul>
-      <li><a href="grr">Podpoložka</a></li>
+<div id="page">
+  <div id="left">
+    <ul id="menu">
+      <li><a href="http://google.com" title="eee">Položka</a></li>
+      <li><a href="uuu?ee">Položka</a>
+        <ul>
+          <li class="selected">
+            <a href="grr">Podpoložka</a>
+            <ul>
+              <li><a href="aaa">podpodpoložka</a></li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+      <li>
+        <a href="eee">Položka</a>
+        <ul>
+          <li><a href="tfafda">podpoložka</a></li>
+          <li><a href="tfafda">podpoložka</a></li>
+          <li><a href="tfafda">podpoložka</a></li>
+        </ul>
+      </li>
     </ul>
-  </li>
-</ul>
+  </div>
+  <div id="main" class="main">
+    <p>text</p>
+  </div>
+</div>
 </body>
 </html>

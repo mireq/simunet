@@ -25,10 +25,12 @@
 
 #include <QDialog>
 
+class SNWebConfigWidget;
 class QStatusBar;
 class QPushButton;
 class QTreeWidget;
 class QSplitter;
+class QProgressBar;
 
 /**
  @author Miroslav Bendik <miroslav.bendik@gmail.com>
@@ -40,18 +42,30 @@ class DeviceSettingsDlg : public QDialog
 		DeviceSettingsDlg(QWidget* parent = 0);
 		~DeviceSettingsDlg();
 		QStatusBar *statusBar();
+	protected:
+		bool event(QEvent *event);
 	private:
 		void saveWindowState();
 		void restoreWindowState();
 	private slots:
 		void currentTabItemChanged(int index);
+		void switchJsErrors();
 		void showJsErrors();
+		void hideJsErrors();
+		void setErrorsAvitable(bool avitable);
+		void showWebLink(const QString &link, const QString &title, const QString &content);
+		void setProgress(int progress);
+		void showProgressBar();
+		void hideProgressBar();
 	private:
 		QStatusBar *m_statusBar;
 		QPushButton *m_errorButton;
 		QTreeWidget *m_errorsTree;
-		QSplitter *m_splitter;
+		QSize m_initialSize;
 		bool m_errorsVisible;
+		bool m_loadProgressVisible;
+		SNWebConfigWidget *m_webConfig;
+		QProgressBar *m_loadProgress;
 };
 
 #endif

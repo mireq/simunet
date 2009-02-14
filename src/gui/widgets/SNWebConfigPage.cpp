@@ -22,14 +22,34 @@
  ***************************************************************************/
 #include "SNWebConfigPage.h"
 
+#include <QWebSettings>
+#include <QUrl>
+
+#include <QNetworkRequest>
+#include <QDebug>
+
 SNWebConfigPage::SNWebConfigPage(QWidget *parent)
 		: QWebPage(parent)
 {
+	settings()->setUserStyleSheetUrl(QUrl("qrc:/web/webstyle.css"));
+	//setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
 }
 
 
 SNWebConfigPage::~SNWebConfigPage()
 {
+}
+
+void SNWebConfigPage::javaScriptConsoleMessage(const QString &message, int lineNumber, const QString &sourceID)
+{
+	emit javaScriptError(message, lineNumber);
+}
+
+bool SNWebConfigPage::acceptNavigationRequest(QWebFrame *frame, const QNetworkRequest &request, NavigationType type)
+{
+	qDebug()<<request.url();
+	//return true;
+	return QWebPage::acceptNavigationRequest(frame, request, type);
 }
 
 

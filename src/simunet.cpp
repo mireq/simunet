@@ -27,6 +27,7 @@
 #include <QPushButton>
 #include <QTranslator>
 #include <QLocale>
+#include <QFile>
 
 #include "MainWindow.h"
 
@@ -34,6 +35,12 @@ int main(int argc, char *argv[])
 {
 	QApplication app(argc, argv);
 
+	/*QFile cssFile(":guiStyle.css");
+	if (cssFile.open(QIODevice::ReadOnly | QIODevice::Text))
+	{
+		app.setStyleSheet(cssFile.readAll());
+		cssFile.close();
+	}*/
 	QCoreApplication::setOrganizationName("SimuNet");
 	QCoreApplication::setOrganizationDomain("simunet.eu");
 	QCoreApplication::setApplicationName("SimuNet");

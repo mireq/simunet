@@ -20,8 +20,8 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef SCENE_H
-#define SCENE_H
+#ifndef SNSCENE_H
+#define SNSCENE_H
 
 #include <QGraphicsScene>
 #include <QtOpenGL>
