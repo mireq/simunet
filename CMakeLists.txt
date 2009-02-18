@@ -24,6 +24,13 @@ find_package(Qt4 REQUIRED)
 find_package(PythonLibs REQUIRED)
 include_directories(${PYTHON_INCLUDE_PATH})
 
+# vyzadujeme OpenSSL
+find_library(OPENSSL_LIBSSL NAMES ssl ssleay32)
+if (OPENSSL_LIBSSL)
+	set(OPENSSL_LIBRARIES ${OPENSSL_LIBSSL})
+else (OPENSSL_LIBSSL)
+	message(FATAL_ERROR "Could not find libssl.")
+endif(OPENSSL_LIBSSL)
 
 set (simunet_VERSION_MAJOR 0)
 set (simunet_VERSION_MINOR 1)
@@ -129,7 +136,9 @@ set(core_SRCS
 	src/core/SNDevice.cpp
 	src/core/SNExceptions.cpp
 	src/core/SNSimulate.cpp
-	src/core/SNSimulateHelper.cpp)
+	src/core/SNSimulateHelper.cpp
+	src/core/SNBloat.cpp
+	src/core/SNBloatList.cpp)
 
 set(core_HDRS
 	src/core/PyCPPObject.h
@@ -137,7 +146,9 @@ set(core_HDRS
 	src/core/SNDevice.h
 	src/core/SNExceptions.h
 	src/core/SNSimulate.h
-	src/core/SNSimulateHelper.h)
+	src/core/SNSimulateHelper.h
+	src/core/SNBloat.h
+	src/core/SNBloatList.h)
 
 qt4_wrap_cpp(simunet_MOC_SIMULATE_HELPER src/core/SNSimulateHelper.h)
 qt4_wrap_cpp(simunet_MOC_SRCS ${simunet_MOC_HDRS})
