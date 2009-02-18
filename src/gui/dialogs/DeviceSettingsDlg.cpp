@@ -35,6 +35,7 @@
 #include <QStatusTipEvent>
 #include <QWebView>
 #include <QProgressBar>
+#include <QGridLayout>
 
 #include <QDebug>
 
@@ -71,8 +72,12 @@ DeviceSettingsDlg::DeviceSettingsDlg(QWidget* parent): QDialog(parent), m_errors
 	tabs->addTab(m_webConfig, tr("Web config"));
 	tabs->addTab(tw, tr("Telnet"));
 
+	int margin = layout->margin();
+	QGridLayout *tabLayout = new QGridLayout();
+	tabLayout->setMargin(margin);
+	tabLayout->addWidget(tabs);
 	layout->setMargin(0);
-	layout->addWidget(tabs);
+	layout->addLayout(tabLayout);
 	layout->addWidget(m_statusBar, 0);
 
 	m_errorsTree->hide();
