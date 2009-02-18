@@ -23,7 +23,6 @@
 #ifndef SNBLOAT_H
 #define SNBLOAT_H
 
-#include <ctime>
 #include <cstring>
 #include <cstdio>
 #include <string>
@@ -56,26 +55,22 @@ class SNBloat
 		
     private:
         std::string fname;
-        FILE *s;
-        time_t lastRead;
         std::map <std::string,SNBloatIndexObject> bloatmap;
         uint16_t majorVersion,minorVersion;
         uint32_t numFiles;
-        SHA512_CTX ctx;
-        bool calcSum;
         std::string description;
         uint32_t purpose;
         
-        uint8_t read_uint8_t(void);
-        uint16_t read_uint16_t(void);
-        uint32_t read_uint24_t(void);
-        uint32_t read_uint32_t(void);
-        void read_chars(char *buffer, size_t size);
-        void read_buffer(void *buffer, size_t size);
+        uint8_t read_uint8_t(FILE *s,SHA512_CTX *ctx=NULL);
+        uint16_t read_uint16_t(FILE *s,SHA512_CTX *ctx=NULL);
+        uint32_t read_uint24_t(FILE *s,SHA512_CTX *ctx=NULL);
+        uint32_t read_uint32_t(FILE *s,SHA512_CTX *ctx=NULL);
+        void read_chars(FILE *s,char *buffer,size_t size,SHA512_CTX *ctx=NULL);
+        void read_buffer(FILE *s,void *buffer,size_t size,SHA512_CTX *ctx=NULL);
         
-        void write_uint8_t(uint8_t n);
-        void write_uint16_t(uint16_t n);
-        void write_uint24_t(uint32_t n);
-        void write_uint32_t(uint32_t n);
+        void write_uint8_t(FILE *s,uint8_t n,SHA512_CTX *ctx=NULL);
+        void write_uint16_t(FILE *s,uint16_t n,SHA512_CTX *ctx=NULL);
+        void write_uint24_t(FILE *s,uint32_t n,SHA512_CTX *ctx=NULL);
+        void write_uint32_t(FILE *s,uint32_t n,SHA512_CTX *ctx=NULL);
 };
 #endif

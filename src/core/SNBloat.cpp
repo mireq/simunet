@@ -62,88 +62,82 @@ SNBloat::SNBloat(const std::string filename)
 {
     fname=filename;
     bloatmap.clear();
-    s=NULL;
-    lastRead=0;
-    calcSum=false;
 }
 
 SNBloat::~SNBloat()
 {
-    if(s!=NULL){
-        fclose(s);
-    }
 }
 
 bool SNBloat::openForReading(void)
 {
+    FILE *s=NULL;
     try{
         s=fopen(fname.c_str(),"rb");
         if(s==NULL) throw;
         
         char buffer[0x10000];
         char buffer2[0x10000];
-        uint16_t l=read_uint16_t();
+        uint16_t l;
         
+        SHA512_CTX ctx;
         SHA512_Init(&ctx);
-        calcSum=true;
         
         /* ID */
-        read_chars(buffer,strlen(SIMUNETBLOAT_ID));
+        read_chars(s,buffer,strlen(SIMUNETBLOAT_ID),&ctx);
         if(strcmp(buffer,SIMUNETBLOAT_ID)) throw;
         
         /* Version */
-        majorVersion=read_uint16_t();
-        minorVersion=read_uint16_t();
+        majorVersion=read_uint16_t(s,&ctx);
+        minorVersion=read_uint16_t(s,&ctx);
         
         /* Bitmap containing purpose of this file */
-        purpose=read_uint32_t();
+        purpose=read_uint32_t(s,&ctx);
         
         /* Get and move to header position */
-        uint32_t pos=read_uint32_t();
+        uint32_t pos=read_uint32_t(s,&ctx);
         if(fseek(s,pos,SEEK_SET)!=0) throw;
         
         /* HeadID */
-        read_chars(buffer,strlen(SIMUNETBLOATHEAD_ID));
+        read_chars(s,buffer,strlen(SIMUNETBLOATHEAD_ID),&ctx);
         if(strcmp(buffer,SIMUNETBLOATHEAD_ID)) throw;
         
         /* Read description */
-        l=read_uint16_t();
-        read_chars(buffer,l);
+        l=read_uint16_t(s,&ctx);
+        read_chars(s,buffer,l,&ctx);
         description=buffer;
         
         /* Multiple SNBloatIndexObjects */
-        numFiles=read_uint32_t();
+        numFiles=read_uint32_t(s,&ctx);
         for(uint32_t i=0;i<numFiles;i++){
-            l=read_uint16_t();
+            l=read_uint16_t(s,&ctx);
             if(l>SIMUNETBLOAT_MAX_FILENAME_LENGTH) throw;
-            read_chars(buffer,l);
+            read_chars(s,buffer,l,&ctx);
             
             SNBloatIndexObject o;
             o.virtfilename=buffer;
-            o.size=read_uint32_t();
-            o.position=read_uint32_t();
+            o.size=read_uint32_t(s,&ctx);
+            o.position=read_uint32_t(s,&ctx);
             
-            read_buffer(o.sum,SHA512_DIGEST_LENGTH);
+            read_buffer(s,o.sum,SHA512_DIGEST_LENGTH,&ctx);
             
             /* Load variables for this bloatobject */
-            uint16_t x=read_uint16_t();
+            uint16_t x=read_uint16_t(s,&ctx);
             for(uint16_t j=0;j<x;j++){
-                l=read_uint16_t();
-                read_chars(buffer,l);
-                l=read_uint16_t();
-                read_chars(buffer2,l);
+                l=read_uint16_t(s,&ctx);
+                read_chars(s,buffer,l,&ctx);
+                l=read_uint16_t(s,&ctx);
+                read_chars(s,buffer2,l,&ctx);
                 o.vars[buffer]=buffer2;
             }
             
             bloatmap[o.virtfilename]=o;
         }
         
-        calcSum=false;
         SHA512_Final((unsigned char *)buffer,&ctx);
-        read_buffer(buffer2,SHA512_DIGEST_LENGTH);
+        read_buffer(s,buffer2,SHA512_DIGEST_LENGTH);
         if(memcmp(buffer,buffer2,SHA512_DIGEST_LENGTH)) throw;
         
-        lastRead=time(NULL);
+        fclose(s);
     }
     catch(...){
         if(s!=NULL){
@@ -154,73 +148,73 @@ bool SNBloat::openForReading(void)
     return true;
 }
 
-uint8_t SNBloat::read_uint8_t(void)
+uint8_t SNBloat::read_uint8_t(FILE *s,SHA512_CTX *ctx)
 {
     if(s==NULL) throw;
     uint8_t x;
     if(fread(&x,sizeof(uint8_t),1,s)!=1) throw;
-    if(calcSum) SHA512_Update(&ctx,&x,1);
+    if(ctx!=NULL) SHA512_Update(ctx,&x,1);
     return x;
 }
 
-uint16_t SNBloat::read_uint16_t(void)
+uint16_t SNBloat::read_uint16_t(FILE *s,SHA512_CTX *ctx)
 {
     if(s==NULL) throw;
     uint8_t x[2];
     if(fread(x,sizeof(uint8_t),2,s)!=2) throw;
-    if(calcSum) SHA512_Update(&ctx,x,2);
+    if(ctx!=NULL) SHA512_Update(ctx,x,2);
     return (x[1]<<8)|x[0];
 }
 
-uint32_t SNBloat::read_uint24_t(void)
+uint32_t SNBloat::read_uint24_t(FILE *s,SHA512_CTX *ctx)
 {
     if(s==NULL) throw;
     uint32_t x[3];
     if(fread(x,sizeof(uint8_t),3,s)!=3) throw;
-    if(calcSum) SHA512_Update(&ctx,x,3);
+    if(ctx!=NULL) SHA512_Update(ctx,x,3);
     return (x[2]<<16)|(x[1]<<8)|x[0];
 }
 
-uint32_t SNBloat::read_uint32_t(void)
+uint32_t SNBloat::read_uint32_t(FILE *s,SHA512_CTX *ctx)
 {
     if(s==NULL) throw;
     uint32_t x[4];
     if(fread(x,sizeof(uint8_t),4,s)!=4) throw;
-    if(calcSum) SHA512_Update(&ctx,x,4);
+    if(ctx!=NULL) SHA512_Update(ctx,x,4);
     return (x[3]<<24)|(x[2]<<16)|(x[1]<<8)|x[0];
 }
 
-void SNBloat::read_chars(char *buffer, size_t size)
+void SNBloat::read_chars(FILE *s,char *buffer,size_t size,SHA512_CTX *ctx)
 {
     if(fread(buffer,1,size,s)!=size) throw;
-    if(calcSum) SHA512_Update(&ctx,buffer,size);
+    if(ctx!=NULL) SHA512_Update(ctx,buffer,size);
     buffer[size]='\0';
 }
 
-void SNBloat::read_buffer(void *buffer, size_t size)
+void SNBloat::read_buffer(FILE *s,void *buffer,size_t size,SHA512_CTX *ctx)
 {
     if(fread(buffer,1,size,s)!=size) throw;
-    if(calcSum) SHA512_Update(&ctx,buffer,size);
+    if(ctx!=NULL) SHA512_Update(ctx,buffer,size);
 }
 
-void SNBloat::write_uint8_t(uint8_t n)
+void SNBloat::write_uint8_t(FILE *s,uint8_t n,SHA512_CTX *ctx)
 {
     if(s==NULL) throw;
     if(fwrite(&n,sizeof(uint8_t),1,s)!=1) throw;
-    if(calcSum) SHA512_Update(&ctx,&n,1);
+    if(ctx!=NULL) SHA512_Update(ctx,&n,1);
 }
 
-void SNBloat::write_uint16_t(uint16_t n)
+void SNBloat::write_uint16_t(FILE *s,uint16_t n,SHA512_CTX *ctx)
 {
     if(s==NULL) throw;
     uint8_t x[2];
     x[0]=n&0xFF;n>>=8;
     x[1]=n&0xFF;
     if(fwrite(x,sizeof(uint8_t),2,s)!=2) throw;
-    if(calcSum) SHA512_Update(&ctx,x,2);
+    if(ctx!=NULL) SHA512_Update(ctx,x,2);
 }
 
-void SNBloat::write_uint24_t(uint32_t n)
+void SNBloat::write_uint24_t(FILE *s,uint32_t n,SHA512_CTX *ctx)
 {
     if(s==NULL) throw;
     uint8_t x[3];
@@ -228,10 +222,10 @@ void SNBloat::write_uint24_t(uint32_t n)
     x[1]=n&0xFF;n>>=8;
     x[2]=n&0xFF;
     if(fwrite(x,sizeof(uint8_t),3,s)!=3) throw;
-    if(calcSum) SHA512_Update(&ctx,x,3);
+    if(ctx!=NULL) SHA512_Update(ctx,x,3);
 }
 
-void SNBloat::write_uint32_t(uint32_t n)
+void SNBloat::write_uint32_t(FILE *s,uint32_t n,SHA512_CTX *ctx)
 {
     if(s==NULL) throw;
     uint8_t x[4];
@@ -240,5 +234,5 @@ void SNBloat::write_uint32_t(uint32_t n)
     x[2]=n&0xFF;n>>=8;
     x[3]=n&0xFF;
     if(fwrite(x,sizeof(uint8_t),4,s)!=4) throw;
-    if(calcSum) SHA512_Update(&ctx,x,4);
+    if(ctx!=NULL) SHA512_Update(ctx,x,4);
 }
