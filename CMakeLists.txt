@@ -20,17 +20,14 @@ endif(CMAKE_BUILD_TYPE MATCHES Debug)
 # vyzadujeme Qt4
 find_package(Qt4 REQUIRED)
 
+find_package(OpenSSL REQUIRED)
+
+
 # vyzadujeme python
 find_package(PythonLibs REQUIRED)
 include_directories(${PYTHON_INCLUDE_PATH})
 
-# vyzadujeme OpenSSL
-find_library(OPENSSL_LIBSSL NAMES ssl ssleay32)
-if (OPENSSL_LIBSSL)
-	set(OPENSSL_LIBRARIES ${OPENSSL_LIBSSL})
-else (OPENSSL_LIBSSL)
-	message(FATAL_ERROR "Could not find libssl.")
-endif(OPENSSL_LIBSSL)
+include_directories(${OPENSSL_INCLUDE_DIR})
 
 set (simunet_VERSION_MAJOR 0)
 set (simunet_VERSION_MINOR 1)
