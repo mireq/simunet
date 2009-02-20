@@ -2,8 +2,8 @@
  *   Simunet - Computer Network Simulator                                  *
  *   http://simunet.eu/                                                    *
  *                                                                         *
- *   Copyright (C) 2008 by Miroslav Bendik                                 *
- *   miroslav.bendik@gmail.com                                             *
+ *   Copyright (C) 2009 by Samuel Kupka                                    *
+ *   skupka@sageteam.eu                                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -23,14 +23,20 @@
 #ifndef SNBLOAT_H
 #define SNBLOAT_H
 
-#include <cstring>
 #include <cstdio>
-#include <malloc.h>
+#include <cstring>
 #include <string>
 #include <vector>
 #include <map>
 
 #include <openssl/sha.h>
+
+#define SNBLOAT_PURPOSE_GENERAL     0x00000001
+#define SNBLOAT_PURPOSE_DATAFILE    0x00000002
+#define SNBLOAT_PURPOSE_DEVICE      0x00000004
+#define SNBLOAT_PURPOSE_MAP         0x00000008
+#define SNBLOAT_PURPOSE_SAVEGAME    0x0000000F
+
 
 #define SIMUNETBLOAT_ID "SimuNetBloat"
 #define SIMUNETBLOATHEAD_ID "SimuNetBloatHead"
@@ -39,13 +45,15 @@
 #define SIMUNETBLOAT_MAXFILEBUFFER 16777216
 #define SIMUNETBLOAT_FILEBUFFER 524288
 
+typedef std::map<std::string,std::string> SNBloatVars;
+
 struct SNBloatIndexObject{
     std::string virtfilename;
     size_t position;
     size_t size;
     size_t physSize; /* Real physical size */
     unsigned char sum[SHA512_DIGEST_LENGTH];
-    std::map<std::string,std::string> vars;
+    SNBloatVars vars;
 };
 
 struct SNBloatRWControl{
@@ -67,19 +75,26 @@ class SNBloat
 		SNBloat(const std::string filename);
 		~SNBloat();
 		
-		int openForReading(void);
+        void setVar(std::string var, std::string value);
+        void unsetVar(std::string var);
 		
+		int openForReading(void);
+		int openForWriting(bool eraseFirst=false);
+
+        /* Following methods are thread safe */
 		std::vector<SNBloatIndexObject> getList(void);
 		int getBIO(std::string filename,SNBloatIndexObject *o);
 		int checkSum(std::string filename);
+		unsigned char *readToBuffer(std::string filename);
 		
 		int readOpen(std::string filename,SNBloatRWControl *o,bool checkSum=false);
         size_t readNext(unsigned char *buffer,size_t size,SNBloatRWControl *o);
         int readClose(SNBloatRWControl *o);
 		
-		/* WARNING! Theese methods ARE NOT thread safe (for obvious reasons) */
-		int openForWriting(bool eraseFirst=false);
-		int writeOpen(std::string filename,SNBloatRWControl *o,std::map<std::string,std::string> vars);
+		/* WARNING! These methods ARE NOT thread safe (for obvious reasons) */
+		int writeFromBuffer(std::string filename, unsigned char *buffer, size_t size, SNBloatVars vars);
+		int writeFromBuffer(std::string filename, unsigned char *buffer, size_t size);
+		int writeOpen(std::string filename,SNBloatRWControl *o,SNBloatVars vars);
         size_t writeNext(unsigned char *buffer,size_t size,SNBloatRWControl *o);
         int writeClose(SNBloatRWControl *o);
 		
@@ -90,6 +105,7 @@ class SNBloat
         uint32_t numFiles;
         std::string description;
         uint32_t purpose;
+        SNBloatVars globalVars;
         
         int readHeader(FILE *s);
         int writeHeader(FILE *s);

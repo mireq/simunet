@@ -2,8 +2,8 @@
  *   Simunet - Computer Network Simulator                                  *
  *   http://simunet.eu/                                                    *
  *                                                                         *
- *   Copyright (C) 2008 by Miroslav Bendik                                 *
- *   miroslav.bendik@gmail.com                                             *
+ *   Copyright (C) 2009 by Samuel Kupka                                    *
+ *   skupka@sageteam.eu                                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -64,11 +64,21 @@ SNBloat::SNBloat(const std::string filename)
 {
     fname=filename;
     bloatmap.clear();
-    purpose=0;
+    purpose=SNBLOAT_PURPOSE_GENERAL;
 }
 
 SNBloat::~SNBloat()
 {
+}
+
+void SNBloat::setVar(std::string var, std::string value)
+{
+    globalVars[var]=value;
+}
+
+void SNBloat::unsetVar(std::string var)
+{
+    globalVars.erase(var);
 }
 
 int SNBloat::readHeader(FILE *s)
@@ -213,7 +223,7 @@ int SNBloat::writeHeader(FILE *s)
             
             /* Save variables for this bloatobject */
             write_uint16_t(s,o.vars.size(),&ctx);
-            for(std::map<std::string,std::string>::const_iterator v=o.vars.begin();v!=o.vars.end();++v){
+            for(SNBloatVars::const_iterator v=o.vars.begin();v!=o.vars.end();++v){
                 strcpy(buffer,v->first.c_str());
                 l=strlen(buffer);
                 write_uint16_t(s,l,&ctx);
@@ -306,6 +316,51 @@ int SNBloat::checkSum(std::string filename)
     return 0;
 }
 
+unsigned char * SNBloat::readToBuffer(std::string filename)
+{
+    SNBloatRWControl o;
+    unsigned char *buf=NULL;
+    try{
+        if(readOpen(filename.c_str(),&o,false)!=0) throw;
+        
+        size_t size=o.size;
+        if(size>SIMUNETBLOAT_MAXFILEBUFFER) throw ;
+        
+        buf=(unsigned char *)malloc(size);
+        if(buf==NULL) throw;
+        
+        if(readNext(buf,size,&o)!=size) throw ;
+        if(readClose(&o)!=0) throw ;
+    }
+    catch(...){
+        free(buf);
+        readClose(&o);
+        return NULL;
+    }
+    return buf;
+}
+
+int SNBloat::writeFromBuffer(std::string filename, unsigned char *buffer, size_t size, SNBloatVars vars)
+{
+    SNBloatRWControl o;
+    try{
+        if(writeOpen(filename.c_str(),&o,vars)!=0) throw;
+        if(writeNext(buffer,size,&o)!=size) throw;
+        if(writeClose(&o)!=0) throw;
+    }
+    catch(...){
+        readClose(&o);
+        return -1;
+    }
+    return 0;
+}
+
+int SNBloat::writeFromBuffer(std::string filename, unsigned char *buffer, size_t size)
+{
+    SNBloatVars v=globalVars;
+    return writeFromBuffer(filename,buffer,size,v);
+}
+
 int SNBloat::readOpen(std::string filename,SNBloatRWControl *o,bool checkSum)
 {
     FILE *s=NULL;
@@ -364,7 +419,7 @@ int SNBloat::readClose(SNBloatRWControl *o)
     return 0;
 }
 
-int SNBloat::writeOpen(std::string filename,SNBloatRWControl *o,std::map<std::string,std::string> vars)
+int SNBloat::writeOpen(std::string filename,SNBloatRWControl *o,SNBloatVars vars)
 {
     FILE *s=NULL;
     o->failed=true;

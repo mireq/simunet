@@ -20,7 +20,6 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-
 #include "core/SNBloat.h"
 #include <cstdlib>
 #include <dirent.h>
@@ -28,13 +27,12 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
-
 #define BUFSIZE 524288
 unsigned char copybuffer[BUFSIZE];
 
 using namespace std;
 
-int addfile(SNBloat *bloat,const char *fname,const char *virtfname,std::map<std::string,std::string> vars)
+int addfile(SNBloat *bloat,const char *fname,const char *virtfname,SNBloatVars vars)
 {
     SNBloatRWControl o;
     FILE *s=fopen(fname,"rb");
@@ -90,11 +88,12 @@ void showusage(char *cmd)
 {
     printf("Usage: %s ACTION [OPTIONS] BLOATFILE [FILE1] [FILE2] ...\n\n",cmd);
     printf("Action:\n");
-    printf("a - add files to bloat\n");
-    printf("c - create new bloat and add files\n");
-    printf("l - list files in bloat\n");
-    printf("x - extract files from bloat\n");
+    printf("a - append file(s) to bloat\n");
+    printf("c - create new bloat and add file(s)\n");
+    printf("l - list file(s) in bloat\n");
+    printf("x - extract file(s) from bloat\n");
     printf("s - check all sums in bloat\n");
+    printf("d - show details about file(s) in bloat\n");
     
     exit(1);
 }
@@ -124,7 +123,7 @@ int crawl(SNBloat *bloat,const char *fname,const char *path,const char *d_name)
     if(stat(fname,&st)!=0) return -1;
     if(st.st_mode&S_IFREG){
         snprintf(newpath,SIMUNETBLOAT_MAX_FILENAME_LENGTH,"%s%s",path,getfilename(fname));
-        std::map<std::string,std::string> vars;
+        SNBloatVars vars;
         return addfile(bloat,fname,newpath,vars);
     }
     
@@ -160,7 +159,7 @@ int execute(SNBloat *bloat,char action,vector<string> files)
 
     if(action=='s'){
         if(bloat->openForReading()) return 3;
-        std::vector<SNBloatIndexObject> v=bloat->getList();
+        vector<SNBloatIndexObject> v=bloat->getList();
         printf("Checking all sums.\n");
         for(uint32_t i=0;i<v.size();i++){
             printf("%s ... ",v[i].virtfilename.c_str());
@@ -212,6 +211,10 @@ int main(int argc, char *argv[])
     
     vector<string> v;
     for(;now<argc;now++){
+        for(uint32_t i=strlen(argv[now])-1;i>=1;i--){
+            if(argv[now][i]=='\\'||argv[now][i]=='/') argv[now][i]='\0';
+            else break;
+        }
         v.push_back(argv[now]);
     }
     int r=execute(bloat,argv[1][0],v);
