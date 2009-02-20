@@ -20,14 +20,13 @@ endif(CMAKE_BUILD_TYPE MATCHES Debug)
 # vyzadujeme Qt4
 find_package(Qt4 REQUIRED)
 
+# vyzadujeme OpenSSL
 find_package(OpenSSL REQUIRED)
-
+include_directories(${OPENSSL_INCLUDE_DIR})
 
 # vyzadujeme python
 find_package(PythonLibs REQUIRED)
 include_directories(${PYTHON_INCLUDE_PATH})
-
-include_directories(${OPENSSL_INCLUDE_DIR})
 
 set (simunet_VERSION_MAJOR 0)
 set (simunet_VERSION_MINOR 1)
@@ -135,7 +134,8 @@ set(core_SRCS
 	src/core/SNSimulate.cpp
 	src/core/SNSimulateHelper.cpp
 	src/core/SNBloat.cpp
-	src/core/SNBloatList.cpp)
+	src/core/SNBloatList.cpp
+	src/core/SNLog.cpp)
 
 set(core_HDRS
 	src/core/PyCPPObject.h
@@ -145,7 +145,8 @@ set(core_HDRS
 	src/core/SNSimulate.h
 	src/core/SNSimulateHelper.h
 	src/core/SNBloat.h
-	src/core/SNBloatList.h)
+	src/core/SNBloatList.h
+	src/core/SNLog.h)
 
 qt4_wrap_cpp(simunet_MOC_SIMULATE_HELPER src/core/SNSimulateHelper.h)
 qt4_wrap_cpp(simunet_MOC_SRCS ${simunet_MOC_HDRS})
@@ -169,7 +170,7 @@ add_executable(simunet
 	${lrelease_outputs}
 	${core_HDRS}
 )
-target_link_libraries(simunet smlib ${PYTHON_LIBRARIES} ${QT_LIBRARIES})
+target_link_libraries(simunet smlib ${PYTHON_LIBRARIES} ${QT_LIBRARIES} ${OPENSSL_LIBRARIES})
 
 install (TARGETS simunet DESTINATION bin)
 
