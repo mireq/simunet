@@ -37,7 +37,7 @@ class SNSimulateHelper: public QThread
 {
 	Q_OBJECT
 	public:
-		SNSimulateHelper();
+		SNSimulateHelper(PyThreadState *mainThreadState);
 		~SNSimulateHelper();
 /*!
  \brief Spustenie simulacie (v samostatnom vlakne).

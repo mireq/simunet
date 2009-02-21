@@ -41,7 +41,9 @@ SNSimulate::SNSimulate(int threads)
 	Py_Initialize();
 
 	// inicializacia vlakien
-	//PyEval_InitThreads();
+	PyEval_InitThreads();
+	m_mainThreadState = PyThreadState_Get();
+	PyEval_ReleaseLock();
 
 	PyRun_SimpleString("import gc");
 	PyRun_SimpleString("gc.set_debug(gc.DEBUG_LEAK)");
@@ -56,7 +58,7 @@ SNSimulate::SNSimulate(int threads)
 
 	for (int i = 0; i < m_threadCount; ++i)
 	{
-		SNSimulateHelper *helper = new SNSimulateHelper();
+		SNSimulateHelper *helper = new SNSimulateHelper(m_mainThreadState);
 		m_simulateHelpers.push_back(helper);
 		helper->start();
 	}
@@ -67,12 +69,16 @@ SNSimulate::SNSimulate(int threads)
 SNSimulate::~SNSimulate()
 {
 	map<int, SNDevice*>::iterator dev;
+	PyEval_AcquireLock();
+	PyThreadState_Swap(m_mainThreadState);
 	while (!m_devices.empty())
 	{
 		dev = m_devices.begin();
 		delete dev->second;
 		m_devices.erase(dev);
 	}
+	PyThreadState_Swap(NULL);
+	PyEval_ReleaseLock();
 	list<SNSimulateHelper *>::iterator helper;
 	for (helper = m_simulateHelpers.begin(); helper != m_simulateHelpers.end(); ++helper)
 	{
@@ -88,8 +94,9 @@ SNSimulate::~SNSimulate()
 		delete *helper;
 		m_simulateHelpers.erase(helper);
 	}
+	PyEval_AcquireLock();
+	PyThreadState_Swap(m_mainThreadState);
 	PyRun_SimpleString("print(gc.garbage)");
-	//PyEval_AcquireLock();
 	Py_Finalize();
 }
 
@@ -105,7 +112,11 @@ bool SNSimulate::stopDevice(uint32_t id)
 	{
 		return true;
 	}
+	PyEval_AcquireLock();
+	PyThreadState_Swap(m_mainThreadState);
 	delete dev->second;
+	PyThreadState_Swap(NULL);
+	PyEval_ReleaseLock();
 	m_devices.erase(id);
 	return false;
 }
@@ -116,7 +127,11 @@ bool SNSimulate::stopDevice(uint32_t id)
  */
 uint32_t SNSimulate::startDevice(const string &filename)
 {
+	PyEval_AcquireLock();
+	PyThreadState_Swap(m_mainThreadState);
 	SNDevice *device = new SNDevice(filename, m_nextDeviceId, this);
+	PyThreadState_Swap(NULL);
+	PyEval_ReleaseLock();
 	(*m_nextSimulateHelper)->addDevice(device);
 	m_devices[m_nextDeviceId] = device;
 	m_nextDeviceId++;

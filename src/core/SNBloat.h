@@ -28,6 +28,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <cstdlib>
 
 #include <openssl/sha.h>
 

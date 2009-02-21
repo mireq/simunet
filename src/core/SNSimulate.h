@@ -90,6 +90,7 @@ class SNSimulate
 		std::list<SNSimulateHelper *>::iterator m_nextSimulateHelper;
 		std::map<int, SNDevice*> m_devices;
 		int m_nextDeviceId;
+		PyThreadState *m_mainThreadState;
 };
 
 

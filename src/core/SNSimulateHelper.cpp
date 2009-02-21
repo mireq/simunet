@@ -31,30 +31,28 @@
 
 PyThreadState *SNSimulateHelper::m_mainThreadState = NULL;
 
-SNSimulateHelper::SNSimulateHelper()
+SNSimulateHelper::SNSimulateHelper(PyThreadState *mainThreadState)
 	:m_stop(false)
 {
-	/*if (m_mainThreadState == NULL)
+	if (m_mainThreadState == NULL)
 	{
-		m_mainThreadState = PyThreadState_Get();
-		PyEval_ReleaseLock();
+		m_mainThreadState = mainThreadState;
 	}
 	PyEval_AcquireLock();
 	PyInterpreterState *mainInterpreterState = m_mainThreadState->interp;
 	m_threadState = PyThreadState_New(mainInterpreterState);
-	PyThreadState_Swap(m_mainThreadState);
-	PyEval_ReleaseLock();*/
+	PyThreadState_Swap(NULL);
+	PyEval_ReleaseLock();
 }
 
 
 SNSimulateHelper::~SNSimulateHelper()
 {
-	/*PyEval_AcquireLock();
-	PyThreadState_Swap(m_mainThreadState);
+	PyEval_AcquireLock();
+	PyThreadState_Swap(NULL);
 	PyThreadState_Clear(m_threadState);
 	PyThreadState_Delete(m_threadState);
-	PyThreadState_Swap(m_mainThreadState);
-	PyEval_ReleaseLock();*/
+	PyEval_ReleaseLock();
 }
 
 void SNSimulateHelper::run()
