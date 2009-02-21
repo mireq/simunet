@@ -2,11 +2,11 @@ include_directories("${PROJECT_BINARY_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}")
 
 add_executable(moduleInitTest moduleInit/moduleInit.cpp shared.cpp)
 add_executable(comunicationTest comunication/comunication.cpp shared.cpp)
-add_executable(snbloatedit snbloatedit/snbloatedit.cpp)
+add_executable(snbloateditTest snbloatedit/snbloatedit.cpp)
 
 target_link_libraries(moduleInitTest smlib ${PYTHON_LIBRARIES} ${QT_LIBRARIES})
 target_link_libraries(comunicationTest smlib ${PYTHON_LIBRARIES} ${QT_LIBRARIES})
-target_link_libraries(snbloatedit smlib ${OPENSSL_LIBRARIES})
+target_link_libraries(snbloateditTest smlib ${OPENSSL_LIBRARIES})
 
 add_test(ModuleInit moduleInitTest testmodule)
 set_tests_properties(ModuleInit PROPERTIES PASS_REGULAR_EXPRESSION "init\nframe1\nframe2\ndel 1")
