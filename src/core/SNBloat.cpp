@@ -316,12 +316,12 @@ int SNBloat::checkSum(std::string filename)
     return 0;
 }
 
-unsigned char * SNBloat::readToBuffer(std::string filename)
+unsigned char * SNBloat::readToBuffer(std::string filename,size_t *filesize,bool checkSum)
 {
     SNBloatRWControl o;
     unsigned char *buf=NULL;
     try{
-        if(readOpen(filename.c_str(),&o,false)!=0) throw;
+        if(readOpen(filename.c_str(),&o,checkSum)!=0) throw;
         
         size_t size=o.size;
         if(size>SIMUNETBLOAT_MAXFILEBUFFER) throw ;
@@ -331,10 +331,13 @@ unsigned char * SNBloat::readToBuffer(std::string filename)
         
         if(readNext(buf,size,&o)!=size) throw ;
         if(readClose(&o)!=0) throw ;
+        
+        *filesize=size;
     }
     catch(...){
         free(buf);
         readClose(&o);
+        *filesize=0;
         return NULL;
     }
     return buf;

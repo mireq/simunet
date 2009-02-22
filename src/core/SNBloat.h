@@ -25,6 +25,7 @@
 
 #include <cstdio>
 #include <cstring>
+#include <cstdlib>
 #include <string>
 #include <vector>
 #include <map>
@@ -86,7 +87,7 @@ class SNBloat
 		std::vector<SNBloatIndexObject> getList(void);
 		int getBIO(std::string filename,SNBloatIndexObject *o);
 		int checkSum(std::string filename);
-		unsigned char *readToBuffer(std::string filename);
+		unsigned char *readToBuffer(std::string filename,size_t *filesize,bool checkSum=false);
 		
 		int readOpen(std::string filename,SNBloatRWControl *o,bool checkSum=false);
         size_t readNext(unsigned char *buffer,size_t size,SNBloatRWControl *o);

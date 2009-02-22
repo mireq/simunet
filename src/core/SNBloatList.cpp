@@ -27,8 +27,86 @@ using namespace std;
 
 SNBloatList::SNBloatList()
 {
+    filemap.clear();
+    nowBloatId=1;
+    doCheckSum=false;
 }
 
 SNBloatList::~SNBloatList()
 {
+}
+
+void SNBloatList::scanDir(std::string dir)
+{
+}
+
+void SNBloatList::setCheckSum(bool checksum)
+{
+    doCheckSum=checksum;
+}
+
+void SNBloatList::addFile(std::string filename,uint32_t bloatId)
+{
+    mutex.lock();
+    filemap[filename].v.push_back(bloatId);
+    filemap[filename].id=bloatId;
+    mutex.unlock();
+}
+
+int SNBloatList::addBloat(std::string filename)
+{
+    uint32_t id;
+    SNBloat *b=NULL;
+    mutex.lock();
+    id=nowBloatId;
+    nowBloatId++;
+    try{
+        b=new SNBloat(filename);
+        std::vector<SNBloatIndexObject> v=b->getList();
+        if(v.size()<1) throw;
+        
+        SNBloatListID lid;
+        lid.filename=filename;
+        lid.bloat=b;
+        bloatlist[id]=lid;
+        
+        for(uint32_t i=0;i<v.size();i++){
+            addFile(v[i].virtfilename,id);
+        }
+    }
+    catch(...){
+        if(b!=NULL) delete(b);
+        id=0;
+    }
+    mutex.unlock();
+    return id;
+}
+
+void SNBloatList::removeBloat(uint32_t bloatId)
+{
+    mutex.lock();
+    
+    for(SNBloatListFMapType::iterator it=filemap.begin();it!=filemap.end();++it){
+        for(vector<uint32_t>::iterator i=it->second.v.begin();i!=it->second.v.end();++i){
+            if(*i==bloatId) it->second.v.erase(i);
+        }
+        it->second.id=it->second.v.back();
+    }
+    
+    delete(bloatlist[bloatId].bloat);
+    bloatlist.erase(bloatId);
+    
+    mutex.unlock();
+}
+
+unsigned char * SNBloatList::readToBuffer(std::string filename,size_t *filesize)
+{
+    /* TODO: Tu treba dat semafor, ale to nie je momentalne take zavazne. */
+    try{
+        if(filemap.count(filename)!=1) throw;
+        return bloatlist[filemap[filename].id].bloat->readToBuffer(filename,filesize,doCheckSum);
+    }
+    catch(...){
+    }
+    return NULL;
 }
