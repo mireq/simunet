@@ -26,12 +26,19 @@
 #include "core/SNConfig.h"
 #include "core/SNSimulate.h"
 
+#include <QMimeData>
+#include <QItemSelectionModel>
+
 using namespace std;
 
-SNDevicesListModel::SNDevicesListModel(QObject* parent): QAbstractListModel(parent)
+SNDevicesListModel::SNDevicesListModel(QObject* parent):
+		QAbstractListModel(parent)
 {
+	//startTimer(200);
 	SNConfig config;
 	m_simulate = new SNSimulate(config.threadsCount());
+	m_selection = new QItemSelectionModel(this);
+	//m_selection->select(index(0, 0, QModelIndex()), QItemSelectionModel::SelectCurrent);
 }
 
 
@@ -80,7 +87,7 @@ uint32_t SNDevicesListModel::startDevice(const string & filename)
 	uint32_t devId = m_simulate->startDevice(filename);
 	beginInsertRows(QModelIndex(), m_deviceIds.count(), m_deviceIds.count());
 	m_deviceIds.append(devId);
-	insertRow(m_deviceIds.count());
+	//insertRow(m_deviceIds.count());
 	endInsertRows();
 	return devId;
 }
@@ -95,9 +102,124 @@ bool SNDevicesListModel::stopDevice(uint32_t id)
 		{
 			return ret;
 		}
+		beginRemoveRows(QModelIndex(), i, i);
 		m_deviceIds.remove(i);
+		endRemoveRows();
 	}
 	return ret;
 }
 
+Qt::DropActions SNDevicesListModel::supportedDropActions() const
+{
+	return Qt::CopyAction | Qt::MoveAction;
+}
+
+Qt::ItemFlags SNDevicesListModel::flags(const QModelIndex &index) const
+{
+	Qt::ItemFlags defaultFlags = QAbstractListModel::flags(index);
+
+	if (index.isValid())
+	{
+		return Qt::ItemIsDragEnabled | defaultFlags;
+	}
+	else
+	{
+		return Qt::ItemIsDropEnabled | defaultFlags;
+	}
+}
+
+QStringList SNDevicesListModel::mimeTypes() const
+{
+	QStringList types;
+	types << "application/x-simunet-device";
+	return types;
+}
+
+QMimeData *SNDevicesListModel::mimeData(const QModelIndexList &indexes) const
+{
+	QMimeData *mimeData = new QMimeData();
+	QByteArray encodedData;
+
+	QDataStream stream(&encodedData, QIODevice::WriteOnly);
+	foreach(QModelIndex index, indexes)
+	{
+		if (index.isValid())
+		{
+			stream << data(index, Qt::UserRole).toInt();
+		}
+	}
+
+	mimeData->setData("application/x-simunet-device", encodedData);
+
+	return mimeData;
+}
+
+bool SNDevicesListModel::dropMimeData(const QMimeData *data,
+                                      Qt::DropAction action,
+                                      int row, int column,
+                                      const QModelIndex &parent)
+{
+	if (action == Qt::IgnoreAction)
+		return true;
+
+	if (!data->hasFormat("application/x-simunet-device"))
+		return false;
+
+	if (column > 0)
+		return false;
+
+	int riadok;
+	if (row != -1)
+		riadok = row;
+	else if (parent.isValid())
+		riadok = parent.row();
+	else
+		riadok = rowCount(QModelIndex());
+
+	QByteArray encodedData = data->data("application/x-simunet-device");
+	QDataStream stream(&encodedData, QIODevice::ReadOnly);
+	QList<int> selectedDevices;
+	while (!stream.atEnd())
+	{
+		int deviceId;
+		stream >> deviceId;
+		selectedDevices.push_front(deviceId);
+	}
+
+	foreach (int deviceId, selectedDevices)
+	{
+		int i = m_deviceIds.indexOf(deviceId);
+		if (i == -1)
+		{
+			return false;
+		}
+		if (i < riadok)
+		{
+			beginInsertRows(QModelIndex(), riadok, riadok);
+			m_deviceIds.insert(riadok, deviceId);
+			endInsertRows();
+			beginRemoveRows(QModelIndex(), i, i);
+			m_deviceIds.remove(i);
+			endRemoveRows();
+			m_selection->select(index(riadok - 1, 0, QModelIndex()), QItemSelectionModel::SelectCurrent);
+		}
+		else
+		{
+			beginRemoveRows(QModelIndex(), i, i);
+			m_deviceIds.remove(i);
+			endRemoveRows();
+			beginInsertRows(QModelIndex(), riadok, riadok);
+			m_deviceIds.insert(riadok, deviceId);
+			endInsertRows();
+			m_selection->select(index(riadok, 0, QModelIndex()), QItemSelectionModel::SelectCurrent);
+		}
+	}
+	return true;
+}
+
+
+QItemSelectionModel *SNDevicesListModel::selectionModel() const
+{
+	return m_selection;
+}
 

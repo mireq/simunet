@@ -28,6 +28,7 @@
 #include <string>
 
 class SNSimulate;
+class QItemSelectionModel;
 
 /**
  @author Miroslav Bendik <miroslav.bendik@gmail.com>
@@ -43,9 +44,17 @@ class SNDevicesListModel : public QAbstractListModel
 		QVariant data(const QModelIndex &index, int role) const;
 		uint32_t startDevice(const std::string &filename);
 		bool stopDevice(uint32_t id);
+		Qt::DropActions supportedDropActions() const;
+		Qt::ItemFlags flags(const QModelIndex &index) const;
+		QStringList mimeTypes() const;
+		QMimeData *mimeData(const QModelIndexList &indexes) const;
+		bool dropMimeData(const QMimeData *data, Qt::DropAction action,
+		                  int row, int column, const QModelIndex &parent);
+		QItemSelectionModel *selectionModel() const;
 	private:
 		QVector<uint32_t> m_deviceIds;
 		SNSimulate *m_simulate;
+		QItemSelectionModel *m_selection;
 
 };
 

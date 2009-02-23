@@ -45,13 +45,20 @@ SNSimulate::SNSimulate(int threads)
 	m_mainThreadState = PyThreadState_Get();
 	PyEval_ReleaseLock();
 
+	PyEval_AcquireLock();
+	PyThreadState_Swap(m_mainThreadState);
+
 	PyRun_SimpleString("import gc");
 	PyRun_SimpleString("gc.set_debug(gc.DEBUG_LEAK)");
+
 
 	setPath();
 	createDevicesDictionary();
 	createSNSimulateModule();
 	createBaseClass();
+
+	PyThreadState_Swap(NULL);
+	PyEval_ReleaseLock();
 
 	m_threadCount = threads;
 	m_nextDeviceId = 1;
@@ -63,6 +70,7 @@ SNSimulate::SNSimulate(int threads)
 		helper->start();
 	}
 	m_nextSimulateHelper = m_simulateHelpers.begin();
+
 }
 
 
@@ -117,7 +125,7 @@ bool SNSimulate::stopDevice(uint32_t id)
 	delete dev->second;
 	PyThreadState_Swap(NULL);
 	PyEval_ReleaseLock();
-	m_devices.erase(id);
+	m_devices.erase(dev);
 	return false;
 }
 

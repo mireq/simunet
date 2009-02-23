@@ -26,7 +26,7 @@
 #include <QDockWidget>
 
 class SNDevicesListModel;
-class QListView;
+class QTreeView;
 class QTabWidget;
 class QAction;
 
@@ -49,7 +49,7 @@ class SecondaryWindow : public QDockWidget
 		QAction *m_newAct;
 		QAction *m_settingsAct;
 		QAction *m_deleteAct;
-		QListView *m_list;
+		QTreeView *m_list;
 		SNDevicesListModel *m_model;
 		QTabWidget *m_tabWidget;
 

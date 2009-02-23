@@ -24,9 +24,10 @@
 
 #include <QTabWidget>
 #include <QVBoxLayout>
-#include <QListView>
+#include <QTreeView>
 #include <QAction>
 #include <QMenu>
+#include <QHeaderView>
 #include "SNDevicesListModel.h"
 #include "DeviceSettingsDlg.h"
 
@@ -57,13 +58,20 @@ void SecondaryWindow::setModel(SNDevicesListModel *model)
 	if (m_list == NULL)
 	{
 		m_model = model;
-		m_list = new QListView();
+		m_list = new QTreeView();
 		m_list->setIconSize(QSize(32, 32));
-		m_list->setUniformItemSizes(true);
+//		m_list->setUniformItemSizes(true);
 		m_list->setModel(model);
 		m_list->setContextMenuPolicy(Qt::CustomContextMenu);
 		connect(m_list, SIGNAL(customContextMenuRequested(const QPoint &)),
 			this, SLOT(showContextMenu(const QPoint &)));
+		m_list->setSelectionMode(QAbstractItemView::SingleSelection);
+		m_list->setDragEnabled(true);
+		m_list->viewport()->setAcceptDrops(true);
+		m_list->setDropIndicatorShown(true);
+		m_list->setDragDropMode(QAbstractItemView::InternalMove);
+		m_list->setSelectionModel(m_model->selectionModel());
+		m_list->header()->hide();
 		m_tabWidget->addTab(m_list, tr("Devices"));
 	}
 }
