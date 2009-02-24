@@ -27,8 +27,6 @@
 #include <QtWebKit>
 #include <QSettings>
 
-#include <QDebug>
-
 QString SNWebConfigWidget::m_webConfigJs;
 
 SNWebConfigWidget::SNWebConfigWidget(QWidget* parent): QWidget(parent), m_errorsVisible(false)

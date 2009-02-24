@@ -28,6 +28,7 @@
 #include <string>
 #include <list>
 #include <map>
+#include <vector>
 
 class SNDevice;
 class SNSimulateHelper;
@@ -77,7 +78,11 @@ class SNSimulate
  \param id ID zariadenia
  \return Navratovou hodotou je referencia zariadenia ak existuje, NULL ak neexistuje.
 */
-		SNDevice *device(uint32_t id);
+		SNDevice *device(uint32_t id) const;
+
+		const std::vector<int> *devicesList(int parent = 0) const;
+		int findIndexOfDevice(int devId, int parent = 0) const;
+		void move(int devId, int row, int parent);
 
 	private:
 		void setPath();
@@ -85,10 +90,47 @@ class SNSimulate
 		void createSNSimulateModule();
 		void createBaseClass();
 
+/*!
+  \brief Pocet vlakien ktore budu spustene
+ */
 		int m_threadCount;
+
+/*!
+  \brief Zoznam vlakien
+*/
 		std::list<SNSimulateHelper *> m_simulateHelpers;
+
+/*!
+  \brief Iterator ukazujuci na nasledujuce vlakno
+  Po nastartovani zariadenia sa posunie na dalise vlakno aby boli zariadenia
+  pridelovane postupne jednotlivym vlaknam. Pri poslednom vlakne sa znovu
+  nastavi na zaciatok zoznamu.
+*/
 		std::list<SNSimulateHelper *>::iterator m_nextSimulateHelper;
-		std::map<int, SNDevice*> m_devices;
+
+/*!
+  \brief Pole zariadeni
+  Asociativne pole ktoreho klucom je unikatne ID zariadenia.
+  Hodnotou je dvojica: ID nadradenej polozky, ukazovatel na zariadenie.
+  V pripade, ze ID nadradenej polozky je 0 znamena to, ze zariadenie je
+  v korenovom adresari.
+*/
+		std::map<int, std::pair<int, SNDevice*> > m_devices;
+
+/*!
+  \brief Stromova struktura s indexmi zariadeni
+  Toto asociativne pole ma ako kluc ID virtualneho adresara kde je zariadenie
+  umiestnene. Hodnotou je zoznam zariadeni (kladne cislo) a podadresarov
+  (zaporne cislo v absolutnej hodnote reprezentuje ID adresara). Korenovy
+  adresar ma cislo 0.
+*/
+		std::map<int, std::vector<int> > m_devicesTree;
+
+/*!
+  \brief ID nasledujuceho zariadenia
+  Aby sme zabranili duplicitam pridelujeme kazdemu dalsiemu zariadeniu vzdy
+  nasledujuce ID (aj keby sa niektore z predchadzajucich uvolnili).
+*/
 		int m_nextDeviceId;
 		PyThreadState *m_mainThreadState;
 };

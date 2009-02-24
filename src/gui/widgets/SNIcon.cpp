@@ -23,8 +23,6 @@
 #include "SNIcon.h"
 #include <QFile>
 
-#include <QDebug>
-
 const int SNIcon::m_size[7] = {16, 22, 32, 48, 64, 128, 0};
 
 SNIcon::SNIcon(const QString& name, bool showUnknownIcon)

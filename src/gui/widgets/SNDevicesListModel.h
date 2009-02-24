@@ -23,7 +23,7 @@
 #ifndef SNDEVICESLISTMODEL_H
 #define SNDEVICESLISTMODEL_H
 
-#include <QAbstractListModel>
+#include <QAbstractItemModel>
 #include <QVector>
 #include <string>
 
@@ -52,7 +52,7 @@ class SNDevicesListModel : public QAbstractListModel
 		                  int row, int column, const QModelIndex &parent);
 		QItemSelectionModel *selectionModel() const;
 	private:
-		QVector<uint32_t> m_deviceIds;
+		//QVector<uint32_t> m_deviceIds;
 		SNSimulate *m_simulate;
 		QItemSelectionModel *m_selection;
 

@@ -76,13 +76,13 @@ SNSimulate::SNSimulate(int threads)
 
 SNSimulate::~SNSimulate()
 {
-	map<int, SNDevice*>::iterator dev;
+	map<int, pair<int, SNDevice*> >::iterator dev;
 	PyEval_AcquireLock();
 	PyThreadState_Swap(m_mainThreadState);
 	while (!m_devices.empty())
 	{
 		dev = m_devices.begin();
-		delete dev->second;
+		delete dev->second.second;
 		m_devices.erase(dev);
 	}
 	PyThreadState_Swap(NULL);
@@ -114,7 +114,7 @@ SNSimulate::~SNSimulate()
  */
 bool SNSimulate::stopDevice(uint32_t id)
 {
-	map<int, SNDevice*>::iterator dev;
+	map<int, pair<int, SNDevice*> >::iterator dev;
 	dev = m_devices.find(id);
 	if (dev == m_devices.end())
 	{
@@ -122,10 +122,34 @@ bool SNSimulate::stopDevice(uint32_t id)
 	}
 	PyEval_AcquireLock();
 	PyThreadState_Swap(m_mainThreadState);
-	delete dev->second;
+	delete dev->second.second;
 	PyThreadState_Swap(NULL);
 	PyEval_ReleaseLock();
+
+	map<int, vector<int> >::iterator subtree;
+
+	int subtreeId = dev->second.first;
+	// vyhladame podstrom v ktorom sa nachadza zariadenie
+	subtree = m_devicesTree.find(dev->second.first);
+
+	// odstranime zariadenie z hlavneho zoznamu
 	m_devices.erase(dev);
+
+	// ak sa zariadenie nenachadza v podstrome doslo k chybe konzistencie dat
+	if (subtree == m_devicesTree.end())
+	{
+		qWarning("Missing subtree: %d", subtreeId);
+		return false;
+	}
+
+	vector<int>::iterator subtreeDev = find(subtree->second.begin(), subtree->second.end(), (int)id);
+	if (subtreeDev == subtree->second.end())
+	{
+		qWarning("Missing device: %d in subtree %d", id, subtreeId);
+		return false;
+	}
+	subtree->second.erase(subtreeDev);
+
 	return false;
 }
 
@@ -140,8 +164,12 @@ uint32_t SNSimulate::startDevice(const string &filename)
 	SNDevice *device = new SNDevice(filename, m_nextDeviceId, this);
 	PyThreadState_Swap(NULL);
 	PyEval_ReleaseLock();
+
 	(*m_nextSimulateHelper)->addDevice(device);
-	m_devices[m_nextDeviceId] = device;
+
+	m_devices[m_nextDeviceId] = pair<int, SNDevice*>(0, device);
+	m_devicesTree[0].push_back(m_nextDeviceId);
+
 	m_nextDeviceId++;
 	m_nextSimulateHelper++;
 	if (m_nextSimulateHelper == m_simulateHelpers.end())
@@ -297,13 +325,64 @@ void SNSimulate::createBaseClass()
 }
 
 
-SNDevice *SNSimulate::device(uint32_t id)
+SNDevice *SNSimulate::device(uint32_t id) const
 {
-	map<int, SNDevice*>::iterator dev;
+	map<int, pair<int, SNDevice*> >::const_iterator dev;
 	dev = m_devices.find(id);
 	if (dev == m_devices.end())
 	{
 		return NULL;
 	}
-	return dev->second;
+	return dev->second.second;
+}
+
+const vector<int> *SNSimulate::devicesList(int parent) const
+{
+	map<int, vector<int> >::const_iterator subtree;
+	subtree = m_devicesTree.find(parent);
+	if (subtree == m_devicesTree.end())
+	{
+		return NULL;
+	}
+	return &subtree->second;
+}
+
+int SNSimulate::findIndexOfDevice(int devId, int parent) const
+{
+	map<int, vector<int> >::const_iterator subtree;
+	subtree = m_devicesTree.find(parent);
+	if (subtree == m_devicesTree.end())
+	{
+		return -1;
+	}
+	size_t pos = find(subtree->second.begin(), subtree->second.end(), devId) - subtree->second.begin();
+	if (pos < subtree->second.size())
+	{
+		return pos;
+	}
+	else
+	{
+		return -1;
+	}
+}
+
+void SNSimulate::move(int devId, int row, int parent)
+{
+	int dev1Parent = m_devices[devId].first;
+
+	map<int, vector<int> >::iterator subtree1 = m_devicesTree.find(dev1Parent);
+	map<int, vector<int> >::iterator subtree2 = m_devicesTree.find(parent);
+
+	vector<int>::iterator dev1 = find(subtree1->second.begin(), subtree1->second.end(), devId);
+	vector<int>::iterator dev2 = subtree2->second.begin() + row;
+
+	subtree1->second.erase(dev1);
+	if (dev1Parent == parent && dev1 < dev2)
+	{
+		subtree2->second.insert(--dev2, devId);
+	}
+	else
+	{
+		subtree2->second.insert(dev2, devId);
+	}
 }
