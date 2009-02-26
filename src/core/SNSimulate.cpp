@@ -30,6 +30,8 @@
 
 #include <iostream>
 
+#include <QDebug>
+
 using namespace std;
 
 /*!
@@ -62,6 +64,7 @@ SNSimulate::SNSimulate(int threads)
 
 	m_threadCount = threads;
 	m_nextDeviceId = 1;
+	m_nextFolderId = 1;
 
 	for (int i = 0; i < m_threadCount; ++i)
 	{
@@ -118,6 +121,7 @@ bool SNSimulate::stopDevice(uint32_t id)
 	dev = m_devices.find(id);
 	if (dev == m_devices.end())
 	{
+		qWarning("Missing device: %d", id);
 		return true;
 	}
 	PyEval_AcquireLock();
@@ -366,6 +370,38 @@ int SNSimulate::findIndexOfDevice(int devId, int parent) const
 	}
 }
 
+int SNSimulate::parent(int devId) const
+{
+	if (devId > 0)
+	{
+		std::map<int, std::pair<int, SNDevice*> >::const_iterator dev = m_devices.find(devId);
+		if (dev == m_devices.end())
+		{
+			return 0;
+		}
+		else
+		{
+			return dev->second.first;
+		}
+	}
+	else
+	{
+		std::map<int, std::pair<int, string> >::const_iterator folder = m_folders.find(-devId);
+		if (folder == m_folders.end())
+		{
+			for (folder = m_folders.begin(); folder != m_folders.end(); ++folder)
+			{
+				qDebug()<<folder->first;
+			}
+			return 0;
+		}
+		else
+		{
+			return folder->second.first;
+		}
+	}
+}
+
 void SNSimulate::move(int devId, int row, int parent)
 {
 	int dev1Parent = m_devices[devId].first;
@@ -373,8 +409,18 @@ void SNSimulate::move(int devId, int row, int parent)
 	map<int, vector<int> >::iterator subtree1 = m_devicesTree.find(dev1Parent);
 	map<int, vector<int> >::iterator subtree2 = m_devicesTree.find(parent);
 
+	if (subtree1 == m_devicesTree.end() || subtree2 == m_devicesTree.end())
+	{
+		qWarning("Subtree not found");
+	}
+
 	vector<int>::iterator dev1 = find(subtree1->second.begin(), subtree1->second.end(), devId);
 	vector<int>::iterator dev2 = subtree2->second.begin() + row;
+
+	if (dev1 == subtree1->second.end() || dev2 == subtree2->second.end())
+	{
+		qWarning("Device not found");
+	}
 
 	subtree1->second.erase(dev1);
 	if (dev1Parent == parent && dev1 < dev2)
@@ -384,5 +430,97 @@ void SNSimulate::move(int devId, int row, int parent)
 	else
 	{
 		subtree2->second.insert(dev2, devId);
+	}
+
+	vector<int>::iterator subtreeDev;
+}
+
+void SNSimulate::removeFromSubtree(int devId, int parent)
+{
+	map<int, vector<int> >::iterator subtree = m_devicesTree.find(parent);
+	if (subtree == m_devicesTree.end())
+	{
+		qWarning("Subtree not found");
+	}
+
+	vector<int>::iterator dev = find(subtree->second.begin(), subtree->second.end(), devId);
+	if (dev == subtree->second.end())
+	{
+		qWarning("Device not found");
+	}
+	subtree->second.erase(dev);
+}
+
+void SNSimulate::addToSubtree(int devId, int row, int parent)
+{
+	map<int, vector<int> >::iterator subtree = m_devicesTree.find(parent);
+	if (subtree == m_devicesTree.end())
+	{
+		qWarning("Subtree not found");
+	}
+
+	vector<int>::iterator dev = subtree->second.begin() + row;
+	if (dev == subtree->second.end())
+	{
+		qWarning("Device not found");
+	}
+
+	subtree->second.insert(dev, devId);
+}
+
+void SNSimulate::addDirectory(std::string name, int parent)
+{
+	m_devicesTree[parent].push_back(-m_nextFolderId);
+	m_folders[m_nextFolderId].first = parent;
+	m_folders[m_nextFolderId].second = name;
+	m_nextFolderId++;
+}
+
+bool SNSimulate::removeDirectory(int directoryId)
+{
+	map<int, pair<int, string> >::iterator dir;
+	dir = m_folders.find(-directoryId);
+	if (dir == m_folders.end())
+	{
+		qWarning("Directory %d not found", directoryId);
+		return true;
+	}
+
+	map<int, vector<int> >::iterator subtree;
+
+	int subtreeId = dir->second.first;
+
+	subtree = m_devicesTree.find(dir->second.first);
+	m_folders.erase(dir);
+
+	// ak sa zariadenie nenachadza v podstrome doslo k chybe konzistencie dat
+	if (subtree == m_devicesTree.end())
+	{
+		qWarning("Missing subtree: %d", subtreeId);
+		return false;
+	}
+
+	vector<int>::iterator subtreeDir = find(subtree->second.begin(), subtree->second.end(), int(directoryId));
+	if (subtreeDir == subtree->second.end())
+	{
+		qWarning("Missing directory: %d in subtree %d", directoryId, subtreeId);
+		return false;
+	}
+	subtree->second.erase(subtreeDir);
+
+	return false;
+}
+
+string *SNSimulate::directory(int directoryId)
+{
+	map<int, pair<int, string> >::iterator dir;
+	dir = m_folders.find(-directoryId);
+	if (dir == m_folders.end())
+	{
+		return NULL;
+	}
+	else
+	{
+		return &dir->second.second;
 	}
 }

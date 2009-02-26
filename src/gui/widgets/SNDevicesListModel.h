@@ -33,23 +33,31 @@ class QItemSelectionModel;
 /**
  @author Miroslav Bendik <miroslav.bendik@gmail.com>
 */
-class SNDevicesListModel : public QAbstractListModel
+class SNDevicesListModel : public QAbstractItemModel
 {
 		Q_OBJECT
 	public:
 		SNDevicesListModel(QObject* parent = 0);
 		~SNDevicesListModel();
 
-		int rowCount(const QModelIndex &parent = QModelIndex()) const;
+		// informacie pre treeView
+		QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const;
+		QModelIndex parent(const QModelIndex &index ) const;
 		QVariant data(const QModelIndex &index, int role) const;
-		uint32_t startDevice(const std::string &filename);
-		bool stopDevice(uint32_t id);
+		int rowCount(const QModelIndex &parent = QModelIndex()) const;
+		int columnCount(const QModelIndex &parent = QModelIndex()) const;
+
+		// drag & drop
 		Qt::DropActions supportedDropActions() const;
 		Qt::ItemFlags flags(const QModelIndex &index) const;
 		QStringList mimeTypes() const;
 		QMimeData *mimeData(const QModelIndexList &indexes) const;
 		bool dropMimeData(const QMimeData *data, Qt::DropAction action,
 		                  int row, int column, const QModelIndex &parent);
+
+		// praca so stromom
+		uint32_t startDevice(const std::string &filename);
+		bool stopDevice(int id);
 		QItemSelectionModel *selectionModel() const;
 	private:
 		//QVector<uint32_t> m_deviceIds;

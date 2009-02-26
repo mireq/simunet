@@ -29,15 +29,21 @@
 #include <QMimeData>
 #include <QItemSelectionModel>
 
+#include <string>
+
+#include <QDebug>
 
 using namespace std;
 
 SNDevicesListModel::SNDevicesListModel(QObject* parent):
-		QAbstractListModel(parent)
+		QAbstractItemModel(parent)
 {
 	SNConfig config;
 	m_simulate = new SNSimulate(config.threadsCount());
 	m_selection = new QItemSelectionModel(this);
+	m_simulate->addDirectory("Adresar", 0);
+	m_simulate->addDirectory("Adresar2", -1);
+	m_simulate->addDirectory("Adresar3", -1);
 }
 
 
@@ -48,7 +54,16 @@ SNDevicesListModel::~SNDevicesListModel()
 
 int SNDevicesListModel::rowCount(const QModelIndex &parent) const
 {
-	const vector<int> * deviceIds = m_simulate->devicesList(0);
+	const vector<int> *deviceIds;
+	if (parent.isValid())
+	{
+		deviceIds = m_simulate->devicesList(parent.internalId());
+	}
+	else
+	{
+		deviceIds = m_simulate->devicesList(0);
+	}
+
 	if (deviceIds == NULL)
 	{
 		return 0;
@@ -66,28 +81,40 @@ QVariant SNDevicesListModel::data(const QModelIndex &index, int role) const
 		return QVariant();
 	}
 
-	const vector<int> * deviceIds = m_simulate->devicesList(0);
-	if (deviceIds == NULL)
-	{
-		return QVariant();
-	}
-
-	if (index.row() >= (int)deviceIds->size())
-	{
-		return QVariant();
-	}
-
 	if (role == Qt::DisplayRole)
 	{
-		return QVariant(QString("Zariadenie %1").arg((*deviceIds)[index.row()]));
+		qint64 internalId = index.internalId();
+		if (internalId > 0)
+		{
+			return QVariant(QString("Zariadenie %1").arg(index.internalId()));
+		}
+		else
+		{
+			string *dirName = m_simulate->directory(internalId);
+			if (dirName == NULL)
+			{
+				return QVariant();
+			}
+			else
+			{
+				return QVariant(QString::fromUtf8(dirName->c_str(), dirName->size()));
+			}
+		}
 	}
-	else if (role == Qt::UserRole)
+	else if (role == Qt::UserRole || role == Qt::ToolTipRole)
 	{
-		return QVariant((*deviceIds)[index.row()]);
+		return QVariant(index.internalId());
 	}
 	else if (role == Qt::DecorationRole)
 	{
-		return QVariant(SNIcon("preferences-system-performance"));
+		if (index.internalId() < 0)
+		{
+			return QVariant(SNIcon("folder"));
+		}
+		else
+		{
+			return QVariant(SNIcon("preferences-system-performance"));
+		}
 	}
 	else
 	{
@@ -105,22 +132,29 @@ uint32_t SNDevicesListModel::startDevice(const string & filename)
 	}
 	beginInsertRows(QModelIndex(), count, count);
 	uint32_t devId = m_simulate->startDevice(filename);
-	//m_deviceIds.append(devId);
-	//insertRow(m_deviceIds.count());
 	endInsertRows();
 	return devId;
 }
 
-bool SNDevicesListModel::stopDevice(uint32_t id)
+bool SNDevicesListModel::stopDevice(int id)
 {
 	int i = m_simulate->findIndexOfDevice(id, 0);
+	qDebug()<<id<<i;
 	if (i == -1)
 	{
 		return true;
 	}
 
+	bool ret;
 	beginRemoveRows(QModelIndex(), i, i);
-	bool ret = m_simulate->stopDevice(id);
+	if (id > 0)
+	{
+		ret = m_simulate->stopDevice(id);
+	}
+	else
+	{
+		ret = m_simulate->removeDirectory(id);
+	}
 	endRemoveRows();
 	return ret;
 }
@@ -132,11 +166,18 @@ Qt::DropActions SNDevicesListModel::supportedDropActions() const
 
 Qt::ItemFlags SNDevicesListModel::flags(const QModelIndex &index) const
 {
-	Qt::ItemFlags defaultFlags = QAbstractListModel::flags(index);
+	Qt::ItemFlags defaultFlags = QAbstractItemModel::flags(index);
 
 	if (index.isValid())
 	{
-		return Qt::ItemIsDragEnabled | defaultFlags;
+		if (index.internalId() > 0)
+		{
+			return Qt::ItemIsDragEnabled | defaultFlags;
+		}
+		else
+		{
+			return Qt::ItemIsDropEnabled | Qt::ItemIsDragEnabled | defaultFlags;
+		}
 	}
 	else
 	{
@@ -161,7 +202,7 @@ QMimeData *SNDevicesListModel::mimeData(const QModelIndexList &indexes) const
 	{
 		if (index.isValid())
 		{
-			stream << data(index, Qt::UserRole).toInt();
+			stream << (int)index.internalId();
 		}
 	}
 
@@ -204,18 +245,22 @@ bool SNDevicesListModel::dropMimeData(const QMimeData *data,
 
 	foreach (int deviceId, selectedDevices)
 	{
-		m_simulate->move(deviceId, riadok, 0);
 		int i = m_simulate->findIndexOfDevice(deviceId, 0);
 		if (i == -1)
 		{
 			return false;
 		}
-		removeRows(i, 1, QModelIndex());
+
+		beginRemoveRows(QModelIndex(), i, i);
+		m_simulate->removeFromSubtree(deviceId, 0);
+		endRemoveRows();
 		if (i < riadok)
 		{
 			riadok--;
 		}
-		insertRows(riadok, 1, QModelIndex());
+		beginInsertRows(QModelIndex(), riadok, riadok);
+		m_simulate->addToSubtree(deviceId, riadok, 0);
+		endInsertRows();
 		m_selection->setCurrentIndex(index(riadok, 0, QModelIndex()), QItemSelectionModel::Current);
 		m_selection->select(index(riadok, 0, QModelIndex()), QItemSelectionModel::SelectCurrent);
 	}
@@ -226,5 +271,69 @@ bool SNDevicesListModel::dropMimeData(const QMimeData *data,
 QItemSelectionModel *SNDevicesListModel::selectionModel() const
 {
 	return m_selection;
+}
+
+QModelIndex SNDevicesListModel::index(int row, int column, const QModelIndex &parent) const
+{
+	if (column != 0)
+	{
+		return QModelIndex();
+	}
+
+	const std::vector<int> *list;
+	if (parent.isValid())
+	{
+		list = m_simulate->devicesList(parent.internalId());
+	}
+	else
+	{
+		list = m_simulate->devicesList(0);
+	}
+
+	if (list == NULL)
+	{
+		return QModelIndex();
+	}
+
+	if (row >= (int)list->size())
+	{
+		return QModelIndex();
+	}
+	return createIndex(row, column, (*list)[row]);
+}
+
+QModelIndex SNDevicesListModel::parent(const QModelIndex &index) const
+{
+	if (!index.isValid())
+	{
+		return QModelIndex();
+	}
+
+	int devId = index.internalId();
+
+	int parent = m_simulate->parent(devId);
+	if (parent == 0)
+	{
+		return QModelIndex();
+	}
+
+	int pParent = m_simulate->parent(parent);
+	if (pParent < 0)
+	{
+		return QModelIndex();
+	}
+
+	int row = m_simulate->findIndexOfDevice(parent, pParent);
+	if (row < 0)
+	{
+		return QModelIndex();
+	}
+
+	return createIndex(row, 0, parent);
+}
+
+int SNDevicesListModel::columnCount(const QModelIndex &parent) const
+{
+	return 1;
 }
 

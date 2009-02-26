@@ -82,7 +82,13 @@ class SNSimulate
 
 		const std::vector<int> *devicesList(int parent = 0) const;
 		int findIndexOfDevice(int devId, int parent = 0) const;
-		void move(int devId, int row, int parent);
+		int parent(int devId) const;
+		void move(int devId, int row, int parent = 0);
+		void removeFromSubtree(int devId, int parent = 0);
+		void addToSubtree(int devId, int row, int parent = 0);
+		void addDirectory(std::string name, int parent = 0);
+		bool removeDirectory(int directoryId);
+		std::string *directory(int directoryId);
 
 	private:
 		void setPath();
@@ -116,6 +122,7 @@ class SNSimulate
   v korenovom adresari.
 */
 		std::map<int, std::pair<int, SNDevice*> > m_devices;
+		std::map<int, std::pair<int, std::string> > m_folders;
 
 /*!
   \brief Stromova struktura s indexmi zariadeni
@@ -132,6 +139,7 @@ class SNSimulate
   nasledujuce ID (aj keby sa niektore z predchadzajucich uvolnili).
 */
 		int m_nextDeviceId;
+		int m_nextFolderId;
 		PyThreadState *m_mainThreadState;
 };
 
