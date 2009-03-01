@@ -81,7 +81,8 @@ class SNSimulate
 		SNDevice *device(uint32_t id) const;
 
 		const std::vector<int> *devicesList(int parent = 0) const;
-		int findIndexOfDevice(int devId, int parent = 0) const;
+		int findIndexOfDevice(int devId, int parent) const;
+		int findIndexOfDevice(int devId) const;
 		int parent(int devId) const;
 		void move(int devId, int row, int parent = 0);
 		void removeFromSubtree(int devId, int parent = 0);

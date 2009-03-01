@@ -370,6 +370,46 @@ int SNSimulate::findIndexOfDevice(int devId, int parent) const
 	}
 }
 
+int SNSimulate::findIndexOfDevice(int devId) const
+{
+	int parent = 0;
+	if (devId > 0)
+	{
+		std::map<int, std::pair<int, SNDevice*> >::const_iterator device = m_devices.find(devId);
+		if (device == m_devices.end())
+		{
+			return -1;
+		}
+		else
+		{
+			parent = device->second.first;
+		}
+	}
+	else
+	{
+		std::map<int, std::pair<int, std::string> >::const_iterator folder = m_folders.find(-devId);
+		if (folder == m_folders.end())
+		{
+			return -1;
+		}
+		else
+		{
+			parent = folder->second.first;
+		}
+	}
+	map<int, vector<int> >::const_iterator subtree = m_devicesTree.find(parent);
+	size_t pos = find(subtree->second.begin(), subtree->second.end(), devId) - subtree->second.begin();
+
+	if (pos < subtree->second.size())
+	{
+		return pos;
+	}
+	else
+	{
+		return -1;
+	}
+}
+
 int SNSimulate::parent(int devId) const
 {
 	if (devId > 0)
@@ -389,10 +429,6 @@ int SNSimulate::parent(int devId) const
 		std::map<int, std::pair<int, string> >::const_iterator folder = m_folders.find(-devId);
 		if (folder == m_folders.end())
 		{
-			for (folder = m_folders.begin(); folder != m_folders.end(); ++folder)
-			{
-				qDebug()<<folder->first;
-			}
 			return 0;
 		}
 		else
@@ -440,15 +476,21 @@ void SNSimulate::removeFromSubtree(int devId, int parent)
 	map<int, vector<int> >::iterator subtree = m_devicesTree.find(parent);
 	if (subtree == m_devicesTree.end())
 	{
-		qWarning("Subtree not found");
+		qWarning("Subtree %d not found", parent);
+		return;
 	}
 
 	vector<int>::iterator dev = find(subtree->second.begin(), subtree->second.end(), devId);
 	if (dev == subtree->second.end())
 	{
-		qWarning("Device not found");
+		qWarning("Device %d not found (subtree %d)", devId, parent);
+		return;
 	}
 	subtree->second.erase(dev);
+	if (subtree->second.size() == 0)
+	{
+		m_devicesTree.erase(subtree);
+	}
 }
 
 void SNSimulate::addToSubtree(int devId, int row, int parent)
@@ -456,15 +498,25 @@ void SNSimulate::addToSubtree(int devId, int row, int parent)
 	map<int, vector<int> >::iterator subtree = m_devicesTree.find(parent);
 	if (subtree == m_devicesTree.end())
 	{
-		qWarning("Subtree not found");
+		m_devicesTree[parent] = vector<int>();
+		subtree = m_devicesTree.find(parent);
 	}
 
-	vector<int>::iterator dev = subtree->second.begin() + row;
-	if (dev == subtree->second.end())
+	if (row > (int)subtree->second.size())
 	{
-		qWarning("Device not found");
+		qWarning("Device %d not found (subtree %d)", row, parent);
+		return;
 	}
+	vector<int>::iterator dev = subtree->second.begin() + row;
 
+	if (devId > 0)
+	{
+		m_devices[devId].first = parent;
+	}
+	else
+	{
+		m_folders[-devId].first = parent;
+	}
 	subtree->second.insert(dev, devId);
 }
 

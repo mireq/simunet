@@ -41,6 +41,7 @@ SNDevicesListModel::SNDevicesListModel(QObject* parent):
 	SNConfig config;
 	m_simulate = new SNSimulate(config.threadsCount());
 	m_selection = new QItemSelectionModel(this);
+	m_simulate->startDevice("router");
 	m_simulate->addDirectory("Adresar", 0);
 	m_simulate->addDirectory("Adresar2", -1);
 	m_simulate->addDirectory("Adresar3", -1);
@@ -229,9 +230,10 @@ bool SNDevicesListModel::dropMimeData(const QMimeData *data,
 	if (row != -1)
 		riadok = row;
 	else if (parent.isValid())
-		riadok = parent.row();
+		riadok = rowCount(parent);
 	else
 		riadok = rowCount(QModelIndex());
+
 
 	QByteArray encodedData = data->data("application/x-simunet-device");
 	QDataStream stream(&encodedData, QIODevice::ReadOnly);
@@ -245,24 +247,51 @@ bool SNDevicesListModel::dropMimeData(const QMimeData *data,
 
 	foreach (int deviceId, selectedDevices)
 	{
-		int i = m_simulate->findIndexOfDevice(deviceId, 0);
+		int devParent = m_simulate->parent(deviceId);
+		int i = m_simulate->findIndexOfDevice(deviceId, devParent);
 		if (i == -1)
 		{
 			return false;
 		}
 
-		beginRemoveRows(QModelIndex(), i, i);
-		m_simulate->removeFromSubtree(deviceId, 0);
+
+		QModelIndex parentIndex;
+		if (devParent != 0)
+		{
+			parentIndex = createIndex(m_simulate->findIndexOfDevice(devParent), 0, devParent);
+		}
+		beginRemoveRows(parentIndex, i, i);
+		m_simulate->removeFromSubtree(deviceId, devParent);
 		endRemoveRows();
-		if (i < riadok)
+
+		int newParent = 0;
+		if (parent.isValid())
+		{
+			newParent = parent.internalId();
+		}
+		else
+		{
+			newParent = 0;
+		}
+
+		if (devParent == newParent && i < riadok)
 		{
 			riadok--;
 		}
-		beginInsertRows(QModelIndex(), riadok, riadok);
-		m_simulate->addToSubtree(deviceId, riadok, 0);
+
+		if (newParent == 0)
+		{
+			parentIndex = QModelIndex();
+		}
+		else
+		{
+			parentIndex = createIndex(m_simulate->findIndexOfDevice(newParent), 0, newParent);
+		}
+		beginInsertRows(parentIndex, riadok, riadok);
+		m_simulate->addToSubtree(deviceId, riadok, newParent);
 		endInsertRows();
-		m_selection->setCurrentIndex(index(riadok, 0, QModelIndex()), QItemSelectionModel::Current);
-		m_selection->select(index(riadok, 0, QModelIndex()), QItemSelectionModel::SelectCurrent);
+		m_selection->setCurrentIndex(createIndex(riadok, 0, deviceId), QItemSelectionModel::Current);
+		m_selection->select(createIndex(riadok, 0, deviceId), QItemSelectionModel::SelectCurrent);
 	}
 	return true;
 }
@@ -309,7 +338,9 @@ QModelIndex SNDevicesListModel::parent(const QModelIndex &index) const
 		return QModelIndex();
 	}
 
+
 	int devId = index.internalId();
+
 
 	int parent = m_simulate->parent(devId);
 	if (parent == 0)
@@ -318,12 +349,9 @@ QModelIndex SNDevicesListModel::parent(const QModelIndex &index) const
 	}
 
 	int pParent = m_simulate->parent(parent);
-	if (pParent < 0)
-	{
-		return QModelIndex();
-	}
 
 	int row = m_simulate->findIndexOfDevice(parent, pParent);
+
 	if (row < 0)
 	{
 		return QModelIndex();
