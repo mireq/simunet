@@ -31,7 +31,6 @@
 
 #include <QAction>
 #include <QMenuBar>
-#include <QApplication>
 #include <QStatusBar>
 #include <QGraphicsView>
 #include <QResizeEvent>
@@ -56,15 +55,8 @@ MainWindow::MainWindow(QWidget* parent, Qt::WindowFlags flags): QMainWindow(pare
 	setupUi();
 	setupSecondaryWindow();
 	restoreWindowState();
-	statusBar()->showMessage(tr("Ready"), 5000);
-	//SNConfig config;
-	//m_simulate = new SNSimulate(config.threadsCount());
-	m_devicesModel = new SNDevicesListModel(this);
-	m_toolWindow->setModel(m_devicesModel);
-	for (int i = 0; i < 10; ++i)
-	{
-		m_devicesModel->startDevice("router");
-	}
+
+	QTimer::singleShot(0, this, SLOT(initSimuNet()));
 }
 
 
@@ -187,6 +179,17 @@ void MainWindow::sceneNavigationModeActionTriggered(QAction *action)
 	{
 		m_scene->setNavigationMode(SNScene::Move);
 	}
+}
+
+void MainWindow::initSimuNet()
+{
+	m_devicesModel = new SNDevicesListModel(this);
+	m_toolWindow->setModel(m_devicesModel);
+	for (int i = 0; i < 10; ++i)
+	{
+		m_devicesModel->startDevice("router");
+	}
+	statusBar()->showMessage(tr("Ready"), 5000);
 }
 
 void MainWindow::restoreWindowState()

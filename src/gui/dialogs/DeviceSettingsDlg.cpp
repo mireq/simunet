@@ -35,7 +35,6 @@
 #include <QStatusTipEvent>
 #include <QWebView>
 #include <QProgressBar>
-#include <QGridLayout>
 
 DeviceSettingsDlg::DeviceSettingsDlg(QWidget* parent): QDialog(parent), m_errorsVisible(false), m_loadProgressVisible(false)
 {

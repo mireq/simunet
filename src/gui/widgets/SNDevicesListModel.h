@@ -56,11 +56,12 @@ class SNDevicesListModel : public QAbstractItemModel
 		                  int row, int column, const QModelIndex &parent);
 
 		// praca so stromom
-		uint32_t startDevice(const std::string &filename);
-		bool stopDevice(int id);
+		uint32_t startDevice(const std::string &filename, const QModelIndex &index = QModelIndex());
+		void addDirectory(const QString &name, const QModelIndex &index = QModelIndex());
+		bool removeDevice(const QModelIndex &index);
 		QItemSelectionModel *selectionModel() const;
 	private:
-		//QVector<uint32_t> m_deviceIds;
+		void insertCompute(const QModelIndex &index, int &parent, int &row, QModelIndex &parentIndex);
 		SNSimulate *m_simulate;
 		QItemSelectionModel *m_selection;
 

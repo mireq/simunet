@@ -47,6 +47,7 @@ class SecondaryWindow : public QDockWidget
 
 	private:
 		QAction *m_newAct;
+		QAction *m_newDirectoryAct;
 		QAction *m_settingsAct;
 		QAction *m_deleteAct;
 		QTreeView *m_list;

@@ -153,16 +153,18 @@ bool SNSimulate::stopDevice(uint32_t id)
 		return false;
 	}
 	subtree->second.erase(subtreeDev);
+	if (subtree->second.size() == 0)
+	{
+		m_devicesTree.erase(subtree);
+	}
 
 	return false;
 }
 
 
-/*!
-    \fn SNSimulate::startDevice(const string &filename)
- */
-uint32_t SNSimulate::startDevice(const string &filename)
+uint32_t SNSimulate::startDevice(const string &filename, int directory, int row)
 {
+	// start zariadenia v pythonovi
 	PyEval_AcquireLock();
 	PyThreadState_Swap(m_mainThreadState);
 	SNDevice *device = new SNDevice(filename, m_nextDeviceId, this);
@@ -171,8 +173,26 @@ uint32_t SNSimulate::startDevice(const string &filename)
 
 	(*m_nextSimulateHelper)->addDevice(device);
 
-	m_devices[m_nextDeviceId] = pair<int, SNDevice*>(0, device);
-	m_devicesTree[0].push_back(m_nextDeviceId);
+	// zaradenie zariadenia do zoznamov
+	// ----------------------------------------------------------------
+	m_devices[m_nextDeviceId] = pair<int, SNDevice*>(directory, device);
+	if (row == -1)
+	{
+		m_devicesTree[directory].push_back(m_nextDeviceId);
+	}
+	else
+	{
+		map<int, vector<int> >::iterator subtree = m_devicesTree.find(directory);
+		if (subtree == m_devicesTree.end() || row > (int)subtree->second.size())
+		{
+			m_devicesTree[directory].push_back(m_nextDeviceId);
+		}
+		else
+		{
+			vector<int>::iterator dev = subtree->second.begin() + row;
+			subtree->second.insert(dev, m_nextDeviceId);
+		}
+	}
 
 	m_nextDeviceId++;
 	m_nextSimulateHelper++;
@@ -184,18 +204,12 @@ uint32_t SNSimulate::startDevice(const string &filename)
 }
 
 
-/*!
-    \fn SNSimulate::processFrame(int id, PyObject *data)
- */
 void SNSimulate::frameResponse(uint32_t id, PyObject *data)
 {
     /// @todo implement me
 }
 
 
-/*!
-    \fn SNSimulate::telnetResponse(uint32_t id, const char *text, const char *cmd)
- */
 void SNSimulate::telnetResponse(uint32_t id, const char *text, const char *cmd)
 {
     /// @todo implement me
@@ -307,7 +321,7 @@ void SNSimulate::createSNSimulateModule()
 void SNSimulate::createBaseClass()
 {
 	PyCPPObject pBuiltinsDict(PyEval_GetBuiltins());
-	PyRun_String("class SNDevice:\n"
+	PyCPPObject ret(PyRun_String("class SNDevice:\n"
 			"\tdef sendFrame(self, data):\n"
 			"\t\tsnsimulate.sendFrame(self.pSNDevice, self.deviceId, data)\n"
 			"\tdef sendTelnet(self, text, cmd):\n"
@@ -325,7 +339,7 @@ void SNSimulate::createBaseClass()
 			"\tdef telnetRequest(self, line, symbol):\n"
 			"\t\tprint(\"telnetRequest not implemented\")\n"
 			"\tdef telnetGetControlChars(self):"
-			"\t\tprint(\"telnetGetControlChars not implemented\")", Py_single_input, pBuiltinsDict, pBuiltinsDict);
+			"\t\tprint(\"telnetGetControlChars not implemented\")", Py_single_input, pBuiltinsDict, pBuiltinsDict), true);
 }
 
 
@@ -520,11 +534,31 @@ void SNSimulate::addToSubtree(int devId, int row, int parent)
 	subtree->second.insert(dev, devId);
 }
 
-void SNSimulate::addDirectory(std::string name, int parent)
+void SNSimulate::addDirectory(std::string name, int parent, int row)
 {
-	m_devicesTree[parent].push_back(-m_nextFolderId);
+	// pridanie do zoznamu adresarov
 	m_folders[m_nextFolderId].first = parent;
 	m_folders[m_nextFolderId].second = name;
+
+	// pridanie do stromu
+	if (row == -1)
+	{
+		m_devicesTree[parent].push_back(-m_nextFolderId);
+	}
+	else
+	{
+		map<int, vector<int> >::iterator subtree = m_devicesTree.find(parent);
+		if (subtree == m_devicesTree.end() || row > (int)subtree->second.size())
+		{
+			m_devicesTree[parent].push_back(-m_nextFolderId);
+		}
+		else
+		{
+			vector<int>::iterator dev = subtree->second.begin() + row;
+			subtree->second.insert(dev, -m_nextFolderId);
+		}
+	}
+
 	m_nextFolderId++;
 }
 
@@ -538,11 +572,32 @@ bool SNSimulate::removeDirectory(int directoryId)
 		return true;
 	}
 
-	map<int, vector<int> >::iterator subtree;
+	// odstranenie podpoloziek
+	map<int, vector<int> >::iterator folderIterator = m_devicesTree.find(directoryId);
+	if (folderIterator != m_devicesTree.end())
+	{
+		list<int> removeList;
+		for (vector<int>::iterator sf = folderIterator->second.begin(); sf != folderIterator->second.end(); ++sf)
+		{
+			removeList.push_back(*sf);
+		}
+
+		for (list<int>::iterator rm = removeList.begin(); rm != removeList.end(); ++rm)
+		{
+			if (*rm > 0)
+			{
+				stopDevice(*rm);
+			}
+			else
+			{
+				removeDirectory(*rm);
+			}
+		}
+	}
 
 	int subtreeId = dir->second.first;
 
-	subtree = m_devicesTree.find(dir->second.first);
+	map<int, vector<int> >::iterator subtree = m_devicesTree.find(dir->second.first);
 	m_folders.erase(dir);
 
 	// ak sa zariadenie nenachadza v podstrome doslo k chybe konzistencie dat

@@ -24,12 +24,13 @@
 #define CONFIGUREDLG_H
 
 #include <QDialog>
-#include <QListWidget>
 
 class SNTitleWidget;
-class QStackedWidget;
 class SNConfigPanel;
 class QDialogButtonBox;
+class QListWidget;
+class QListWidgetItem;
+class QStackedWidget;
 
 /**
  @author Miroslav Bendik <miroslav.bendik@gmail.com>

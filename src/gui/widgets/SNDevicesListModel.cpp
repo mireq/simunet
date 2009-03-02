@@ -41,10 +41,6 @@ SNDevicesListModel::SNDevicesListModel(QObject* parent):
 	SNConfig config;
 	m_simulate = new SNSimulate(config.threadsCount());
 	m_selection = new QItemSelectionModel(this);
-	m_simulate->startDevice("router");
-	m_simulate->addDirectory("Adresar", 0);
-	m_simulate->addDirectory("Adresar2", -1);
-	m_simulate->addDirectory("Adresar3", -1);
 }
 
 
@@ -123,31 +119,49 @@ QVariant SNDevicesListModel::data(const QModelIndex &index, int role) const
 	}
 }
 
-uint32_t SNDevicesListModel::startDevice(const string & filename)
+uint32_t SNDevicesListModel::startDevice(const string &filename, const QModelIndex &index)
 {
-	int count = 0;
-	const vector<int> *deviceIds = m_simulate->devicesList(0);
-	if (deviceIds != NULL)
-	{
-		count = deviceIds->size();
-	}
-	beginInsertRows(QModelIndex(), count, count);
-	uint32_t devId = m_simulate->startDevice(filename);
+	int parent = 0;
+	int row = 0;
+	QModelIndex parentIndex;
+	insertCompute(index, parent, row, parentIndex);
+
+	beginInsertRows(parentIndex, row, row);
+	uint32_t devId = m_simulate->startDevice(filename, parent, row);
 	endInsertRows();
+
 	return devId;
 }
 
-bool SNDevicesListModel::stopDevice(int id)
+void SNDevicesListModel::addDirectory(const QString &name, const QModelIndex &index)
 {
-	int i = m_simulate->findIndexOfDevice(id, 0);
-	qDebug()<<id<<i;
+	int parent = 0;
+	int row = 0;
+	QModelIndex parentIndex;
+	insertCompute(index, parent, row, parentIndex);
+
+
+	beginInsertRows(parentIndex, row, row);
+	m_simulate->addDirectory(name.toUtf8().data(), parent, row);
+	endInsertRows();
+}
+
+bool SNDevicesListModel::removeDevice(const QModelIndex &index)
+{
+	if (!index.isValid())
+	{
+		return true;
+	}
+
+	int id = index.internalId();
+	int i = m_simulate->findIndexOfDevice(id);
 	if (i == -1)
 	{
 		return true;
 	}
 
 	bool ret;
-	beginRemoveRows(QModelIndex(), i, i);
+	beginRemoveRows(index.parent(), i, i);
 	if (id > 0)
 	{
 		ret = m_simulate->stopDevice(id);
@@ -232,7 +246,8 @@ bool SNDevicesListModel::dropMimeData(const QMimeData *data,
 	else if (parent.isValid())
 		riadok = rowCount(parent);
 	else
-		riadok = rowCount(QModelIndex());
+		return false;
+		//riadok = rowCount(QModelIndex());
 
 
 	QByteArray encodedData = data->data("application/x-simunet-device");
@@ -363,5 +378,44 @@ QModelIndex SNDevicesListModel::parent(const QModelIndex &index) const
 int SNDevicesListModel::columnCount(const QModelIndex &parent) const
 {
 	return 1;
+}
+
+void SNDevicesListModel::insertCompute(const QModelIndex &index, int &parent, int &row, QModelIndex &parentIndex)
+{
+	if (index.isValid())
+	{
+		// ak je nadradeny prvok adresar
+		if (index.internalId() < 0)
+		{
+			parentIndex = index;
+			parent = index.internalId();
+			const vector<int> *deviceIds = m_simulate->devicesList(parent);
+			if (deviceIds != NULL)
+			{
+				row = deviceIds->size();
+			}
+		}
+		else
+		{
+			parentIndex = index.parent();
+			if (parentIndex.isValid())
+			{
+				parent = parentIndex.internalId();
+			}
+			else
+			{
+				parent = 0;
+			}
+			row = m_simulate->findIndexOfDevice(index.internalId(), parent) + 1;
+		}
+	}
+	else
+	{
+		const vector<int> *deviceIds = m_simulate->devicesList(parent);
+		if (deviceIds != NULL)
+		{
+			row = deviceIds->size();
+		}
+	}
 }
 

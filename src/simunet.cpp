@@ -24,10 +24,8 @@
 #include "simunet.h"
 
 #include <QApplication>
-#include <QPushButton>
 #include <QTranslator>
 #include <QLocale>
-#include <QFile>
 
 #include "MainWindow.h"
 

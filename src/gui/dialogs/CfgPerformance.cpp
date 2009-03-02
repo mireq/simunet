@@ -24,7 +24,6 @@
 #include "core/SNConfig.h"
 
 #include <QFormLayout>
-#include <QPushButton>
 #include <QMessageBox>
 #include <QSpinBox>
 #include <QSettings>
@@ -85,7 +84,6 @@ bool CfgPerformance::panelSelected()
 
 void CfgPerformance::saveChanges()
 {
-	QSettings settings;
 	SNConfig config;
 	int val = m_threadsCount->value();
 	config.setThreadsCount(val);
@@ -95,8 +93,6 @@ void CfgPerformance::saveChanges()
 
 void CfgPerformance::readConfig()
 {
-	QSettings settings;
-
 	SNConfig config;
 	m_sThreadsCount = config.threadsCount();
 	m_threadsCount->setValue(m_sThreadsCount);

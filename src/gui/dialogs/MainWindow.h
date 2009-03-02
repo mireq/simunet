@@ -61,6 +61,7 @@ class MainWindow : public QMainWindow
 		void about();
 		void configure();
 		void sceneNavigationModeActionTriggered(QAction *);
+		void initSimuNet();
 
 	private:
 		SNDevicesListModel *m_devicesModel;

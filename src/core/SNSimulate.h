@@ -54,7 +54,7 @@ class SNSimulate
  \brief Pridanie zariadenia do simulacie.
  \return Navratovou hodnotou je jedinecne identifikacne cislo zariadenia.
 */
-		uint32_t startDevice(const std::string &filename);
+		uint32_t startDevice(const std::string &filename, int directory = 0, int row = -1);
 
 /*!
  \brief Spracovanie ramca / preposlanie inym zariadeniam.
@@ -87,7 +87,7 @@ class SNSimulate
 		void move(int devId, int row, int parent = 0);
 		void removeFromSubtree(int devId, int parent = 0);
 		void addToSubtree(int devId, int row, int parent = 0);
-		void addDirectory(std::string name, int parent = 0);
+		void addDirectory(std::string name, int parent = 0, int row = -1);
 		bool removeDirectory(int directoryId);
 		std::string *directory(int directoryId);
 

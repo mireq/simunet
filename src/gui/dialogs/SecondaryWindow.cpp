@@ -22,14 +22,18 @@
  ***************************************************************************/
 #include "SecondaryWindow.h"
 
+#include "SNDevicesListModel.h"
+#include "DeviceSettingsDlg.h"
+
 #include <QTabWidget>
 #include <QVBoxLayout>
 #include <QTreeView>
 #include <QAction>
 #include <QMenu>
 #include <QHeaderView>
-#include "SNDevicesListModel.h"
-#include "DeviceSettingsDlg.h"
+#include <QInputDialog>
+#include <QMessageBox>
+
 
 SecondaryWindow::SecondaryWindow(QWidget* parent, Qt::WindowFlags flags): QDockWidget(parent, flags), m_list(NULL), m_model(NULL)
 {
@@ -41,6 +45,7 @@ SecondaryWindow::SecondaryWindow(QWidget* parent, Qt::WindowFlags flags): QDockW
 	setWidget(m_tabWidget);
 
 	m_newAct = new QAction("New", this);
+	m_newDirectoryAct = new QAction("New Directory", this);
 	m_settingsAct = new QAction("Settings", this);
 	m_deleteAct = new QAction("Delete", this);
 
@@ -60,7 +65,6 @@ void SecondaryWindow::setModel(SNDevicesListModel *model)
 		m_model = model;
 		m_list = new QTreeView();
 		m_list->setIconSize(QSize(32, 32));
-//		m_list->setUniformItemSizes(true);
 		m_list->setModel(model);
 		m_list->setContextMenuPolicy(Qt::CustomContextMenu);
 		connect(m_list, SIGNAL(customContextMenuRequested(const QPoint &)),
@@ -83,7 +87,9 @@ void SecondaryWindow::showContextMenu(const QPoint &point)
 		QList<QAction *> actions;
 		QModelIndex index = m_list->indexAt(point);
 		actions.append(m_newAct);
-		if (index.isValid()) {
+		actions.append(m_newDirectoryAct);
+		if (index.isValid())
+		{
 			actions.append(m_settingsAct);
 			actions.append(m_deleteAct);
 		}
@@ -92,7 +98,20 @@ void SecondaryWindow::showContextMenu(const QPoint &point)
 			QAction *triggered = QMenu::exec(actions, m_list->mapToGlobal(point));
 			if (triggered == m_newAct)
 			{
-				m_model->startDevice("router");
+				m_model->startDevice("router", index);
+			}
+			else if (triggered == m_newDirectoryAct)
+			{
+				///@todo Poriadne anglicke texty
+				bool ok;
+				QString text = QInputDialog::getText(this,
+				  tr("New folder name"),
+				  tr("New folder name"), QLineEdit::Normal, "", &ok);
+				
+				if (ok && !text.isEmpty())
+				{
+					m_model->addDirectory(text, index);
+				}
 			}
 			else if (triggered == m_settingsAct)
 			{
@@ -102,7 +121,21 @@ void SecondaryWindow::showContextMenu(const QPoint &point)
 			}
 			else if (triggered == m_deleteAct)
 			{
-				m_model->stopDevice(index.data(Qt::UserRole).toInt());
+				if (m_model->rowCount(index) > 0)
+				{
+					///@todo Poriadny anglicky text
+					QMessageBox::StandardButton btn = QMessageBox::question(this,
+					  "Directory not empty", "Directory not empty, remove?",
+					  QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
+					if (btn == QMessageBox::Yes)
+					{
+						m_model->removeDevice(index);
+					}
+				}
+				else
+				{
+					m_model->removeDevice(index);
+				}
 			}
 		}
 	}

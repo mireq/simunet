@@ -26,13 +26,12 @@
 
 #include "SNIcon.h"
 
-#include <QVBoxLayout>
-#include <QHBoxLayout>
+#include <QBoxLayout>
 #include <QDialogButtonBox>
 #include <QStackedWidget>
 #include <QPushButton>
 #include <QCloseEvent>
-#include <QShowEvent>
+#include <QListWidget>
 
 ConfigureDlg::ConfigureDlg(QWidget* parent, Qt::WindowFlags f): QDialog(parent, f)
 {
