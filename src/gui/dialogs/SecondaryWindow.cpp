@@ -90,7 +90,10 @@ void SecondaryWindow::showContextMenu(const QPoint &point)
 		actions.append(m_newDirectoryAct);
 		if (index.isValid())
 		{
-			actions.append(m_settingsAct);
+			if (index.data(Qt::UserRole).toInt() > 0)
+			{
+				actions.append(m_settingsAct);
+			}
 			actions.append(m_deleteAct);
 		}
 		if (actions.count() > 0)

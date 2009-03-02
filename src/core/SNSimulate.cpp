@@ -29,6 +29,7 @@
 #include "config.h"
 
 #include <iostream>
+#include <algorithm>
 
 #include <QDebug>
 
