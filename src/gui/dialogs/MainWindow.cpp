@@ -56,7 +56,7 @@ MainWindow::MainWindow(QWidget* parent, Qt::WindowFlags flags): QMainWindow(pare
 	setupSecondaryWindow();
 	restoreWindowState();
 
-	setEnabled(false);
+	setWindowsEnabled(false);
 	QTimer::singleShot(0, this, SLOT(initSimuNet()));
 }
 
@@ -64,7 +64,15 @@ MainWindow::MainWindow(QWidget* parent, Qt::WindowFlags flags): QMainWindow(pare
 MainWindow::~MainWindow()
 {
 	saveWindowState();
-	//delete m_simulate;
+}
+
+
+void MainWindow::setWindowsEnabled(bool enabled)
+{
+	foreach (QWidget *widget, QApplication::topLevelWidgets())
+	{
+		widget->setEnabled(enabled);
+	}
 }
 
 void MainWindow::setupVariables()
@@ -190,8 +198,8 @@ void MainWindow::initSimuNet()
 	{
 		m_devicesModel->startDevice("router");
 	}
+	setWindowsEnabled(true);
 	statusBar()->showMessage(tr("Ready"), 5000);
-	setEnabled(true);
 }
 
 void MainWindow::restoreWindowState()
@@ -211,3 +219,5 @@ void MainWindow::saveWindowState()
 	settings.setValue("size", size());
 	settings.endGroup();
 }
+
+
