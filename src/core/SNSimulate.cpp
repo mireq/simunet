@@ -535,7 +535,7 @@ void SNSimulate::addToSubtree(int devId, int row, int parent)
 	subtree->second.insert(dev, devId);
 }
 
-void SNSimulate::addDirectory(std::string name, int parent, int row)
+void SNSimulate::addDirectory(const std::string &name, int parent, int row)
 {
 	// pridanie do zoznamu adresarov
 	m_folders[m_nextFolderId].first = parent;
@@ -561,6 +561,15 @@ void SNSimulate::addDirectory(std::string name, int parent, int row)
 	}
 
 	m_nextFolderId++;
+}
+
+void SNSimulate::renameDirectory(const std::string &name, int directoryId)
+{
+	map<int, pair<int, string> >::iterator dir = m_folders.find(-directoryId);
+	if (dir != m_folders.end())
+	{
+		dir->second.second = name;
+	}
 }
 
 bool SNSimulate::removeDirectory(int directoryId)

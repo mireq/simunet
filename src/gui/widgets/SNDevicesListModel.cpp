@@ -78,7 +78,7 @@ QVariant SNDevicesListModel::data(const QModelIndex &index, int role) const
 		return QVariant();
 	}
 
-	if (role == Qt::DisplayRole)
+	if (role == Qt::DisplayRole || role == Qt::EditRole)
 	{
 		qint64 internalId = index.internalId();
 		if (internalId > 0)
@@ -117,6 +117,17 @@ QVariant SNDevicesListModel::data(const QModelIndex &index, int role) const
 	{
 		return QVariant();
 	}
+}
+
+bool SNDevicesListModel::setData(const QModelIndex &index, const QVariant &value, int role)
+{
+	if (index.isValid() && index.internalId() < 0 && role == Qt::EditRole)
+	{
+		m_simulate->renameDirectory(value.toString().toUtf8().data(), index.internalId());
+		emit dataChanged(index, index);
+		return true;
+	}
+	return false;
 }
 
 uint32_t SNDevicesListModel::startDevice(const string &filename, const QModelIndex &index)
@@ -191,7 +202,7 @@ Qt::ItemFlags SNDevicesListModel::flags(const QModelIndex &index) const
 		}
 		else
 		{
-			return Qt::ItemIsDropEnabled | Qt::ItemIsDragEnabled | defaultFlags;
+			return Qt::ItemIsDropEnabled | Qt::ItemIsDragEnabled | Qt::ItemIsEditable | defaultFlags;
 		}
 	}
 	else

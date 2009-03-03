@@ -87,7 +87,8 @@ class SNSimulate
 		void move(int devId, int row, int parent = 0);
 		void removeFromSubtree(int devId, int parent = 0);
 		void addToSubtree(int devId, int row, int parent = 0);
-		void addDirectory(std::string name, int parent = 0, int row = -1);
+		void addDirectory(const std::string &name, int parent = 0, int row = -1);
+		void renameDirectory(const std::string &name, int directoryId);
 		bool removeDirectory(int directoryId);
 		std::string *directory(int directoryId);
 
