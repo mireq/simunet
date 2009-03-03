@@ -48,14 +48,15 @@ SecondaryWindow::SecondaryWindow(QWidget* parent, Qt::WindowFlags flags): QDockW
 	m_newDirectoryAct = new QAction("New Directory", this);
 	m_settingsAct = new QAction("Settings", this);
 	m_deleteAct = new QAction("Delete", this);
-
-	//QWidget *m_devicesWidget = new QWidget();
-	//tabWidget->addTab(devicesWidget, tr("Devices"));
 }
 
 
 SecondaryWindow::~SecondaryWindow()
 {
+	for (QMap<int, QWidget *>::iterator it = m_settingsDialogs.begin(); it != m_settingsDialogs.end(); ++it)
+	{
+		it.value()->deleteLater();
+	}
 }
 
 void SecondaryWindow::setModel(SNDevicesListModel *model)
@@ -96,6 +97,7 @@ void SecondaryWindow::showContextMenu(const QPoint &point)
 			}
 			actions.append(m_deleteAct);
 		}
+
 		if (actions.count() > 0)
 		{
 			QAction *triggered = QMenu::exec(actions, m_list->mapToGlobal(point));
@@ -118,9 +120,21 @@ void SecondaryWindow::showContextMenu(const QPoint &point)
 			}
 			else if (triggered == m_settingsAct)
 			{
-				DeviceSettingsDlg *dlg = new DeviceSettingsDlg(this);
-				dlg->exec();
-				delete dlg;
+				if (index.isValid())
+				{
+					int deviceId = index.data(Qt::UserRole).toInt();
+					if (!m_settingsDialogs.contains(deviceId))
+					{
+						DeviceSettingsDlg *dlg = new DeviceSettingsDlg(deviceId, this);
+						m_settingsDialogs[deviceId] = dlg;
+						connect(dlg, SIGNAL(dialogClosed(DeviceSettingsDlg *)), this, SLOT(settingsClosed(DeviceSettingsDlg *)));
+						dlg->show();
+					}
+					else
+					{
+						m_settingsDialogs[deviceId]->raise();
+					}
+				}
 			}
 			else if (triggered == m_deleteAct)
 			{
@@ -142,6 +156,13 @@ void SecondaryWindow::showContextMenu(const QPoint &point)
 			}
 		}
 	}
+}
+
+void SecondaryWindow::settingsClosed(DeviceSettingsDlg *dialog)
+{
+	int deviceId = dialog->deviceId();
+	m_settingsDialogs.remove(deviceId);
+	dialog->deleteLater();
 }
 
 

@@ -39,9 +39,12 @@ class DeviceSettingsDlg : public QDialog
 {
 		Q_OBJECT
 	public:
-		DeviceSettingsDlg(QWidget* parent = 0);
+		DeviceSettingsDlg(int devId, QWidget* parent = 0);
 		~DeviceSettingsDlg();
-		QStatusBar *statusBar();
+		QStatusBar *statusBar() const;
+		int deviceId() const;
+	signals:
+		void dialogClosed(DeviceSettingsDlg *);
 	protected:
 		bool event(QEvent *event);
 	private:
@@ -58,6 +61,7 @@ class DeviceSettingsDlg : public QDialog
 		void showProgressBar();
 		void hideProgressBar();
 	private:
+		int m_deviceId;
 		QStatusBar *m_statusBar;
 		QPushButton *m_errorButton;
 		QTreeWidget *m_errorsTree;

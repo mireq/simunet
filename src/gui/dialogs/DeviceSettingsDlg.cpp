@@ -36,7 +36,7 @@
 #include <QWebView>
 #include <QProgressBar>
 
-DeviceSettingsDlg::DeviceSettingsDlg(QWidget* parent): QDialog(parent), m_errorsVisible(false), m_loadProgressVisible(false)
+DeviceSettingsDlg::DeviceSettingsDlg(int devId, QWidget* parent): QDialog(parent), m_deviceId(devId), m_errorsVisible(false), m_loadProgressVisible(false)
 {
 	m_statusBar = new QStatusBar;
 	m_errorButton = new QPushButton(tr("Show javascript errors"));
@@ -49,8 +49,10 @@ DeviceSettingsDlg::DeviceSettingsDlg(QWidget* parent): QDialog(parent), m_errors
 
 	m_loadProgress->setFixedWidth(150);
 	m_loadProgress->hide();
+	m_statusBar->setFixedHeight(m_statusBar->sizeHint().height());
 	m_statusBar->addPermanentWidget(m_loadProgress);
 	m_statusBar->addPermanentWidget(m_errorButton);
+	
 	connect(m_webConfig, SIGNAL(jsErrorsAvitable(bool)), SLOT(setErrorsAvitable(bool)));
 	connect(m_webConfig->page(), SIGNAL(linkHovered(QString, QString, QString)), SLOT(showWebLink(QString, QString, QString)));
 	connect(m_webConfig->page(), SIGNAL(loadStarted()), SLOT(showProgressBar()));
@@ -91,9 +93,14 @@ DeviceSettingsDlg::~DeviceSettingsDlg()
 	saveWindowState();
 }
 
-QStatusBar *DeviceSettingsDlg::statusBar()
+QStatusBar *DeviceSettingsDlg::statusBar() const
 {
 	return m_statusBar;
+}
+
+int DeviceSettingsDlg::deviceId() const
+{
+	return m_deviceId;
 }
 
 bool DeviceSettingsDlg::event(QEvent *event)
@@ -102,6 +109,10 @@ bool DeviceSettingsDlg::event(QEvent *event)
 	{
 		m_statusBar->showMessage(static_cast<QStatusTipEvent *>(event)->tip());
 		return true;
+	}
+	else if (event->type() == QEvent::Close)
+	{
+		emit dialogClosed(this);
 	}
 	return QDialog::event(event);
 }

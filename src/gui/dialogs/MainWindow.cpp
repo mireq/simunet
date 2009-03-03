@@ -56,6 +56,7 @@ MainWindow::MainWindow(QWidget* parent, Qt::WindowFlags flags): QMainWindow(pare
 	setupSecondaryWindow();
 	restoreWindowState();
 
+	setEnabled(false);
 	QTimer::singleShot(0, this, SLOT(initSimuNet()));
 }
 
@@ -190,6 +191,7 @@ void MainWindow::initSimuNet()
 		m_devicesModel->startDevice("router");
 	}
 	statusBar()->showMessage(tr("Ready"), 5000);
+	setEnabled(true);
 }
 
 void MainWindow::restoreWindowState()

@@ -24,7 +24,9 @@
 #define SECONDARYWINDOW_H
 
 #include <QDockWidget>
+#include <QMap>
 
+class DeviceSettingsDlg;
 class SNDevicesListModel;
 class QTreeView;
 class QTabWidget;
@@ -44,6 +46,7 @@ class SecondaryWindow : public QDockWidget
 
 	private slots:
 		void showContextMenu(const QPoint &point);
+		void settingsClosed(DeviceSettingsDlg *dialog);
 
 	private:
 		QAction *m_newAct;
@@ -53,6 +56,7 @@ class SecondaryWindow : public QDockWidget
 		QTreeView *m_list;
 		SNDevicesListModel *m_model;
 		QTabWidget *m_tabWidget;
+		QMap<int, QWidget *> m_settingsDialogs;
 
 };
 
