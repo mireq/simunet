@@ -31,19 +31,23 @@
 class QLabel;
 
 /**
- @author Miroslav Bendik <miroslav.bendik@gmail.com>
- @brief Widget na zobrazenie titulku / varovania v ramceku
+ @author Miroslav Bendik
 */
 class SNTitleWidget : public QWidget
 {
 		Q_OBJECT
 	public:
 /*!
- \brief Typy sprav (rozlisene ikonou).
- */
+  Typ spravy.
+
+  Pouziva sa na graficke odlisenie jednotlivych druhov informacnych sprav.
+*/
 		enum MessageType
 		{
-			PlainMessage, InfoMessage, WarningMessage, ErrorMessage
+			PlainMessage, /*!< Bezna sprava (bez definovanej ikony). */
+			InfoMessage, /*!< Informacna sprava. */
+			WarningMessage, /*!< Varovna sprava. */
+			ErrorMessage /*!< Chybova sprava. */
 		};
 
 	public:
@@ -55,32 +59,12 @@ class SNTitleWidget : public QWidget
 		~SNTitleWidget();
 
 	public slots:
-/*!
- \brief Pomocou setPixmap je mozne pouzit vlastnu ikonu.
-*/
 		void setPixmap(const QString &name);
 		void setPixmap(const QPixmap &pixmap);
 		void setPixmap(const QIcon &icon);
 		void setPixmap(MessageType type);
-
-/*!
- \brief Nastavenie textu spravy.
- \param QString Text spravy
-*/
 		void setText(const QString &text);
-
-/*!
- \brief Nastavenie komentaru.
- \param QString Text komentaru.
- Tato funkcia nastavuje volitelny komentar. Pre zrusenie zobrazenia komentaru
- treba parameter comment nastavit na NULL (QString())
-*/
 		void setComment(const QString &comment);
-
-/*!
- \brief Nastavenie casu po ktorom sprava zmizne.
- \param int Cas v milisekundach. Ak je cas nulovy bude sprava zobrazena permanentne.
-*/
 		void setHideTimeout(int msecs);
 
 	private:

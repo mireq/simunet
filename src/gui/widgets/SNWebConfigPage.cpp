@@ -28,6 +28,15 @@
 #include <QNetworkRequest>
 #include <QDebug>
 
+/*!
+  \class SNWebConfigPage
+  \brief Vylepsenie QWebPage o filtrovanie a pridany vlastny css styl.
+  \ingroup widgets
+*/
+
+/*!
+  Vytvorenie web stranky.
+*/
 SNWebConfigPage::SNWebConfigPage(QWidget *parent)
 		: QWebPage(parent)
 {
@@ -35,16 +44,28 @@ SNWebConfigPage::SNWebConfigPage(QWidget *parent)
 	//setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
 }
 
-
+/*!
+  Zrusenie web stranky.
+*/
 SNWebConfigPage::~SNWebConfigPage()
 {
 }
 
+/*!
+  \reimp
+
+  \par Tato metoda emituje signal javaScriptError() v pripade, ze nastane chyba.
+*/
 void SNWebConfigPage::javaScriptConsoleMessage(const QString &message, int lineNumber, const QString &sourceID)
 {
 	emit javaScriptError(message, lineNumber);
 }
 
+/*!
+  \reimp
+
+  \par Filter pre navigacne prikazy.
+*/
 bool SNWebConfigPage::acceptNavigationRequest(QWebFrame *frame, const QNetworkRequest &request, NavigationType type)
 {
 	qDebug()<<request.url();
@@ -52,4 +73,9 @@ bool SNWebConfigPage::acceptNavigationRequest(QWebFrame *frame, const QNetworkRe
 	return QWebPage::acceptNavigationRequest(frame, request, type);
 }
 
+/*!
+  \fn SNWebConfigPage::javaScriptError(QString, int)
+  Tento signal sa emituje pri najdeni chyby v javascripte.
 
+  Emituje sa chybova hlaska a cislo riadku na ktorom doslo k chybe.
+*/

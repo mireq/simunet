@@ -29,6 +29,14 @@
 
 QString SNWebConfigWidget::m_webConfigJs;
 
+/*!
+  \class SNWebConfigWidget
+  \brief Okno s integrovanym prehliadacom pouzivane na nastavenie zariadeni cez webove rozhranie.
+*/
+
+/*!
+  Vytvorenie webovej konfiguracie pre zariadenie.
+*/
 SNWebConfigWidget::SNWebConfigWidget(QWidget* parent): QWidget(parent), m_errorsVisible(false)
 {
 	setObjectName("WebConfig");
@@ -99,22 +107,35 @@ SNWebConfigWidget::SNWebConfigWidget(QWidget* parent): QWidget(parent), m_errors
 	restoreWindowState();
 }
 
-
+/*!
+  Zrusenie webovej konfiguracie.
+*/
 SNWebConfigWidget::~SNWebConfigWidget()
 {
 	saveWindowState();
 }
 
+/*!
+  Vyrenderovanie html kodu.
+
+  \param string HTML kod ktory sa ma vyrenderovat.
+*/
 void SNWebConfigWidget::render(const QString &string)
 {
 	m_view->setHtml(string, QUrl("simunet:/"));
 }
 
+/*!
+  Vrati pocet javascript-ovych chyb.
+*/
 int SNWebConfigWidget::errorsCount() const
 {
 	return m_jsErrorsTree->topLevelItemCount();
 }
 
+/*!
+  Nastavenie viditelnosti javascript-ovych chybovych hlasok.
+*/
 void SNWebConfigWidget::setErrorsVisible(bool visible)
 {
 	if (!visible && m_jsErrorsTree->isVisible())
@@ -131,16 +152,25 @@ void SNWebConfigWidget::setErrorsVisible(bool visible)
 	m_jsErrorsTree->setVisible(visible);
 }
 
+/*!
+  Vrati referenciu na aktualne zobrazenu stranku.
+*/
 QWebPage *SNWebConfigWidget::page()
 {
 	return m_view->page();
 }
 
+/*!
+  Nastavenie titulku stranky.
+*/
 void SNWebConfigWidget::setPageTitle(const QString &title)
 {
 	m_titleLabel->setText(title);
 }
 
+/*!
+  Nastavenie adresy ktoru ma integrovany browser zobrazit.
+*/
 void SNWebConfigWidget::setUrl(const QString &url)
 {
 	qDebug()<<url;
@@ -151,6 +181,9 @@ void SNWebConfigWidget::setUrl(const QString &url)
 	exampleFile.close();
 }
 
+/*!
+  Pridanie polozky do menu zobrazeneho vlavo.
+*/
 void SNWebConfigWidget::addMenuItem(const QString &text, const QString &href, int depth, int mode, const QString &title)
 {
 	QFont newFont = font();
@@ -306,5 +339,9 @@ void SNWebConfigWidget::menuActivated(const QModelIndex &index)
 	}
 }
 
+/*!
+  \fn void SNWebConfigWidget::jsErrorsAvitable(bool)
 
+  Indikacia dostupnosti javascript-ovych chyb.
+*/
 

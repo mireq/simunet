@@ -35,6 +35,20 @@
 
 using namespace std;
 
+/*!
+  \class SNDevicesListModel
+  \brief Model pomocou ktoreho sa manipuluje so zariadeniami.
+  \ingroup models
+
+  Pomocou tejto triedy sa daju modifikovat zariadenia v SNSimulate. Zariadenia
+  by sa nemali modifikovat priamo aby boli zobrazene zariadenia aktualne.
+*/
+
+/*!
+  Vytvorenie modelu.
+
+  Pri vytvoreni modelu sa vytvori objekt SNSimulate.
+*/
 SNDevicesListModel::SNDevicesListModel(QObject* parent):
 		QAbstractItemModel(parent)
 {
@@ -43,12 +57,19 @@ SNDevicesListModel::SNDevicesListModel(QObject* parent):
 	m_selection = new QItemSelectionModel(this);
 }
 
-
+/*!
+  Zrusenie modelu.
+*/
 SNDevicesListModel::~SNDevicesListModel()
 {
 	delete m_simulate;
 }
 
+/*!
+  \reimp
+
+  \par Vrati pocet riadkov ktore su v adresari urcenom parametrom \a parent.
+*/
 int SNDevicesListModel::rowCount(const QModelIndex &parent) const
 {
 	const vector<int> *deviceIds;
@@ -71,6 +92,12 @@ int SNDevicesListModel::rowCount(const QModelIndex &parent) const
 	}
 }
 
+/*!
+  \reimp
+
+  \par Vrati data na pozicii indexu. Pre ziskanie ID zariadenia musi byt rola
+  Qt::UserRole.
+*/
 QVariant SNDevicesListModel::data(const QModelIndex &index, int role) const
 {
 	if (!index.isValid())
@@ -119,6 +146,11 @@ QVariant SNDevicesListModel::data(const QModelIndex &index, int role) const
 	}
 }
 
+/*!
+  \reimp
+
+  \par Nastavenie mena polozky.
+*/
 bool SNDevicesListModel::setData(const QModelIndex &index, const QVariant &value, int role)
 {
 	if (index.isValid() && index.internalId() < 0 && role == Qt::EditRole)
@@ -130,7 +162,10 @@ bool SNDevicesListModel::setData(const QModelIndex &index, const QVariant &value
 	return false;
 }
 
-uint32_t SNDevicesListModel::startDevice(const string &filename, const QModelIndex &index)
+/*!
+  Spustenie zariadenia v adresari urcenom indexom.
+*/
+uint32_t SNDevicesListModel::startDevice(const std::string &filename, const QModelIndex &index)
 {
 	int parent = 0;
 	int row = 0;
@@ -144,6 +179,9 @@ uint32_t SNDevicesListModel::startDevice(const string &filename, const QModelInd
 	return devId;
 }
 
+/*!
+  Vytvorenie podadresara v adresari urceonom indexom.
+*/
 void SNDevicesListModel::addDirectory(const QString &name, const QModelIndex &index)
 {
 	int parent = 0;
@@ -157,6 +195,9 @@ void SNDevicesListModel::addDirectory(const QString &name, const QModelIndex &in
 	endInsertRows();
 }
 
+/*!
+  Odstranenie zariadenia z modelu. Zariadenie je urcene indexom.
+*/
 bool SNDevicesListModel::removeDevice(const QModelIndex &index)
 {
 	if (!index.isValid())
@@ -185,11 +226,17 @@ bool SNDevicesListModel::removeDevice(const QModelIndex &index)
 	return ret;
 }
 
+/*!
+  \reimp
+*/
 Qt::DropActions SNDevicesListModel::supportedDropActions() const
 {
 	return Qt::CopyAction | Qt::MoveAction;
 }
 
+/*!
+  \reimp
+*/
 Qt::ItemFlags SNDevicesListModel::flags(const QModelIndex &index) const
 {
 	Qt::ItemFlags defaultFlags = QAbstractItemModel::flags(index);
@@ -211,6 +258,11 @@ Qt::ItemFlags SNDevicesListModel::flags(const QModelIndex &index) const
 	}
 }
 
+/*!
+  \reimp
+
+  \par Podporovany mime typ je application/x-simunet-device.
+*/
 QStringList SNDevicesListModel::mimeTypes() const
 {
 	QStringList types;
@@ -218,6 +270,9 @@ QStringList SNDevicesListModel::mimeTypes() const
 	return types;
 }
 
+/*!
+  \reimp
+*/
 QMimeData *SNDevicesListModel::mimeData(const QModelIndexList &indexes) const
 {
 	QMimeData *mimeData = new QMimeData();
@@ -237,6 +292,9 @@ QMimeData *SNDevicesListModel::mimeData(const QModelIndexList &indexes) const
 	return mimeData;
 }
 
+/*!
+  \reimp
+*/
 bool SNDevicesListModel::dropMimeData(const QMimeData *data,
                                       Qt::DropAction action,
                                       int row, int column,
@@ -322,12 +380,20 @@ bool SNDevicesListModel::dropMimeData(const QMimeData *data,
 	return true;
 }
 
+/*!
+  Vrati model vyberu.
 
+  \warning Ak sa nenastavi spravny model vyberu pre pohlad nebude mozne po
+  presune zariadenia / adresara ponechat vybranu polozku.
+*/
 QItemSelectionModel *SNDevicesListModel::selectionModel() const
 {
 	return m_selection;
 }
 
+/*!
+  \reimp
+*/
 QModelIndex SNDevicesListModel::index(int row, int column, const QModelIndex &parent) const
 {
 	if (column != 0)
@@ -357,6 +423,9 @@ QModelIndex SNDevicesListModel::index(int row, int column, const QModelIndex &pa
 	return createIndex(row, column, (*list)[row]);
 }
 
+/*!
+  \reimp
+*/
 QModelIndex SNDevicesListModel::parent(const QModelIndex &index) const
 {
 	if (!index.isValid())
@@ -386,6 +455,9 @@ QModelIndex SNDevicesListModel::parent(const QModelIndex &index) const
 	return createIndex(row, 0, parent);
 }
 
+/*!
+  \reimp
+*/
 int SNDevicesListModel::columnCount(const QModelIndex &parent) const
 {
 	return 1;

@@ -25,32 +25,73 @@
 
 using namespace std;
 
-SNDeviceImportException::SNDeviceImportException(const string &a_moduleName)
+/*!
+  \class SNDeviceImportException
+  \brief Vynimka ktora sa vyvolava pri chybe importu zariadenia.
+  \ingroup exceptions
+*/
+
+/*!
+  Vytvorenie vynimky.
+
+  \param moduleName Nazov zariadenia ktore sa nepodarilo nastartovat.
+*/
+SNDeviceImportException::SNDeviceImportException(const std::string &moduleName)
 {
-	m_moduleName = a_moduleName;
+	m_moduleName = moduleName;
 }
 
-const string &SNDeviceImportException::moduleName()
+/*!
+  Zistenie nazvu chybneho zariadenia.
+*/
+const std::string &SNDeviceImportException::moduleName()
 {
 	return m_moduleName;
 }
 
-SNPythonInterpreterException::SNPythonInterpreterException(const std::string & a_problem, SNPythonInterpreterException::pythonErr a_type)
+/*!
+  \class SNPythonInterpreterException
+  \brief Vynimka sa vykonava pri chybe spoluprace s python intepreterom.
+  \ingroup exceptions
+*/
+
+/*!
+  Vytvorenie novej vynimke pre chybe interpretovania python kodu.
+
+  \param problem Strucny popis problemu v textovej podobe.
+  \param type Typ problemu ktory sa vyskytol.
+*/
+SNPythonInterpreterException::SNPythonInterpreterException(const std::string &problem, SNPythonInterpreterException::pythonErr type)
 {
-	m_problem = a_problem;
-	m_type = a_type;
+	m_problem = problem;
+	m_type = type;
 }
 
+/*!
+  Strucny popis problemu v textovej forme.
+*/
 const std::string & SNPythonInterpreterException::problem()
 {
 	return m_problem;
 }
 
+/*!
+  Typ problemu ktory nastal.
+*/
 SNPythonInterpreterException::pythonErr SNPythonInterpreterException::problemType()
 {
 	return m_type;
 }
 
+/*!
+  \class PyObjectNULLException
+  \brief Vynimka vyvolana pri vratenie NULL namiesto PyObject *
+*/
+
+/*!
+  Vynimka ktora sa vyvola v pripade, ze python vrati namiesto PyObject * hodnotu
+  NULL.
+*/
 PyObjectNULLException::PyObjectNULLException()
 {
 }

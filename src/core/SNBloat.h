@@ -68,7 +68,10 @@ struct SNBloatRWControl{
     SNBloatIndexObject bio;
 };
 
-/**
+/* zmenene na standardny komentar aby nebola tato trieda (zatial) automaticky
+   dokumentovana, odporucam z autora zrusit mail (kvoli spamom)
+*/
+/*
  @author Samuel Kupka <skupka@sageteam.eu>
 */
 class SNBloat

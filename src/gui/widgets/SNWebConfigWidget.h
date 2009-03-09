@@ -34,7 +34,7 @@ class QTreeWidget;
 class QWebPage;
 
 /**
- @author Miroslav Bendik <miroslav.bendik@gmail.com>
+ @author Miroslav Bendik
 */
 class SNWebConfigWidget : public QWidget
 {

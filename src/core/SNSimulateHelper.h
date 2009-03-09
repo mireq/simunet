@@ -30,8 +30,7 @@
 class SNDevice;
 
 /**
- @author Miroslav Bendik <miroslav.bendik@gmail.com>
- @brief Trieda zabezpecujuca beh jednotlivych modulov.
+ @author Miroslav Bendik
 */
 class SNSimulateHelper: public QThread
 {
@@ -39,19 +38,8 @@ class SNSimulateHelper: public QThread
 	public:
 		SNSimulateHelper(PyThreadState *mainThreadState);
 		~SNSimulateHelper();
-/*!
- \brief Spustenie simulacie (v samostatnom vlakne).
-*/
 		void run();
-
-/*!
- \brief Zastavenie vlakna.
-*/
 		void stop();
-
-/*!
- \brief Pridanie zariadenia ktore sa bude v tomto vlakne spracovavat.
-*/
 		void addDevice(SNDevice *device);
 	private:
 		bool m_stop;

@@ -30,8 +30,7 @@
 class QSpinBox;
 
 /**
- @author Miroslav Bendik <miroslav.bendik@gmail.com>
- @brief Konfiguracia vykonu aplikacie
+ @author Miroslav Bendik
 */
 class CfgPerformance : public SNConfigPanel
 {
@@ -39,11 +38,11 @@ class CfgPerformance : public SNConfigPanel
 	public:
 		CfgPerformance(QWidget* parent = 0);
 		~CfgPerformance();
-		QString panelName() const;
-		SNIcon icon() const;
-		bool panelChanged();
-		bool panelSelected();
-		void saveChanges();
+		virtual QString panelName() const;
+		virtual SNIcon icon() const;
+		virtual bool panelChanged();
+		virtual bool panelSelected();
+		virtual void saveChanges();
 
 	private:
 		void readConfig();

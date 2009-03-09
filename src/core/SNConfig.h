@@ -26,7 +26,7 @@
 class QSettings;
 
 /**
- @author Miroslav Bendik <miroslav.bendik@gmail.com>
+ @author Miroslav Bendik
 */
 class SNConfig
 {

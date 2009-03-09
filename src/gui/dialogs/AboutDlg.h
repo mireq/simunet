@@ -27,8 +27,7 @@
 #include <QDialog>
 
 /**
- @author Miroslav Bendik <miroslav.bendik@gmail.com>
- @brief Okno zobrazujuce informacie o autoroch aplikacie
+ @author Miroslav Bendik
 */
 
 class AboutDlg : public QDialog, Ui_AboutDlg

@@ -31,6 +31,19 @@
 
 PyThreadState *SNSimulateHelper::m_mainThreadState = NULL;
 
+/*!
+  \class SNSimulateHelper
+  \brief Trieda zabezpecujuca beh jednotlivych modulov.
+  \ingroup core
+
+  Kazda instancia tejto triedy bezi v samostatnom vlakne a stara sa o
+  1 vlakno v pythonovi.
+*/
+
+
+/*!
+  Vytvorenie instancie v hlavnom vlakne.
+*/
 SNSimulateHelper::SNSimulateHelper(PyThreadState *mainThreadState)
 	:m_stop(false)
 {
@@ -45,7 +58,9 @@ SNSimulateHelper::SNSimulateHelper(PyThreadState *mainThreadState)
 	PyEval_ReleaseLock();
 }
 
-
+/*!
+  Zrusenie instancie, zastavenie cinnosti vlakna.
+*/
 SNSimulateHelper::~SNSimulateHelper()
 {
 	PyEval_AcquireLock();
@@ -55,6 +70,9 @@ SNSimulateHelper::~SNSimulateHelper()
 	PyEval_ReleaseLock();
 }
 
+/*!
+  Spustenie simulacie (v samostatnom vlakne).
+ */
 void SNSimulateHelper::run()
 {
 	while(1)
@@ -72,11 +90,19 @@ void SNSimulateHelper::run()
 	}
 }
 
+/*!
+  Zastavenie vlakna.
+
+  Vlakno sa zastavi s istym oneskorenim, je potrebne pouzit join.
+ */
 void SNSimulateHelper::stop()
 {
 	m_stop = true;
 }
 
+/*!
+  Pridanie zariadenia ktore sa bude v tomto vlakne spracovavat.
+ */
 void SNSimulateHelper::addDevice(SNDevice *device)
 {
 	m_devices.push_back(device);

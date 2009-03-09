@@ -36,8 +36,7 @@ class SNScene;
 class SecondaryWindow;
 
 /**
- @author Miroslav Bendik <miroslav.bendik@gmail.com>
- @brief Hlavne okno aplikacie.
+ @author Miroslav Bendik
 */
 class MainWindow : public QMainWindow
 {
@@ -47,7 +46,7 @@ class MainWindow : public QMainWindow
 		~MainWindow();
 		static void setWindowsEnabled(bool enabled);
 
-	protected:
+	private:
 		void setupVariables();
 		void setupUi();
 		void setupToolBars();
@@ -58,7 +57,7 @@ class MainWindow : public QMainWindow
 		void restoreWindowState();
 		void saveWindowState();
 
-	protected slots:
+	private slots:
 		void about();
 		void configure();
 		void sceneNavigationModeActionTriggered(QAction *);

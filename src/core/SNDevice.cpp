@@ -29,13 +29,31 @@
 
 using namespace std;
 
+/*!
+  Metody ktore exportujeme do pythonu
+*/
 const PyMethodDef SNDevice::SNSimulateMethods[] = {
 	{"sendFrame", SNDevice::frameResponseWrapper, METH_VARARGS, "Odoslanie ramca"},
 	{"sendTelnet", SNDevice::telnetResponseWrapper, METH_VARARGS, "Odoslanie dat cez telnet"},
 	{NULL, NULL, 0, NULL}
 };
 
-SNDevice::SNDevice(const string &filename, uint32_t deviceId, SNSimulate *parent)
+/*!
+  \class SNDevice
+  \brief Trieda prepajajuca svet pythonu s C++.
+  \ingroup core
+
+  Tato trieda zjednodusuje volanie python funkcii z C++.
+*/
+
+/*!
+  Vytvorenie zariadenia.
+
+  \param filename Adresar so zariadenim (v rovnakom tvare ako pouziva python import).
+  \param deviceId Jednoznacny identifikator zariadenia.
+  \param parent Odkaz na objekt typu SNSimulate
+ */
+SNDevice::SNDevice(const std::string &filename, uint32_t deviceId, SNSimulate *parent)
 {
 	m_simulate = parent;
 	try
@@ -82,7 +100,9 @@ SNDevice::SNDevice(const string &filename, uint32_t deviceId, SNSimulate *parent
 	std::cout<<std::flush;
 }
 
-
+/*!
+  Zrusenie zariadenia
+*/
 SNDevice::~SNDevice()
 {
 	PyCPPObject pDeviceId(PyLong_FromUnsignedLong(m_deviceId), true);
@@ -99,7 +119,7 @@ SNDevice::~SNDevice()
 
 
 /*!
-    \fn SNDevice::processFrame(data *PyObject)
+  Odoslanie ramca zariadeniu.
  */
 bool SNDevice::processFrame(PyObject *data)
 {
@@ -123,7 +143,7 @@ bool SNDevice::processFrame(PyObject *data)
 
 
 /*!
-    \fn SNDevice::resetConfig(void)
+  Vymazanie konfiguracie zariadenia.
  */
 bool SNDevice::resetConfig(void)
 {
@@ -146,7 +166,7 @@ bool SNDevice::resetConfig(void)
 
 
 /*!
-    \fn SNDevice::setConfig(PyObject *data)
+  Nastavenie konfiguracie zariadenia.
  */
 bool SNDevice::setConfig(PyObject *data)
 {
@@ -168,9 +188,8 @@ bool SNDevice::setConfig(PyObject *data)
 	}
 }
 
-
 /*!
-    \fn SNDevice::dumpConfig(void)
+  Ziskanie konfiguracie zariadenia.
  */
 PyObject *SNDevice::dumpConfig(void)
 {
@@ -192,9 +211,12 @@ PyObject *SNDevice::dumpConfig(void)
 
 
 /*!
-    \fn SNDevice::httpRequest(const string &url, PyObject *post)
+ Odoslanie http poziadavky zariadeniu.
+
+ \param url Url ktore pozadujeme od http serveru zariadenia.
+ \param post Post data ktore mu posielame.
  */
-char *SNDevice::httpRequest(const string &url, PyObject *post)
+char *SNDevice::httpRequest(const std::string &url, PyObject *post)
 {
 	try
 	{
@@ -217,7 +239,10 @@ char *SNDevice::httpRequest(const string &url, PyObject *post)
 	}
 }
 
-char *SNDevice::httpRequest(const std::string &url, const map<string,string> post)
+/*!
+  \overload
+*/
+char *SNDevice::httpRequest(const std::string &url, const std::map<std::string, std::string> post)
 {
 	try
 	{
@@ -237,9 +262,14 @@ char *SNDevice::httpRequest(const std::string &url, const map<string,string> pos
 
 
 /*!
-    \fn SNDevice::telnetRequest(const string &line, char symbol)
+  Odoslanie vstupneho riadku z telnetu a symbolu ktory prenos odstartoval.
+
+  Pomocou tejto metody sa posilaju telnet data pre konkretne zariadenie.
+
+  \param line Vstupny riadok.
+  \param symbol Znak ktory odstartoval prenos (napr \\n, alebo ? na CISCO zariadeniach.)
  */
-char *SNDevice::telnetRequest(const string &line, char symbol)
+char *SNDevice::telnetRequest(const std::string &line, char symbol)
 {
 	try
 	{
@@ -274,7 +304,7 @@ char *SNDevice::telnetRequest(const string &line, char symbol)
 
 
 /*!
-    \fn SNDevice::telnetGetControlChars(void)
+  Ziskanie zoznamu znakoch po ktorych odosielame data zariadeniu.
  */
 char *SNDevice::telnetGetControlChars(void)
 {

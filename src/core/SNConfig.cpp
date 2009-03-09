@@ -23,17 +23,31 @@
 #include "SNConfig.h"
 #include <QSettings>
 
+/*!
+  \class SNConfig
+  \brief Trieda ktora sa stara o ukladanie nastaveni.
+  \ingroup core
+*/
+
+/*!
+  Vytvorenie instancie SNConfig.
+*/
 SNConfig::SNConfig()
 {
 	m_settings = new QSettings();
 }
 
-
+/*!
+  Zrusenie instancie SNConfig, pripadny zapis este neulozenych zmien.
+*/
 SNConfig::~SNConfig()
 {
 	delete m_settings;
 }
 
+/*!
+  Vrati pocet vlakien ktore sa po zapnuti nastartuju.
+*/
 int SNConfig::threadsCount()
 {
 	m_settings->beginGroup("preferences");
@@ -46,6 +60,9 @@ int SNConfig::threadsCount()
 	return threads;
 }
 
+/*!
+  Nastavenie poctu vlakien.
+*/
 void SNConfig::setThreadsCount(int threads)
 {
 	m_settings->beginGroup("preferences");

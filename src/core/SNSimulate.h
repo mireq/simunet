@@ -34,52 +34,18 @@ class SNDevice;
 class SNSimulateHelper;
 
 /**
- @author Miroslav Bendik <miroslav.bendik@gmail.com>
- @brief Trieda zabezpecujuca samotnu simulaciu.
+ @author Miroslav Bendik
 */
 class SNSimulate
 {
 	public:
 		SNSimulate(int threads);
 		~SNSimulate();
-
-/*!
- \brief Odstranenie zariadenia zo simulacie.
- \param id Unikatne identifikacne cislo zariadenia.
- \return Po uspesnom odstraneni je navratova hodnota false, pri chybe true.
-*/
 		bool stopDevice(uint32_t id);
-
-/*!
- \brief Pridanie zariadenia do simulacie.
- \return Navratovou hodnotou je jedinecne identifikacne cislo zariadenia.
-*/
 		uint32_t startDevice(const std::string &filename, int directory = 0, int row = -1);
-
-/*!
- \brief Spracovanie ramca / preposlanie inym zariadeniam.
- \param id ID zariadenia.
- \param data Data ktore poslalo zariadenie.
- Tato metoda zachytava spravy od zariadeni a spracuje ich / preposiela
- ostatnym zariadeniam.
-*/
 		void frameResponse(uint32_t id, PyObject *data);
-
-/*!
- \brief Prijatie telnet odpovede od zariadenia.
- \param id ID zariadenia.
- \param text Text ktory vypisalo zariadenie.
- \param cmd Text ktory sa ma pouzit ako prompt.
-*/
 		void telnetResponse(uint32_t id, const char *text, const char *cmd);
-
-/*!
- \brief Ziskanie referencie na zariadenie
- \param id ID zariadenia
- \return Navratovou hodotou je referencia zariadenia ak existuje, NULL ak neexistuje.
-*/
 		SNDevice *device(uint32_t id) const;
-
 		const std::vector<int> *devicesList(int parent = 0) const;
 		int findIndexOfDevice(int devId, int parent) const;
 		int findIndexOfDevice(int devId) const;

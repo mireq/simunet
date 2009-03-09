@@ -72,6 +72,15 @@ void SNSceneAttribDialog::newAngle(float angle)
 
 //////////////////////////////////////////////
 
+/*!
+  \class SNScene
+  \brief Graficka (OpenGL) scena.
+*/
+
+
+/*!
+  Vytvorenie grafickej sceny.
+*/
 SNScene::SNScene(QObject* parent): QGraphicsScene(parent), m_tahanie(false), m_rotacia(0.0), m_pozicia(0.0, 0.0)
 {
 	m_dialog = new SNSceneAttribDialog("SNScene attributes");
@@ -89,11 +98,16 @@ SNScene::SNScene(QObject* parent): QGraphicsScene(parent), m_tahanie(false), m_r
 }
 
 
+/*!
+  Zrusenie grafickej sceny.
+*/
 SNScene::~SNScene()
 {
 }
 
-
+/*!
+  Nastavenie navigacneho modu.
+*/
 void SNScene::setNavigationMode(NavigationMode mode)
 {
 	m_navigationMode = mode;
@@ -195,7 +209,12 @@ void SNScene::keyPressEvent(QKeyEvent *event)
 	}
 }
 
+/*!
+  Vykreslovanie pozadia sceny.
 
+  Pri vykreslovani OpenGL ako pozadie nie je nutne pouzivat double buffering.
+  K prekresleniu sceny dochadza az pri kompletnom vykresleni cez OpenGL.
+*/
 void SNScene::drawBackground(QPainter *painter, const QRectF &)
 {
 	if (painter->paintEngine()->type() != QPaintEngine::OpenGL) {

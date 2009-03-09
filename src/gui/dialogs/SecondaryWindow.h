@@ -33,8 +33,7 @@ class QTabWidget;
 class QAction;
 
 /**
- @author Miroslav Bendik <miroslav.bendik@gmail.com>
- @brief Sekundarne (oddelitelne) okno na nastroje
+ @author Miroslav Bendik
 */
 class SecondaryWindow : public QDockWidget
 {

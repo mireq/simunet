@@ -31,7 +31,7 @@ class SNSimulate;
 class QItemSelectionModel;
 
 /**
- @author Miroslav Bendik <miroslav.bendik@gmail.com>
+ @author Miroslav Bendik
 */
 class SNDevicesListModel : public QAbstractItemModel
 {

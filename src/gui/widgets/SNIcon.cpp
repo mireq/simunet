@@ -25,7 +25,28 @@
 
 const int SNIcon::m_size[7] = {16, 22, 32, 48, 64, 128, 0};
 
-SNIcon::SNIcon(const QString& name, bool showUnknownIcon)
+/*!
+  \class SNIcon
+  \brief Trieda pouzitelna ako nahrada QIcon.
+  \ingroup widgets
+
+  Pouzitie tejto triedy je o nieco jednoduchsie nez QIcon. Okrem toho
+  umoznuje tato trieda jednoduchsiu integraciu do desktopu. Nazvy ikon su
+  kompatibilne s KDE 4.
+
+  Ikony sa prehladavaju v adresari :/icons/XxY/name.png. Ikony mozu mat niekolko
+  velkosti. Ak ma ikona niekolko velkosti nespomali to beh. K nacitaniu ikony
+  dojde az pri poziadavke na vykreslenie (kedy sa uz vie aku pozadujeme velkost).
+*/
+
+/*!
+  Vytvorenie novej ikony.
+
+  \param name Nazov ikony. Podla nazvu sa bude vyhladavat subor.
+  \param showUnknownIcon V pripade, ze je tento parameter true a ikona sa
+    nenajde bude nahradena neznamou ikonou.
+*/
+SNIcon::SNIcon(const QString &name, bool showUnknownIcon)
 {
 	int sizeIndex = 0;
 	int filesFound = 0;
@@ -62,7 +83,9 @@ SNIcon::SNIcon(const QString& name, bool showUnknownIcon)
 	}
 }
 
-
+/*!
+  Zrusenie ikony.
+*/
 SNIcon::~SNIcon()
 {
 }

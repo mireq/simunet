@@ -34,7 +34,17 @@
 #include <QInputDialog>
 #include <QMessageBox>
 
+/*!
+  \class SecondaryWindow
+  \brief Sekundarne (oddelitelne) okno na nastroje
+  \ingroup dialogs
 
+  V tomto okne sa zobrazuju rozne nastroje a zoznam zariadeni.
+*/
+
+/*!
+  Vytvorenie sekundarneho okna.
+*/
 SecondaryWindow::SecondaryWindow(QWidget* parent, Qt::WindowFlags flags): QDockWidget(parent, flags), m_list(NULL), m_model(NULL)
 {
 	setObjectName("ToolWindow");
@@ -50,7 +60,9 @@ SecondaryWindow::SecondaryWindow(QWidget* parent, Qt::WindowFlags flags): QDockW
 	m_deleteAct = new QAction("Delete", this);
 }
 
-
+/*!
+  Zrusenie sekundarneho okna.
+*/
 SecondaryWindow::~SecondaryWindow()
 {
 	for (QMap<int, QWidget *>::iterator it = m_settingsDialogs.begin(); it != m_settingsDialogs.end(); ++it)
@@ -59,6 +71,9 @@ SecondaryWindow::~SecondaryWindow()
 	}
 }
 
+/*!
+  Nastavenie modelu cez ktory sa modifikuju zariadenia.
+*/
 void SecondaryWindow::setModel(SNDevicesListModel *model)
 {
 	if (m_list == NULL)

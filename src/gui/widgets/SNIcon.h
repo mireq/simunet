@@ -26,20 +26,12 @@
 #include <QIcon>
 
 /**
- @author Miroslav Bendik <miroslav.bendik@gmail.com>
- @brief Trieda pouzitelna ako nahrada QIcon (kvoli kompatibilite s KDE).
+ @author Miroslav Bendik
 */
 class SNIcon : public QIcon
 {
 	public:
-/*!
- \brief Konstruktor vytvarajuci ikonu.
- \param QString Nazov ikony
- Nazov ikony sa zadava bez uvodneho : a pripony (.png). Nazvy su
- kompatibilne s KDE4. V pripade, ze sa ziadana ikona nenajde nacita sa
- unknown.png.
-*/
-		SNIcon(const QString& name, bool showUnknownIcon = true);
+		SNIcon(const QString &name, bool showUnknownIcon = true);
 		virtual ~SNIcon();
 	private:
 		static const int m_size[7];

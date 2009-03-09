@@ -36,8 +36,20 @@
 using namespace std;
 
 /*!
-    \fn SNSimulate::SNSimulate()
-    Vytvorenie n vlakien SNSimulateHelper
+  \class SNSimulate
+  \brief Trieda zabezpecujuca samotnu simulaciu.
+  \ingroup core
+
+  Tato trieda obsahuje odkazy na vsetky zariadenia a zaroven obsahuje virtualnu
+  adresarovu strukturu so jednotlivymi zariadeniami. Pri vytvoreni objektu
+  sa vytvori niekolko objektov typu SNSimulateHelper (podla nastavenia)
+  poctu vlakien.
+
+  \sa SNSimulateHelper
+*/
+
+/*!
+  Vytvorenie n vlakien SNSimulateHelper
 */
 SNSimulate::SNSimulate(int threads)
 {
@@ -77,7 +89,9 @@ SNSimulate::SNSimulate(int threads)
 
 }
 
-
+/*!
+  Ukoncenie vsetkych vlakien.
+*/
 SNSimulate::~SNSimulate()
 {
 	map<int, pair<int, SNDevice*> >::iterator dev;
@@ -114,7 +128,9 @@ SNSimulate::~SNSimulate()
 
 
 /*!
-    \fn SNSimulate::stopDevice(uint32_t id)
+ \brief Odstranenie zariadenia zo simulacie.
+ \param id Unikatne identifikacne cislo zariadenia.
+ \return Po uspesnom odstraneni je navratova hodnota false, pri chybe true.
  */
 bool SNSimulate::stopDevice(uint32_t id)
 {
@@ -162,8 +178,22 @@ bool SNSimulate::stopDevice(uint32_t id)
 	return false;
 }
 
+/*!
+  \brief Pridanie zariadenia do simulacie.
+  \param filename Zariadenie ktore sa ma nastartovat.
+  \param directory Virtualny adresar v ktorom bude zariadenie.
+  \param row Riadok na ktorom sa ma zariadenie zobrazovat.
+  \return Navratovou hodnotou je jedinecne identifikacne cislo zariadenia.
 
-uint32_t SNSimulate::startDevice(const string &filename, int directory, int row)
+  Zariadenia sa zobrazuju vo virtualnej adresarovej strukture. Ak sa tato
+  funkcia zavola bez parametrov bude sa dane zariadenie zobrazovat ako posledna
+  polozka v korenovom adresari. Korenovy adresar ma piradene unikatne cislo 0.
+
+  Riadky do ktorych sa vkladaju zariadenia su cislovane od 0. Ak ponechame
+  standardne nastavenie riadku (-1) zariadenie sa prida na koniec zoznamu
+  zariadeni.
+ */
+uint32_t SNSimulate::startDevice(const std::string &filename, int directory, int row)
 {
 	// start zariadenia v pythonovi
 	PyEval_AcquireLock();
@@ -204,13 +234,25 @@ uint32_t SNSimulate::startDevice(const string &filename, int directory, int row)
 	return m_nextDeviceId - 1;
 }
 
+/*!
+  \brief Spracovanie ramca / preposlanie inym zariadeniam.
+  \param id ID zariadenia.
+  \param data Data ktore poslalo zariadenie.
 
+  Tato metoda zachytava spravy od zariadeni a spracuje ich / preposiela
+  ostatnym zariadeniam.
+ */
 void SNSimulate::frameResponse(uint32_t id, PyObject *data)
 {
     /// @todo implement me
 }
 
-
+/*!
+  \brief Prijatie telnet odpovede od zariadenia.
+  \param id ID zariadenia.
+  \param text Text ktory vypisalo zariadenie.
+  \param cmd Text ktory sa ma pouzit ako prompt.
+ */
 void SNSimulate::telnetResponse(uint32_t id, const char *text, const char *cmd)
 {
     /// @todo implement me
@@ -218,7 +260,7 @@ void SNSimulate::telnetResponse(uint32_t id, const char *text, const char *cmd)
 
 
 /*!
-    \brief Nastavime cesty v ktorych su hladane moduly.
+  \brief Nastavime cesty v ktorych su hladane moduly.
  */
 void SNSimulate::setPath()
 {
@@ -286,7 +328,7 @@ void SNSimulate::setPath()
 }
 
 /*!
-    \brief Vytvorenie pythonovskej struktury v ktorej budu udrziavane zariadenia.
+  \brief Vytvorenie pythonovskej struktury v ktorej budu udrziavane zariadenia.
  */
 void SNSimulate::createDevicesDictionary()
 {
@@ -302,10 +344,11 @@ void SNSimulate::createDevicesDictionary()
 }
 
 /*!
-    \brief Vytvorenie prepojenia na c++ triedu SNSimulate
-    Tato funkcia vytvori pythonovsky modul snsimulate ktory sluzi na komunikaciu
-    pythonu s c-rozhranim. Tento modul sa nebude vyuzivat priamo, ale iba
-    z triedy SNDevice cez metody ako sendFrame.
+  \brief Vytvorenie prepojenia na c++ triedu SNSimulate
+
+  Tato funkcia vytvori pythonovsky modul snsimulate ktory sluzi na komunikaciu
+  pythonu s c-rozhranim. Tento modul sa nebude vyuzivat priamo, ale iba
+  z triedy SNDevice cez metody ako sendFrame.
  */
 void SNSimulate::createSNSimulateModule()
 {
@@ -317,7 +360,7 @@ void SNSimulate::createSNSimulateModule()
 }
 
 /*!
-    \brief Vytvorenie zakladnej pythonovskej triedy pre zariadenia (SNDevice)
+  \brief Vytvorenie zakladnej pythonovskej triedy pre zariadenia (SNDevice)
  */
 void SNSimulate::createBaseClass()
 {
@@ -343,7 +386,11 @@ void SNSimulate::createBaseClass()
 			"\t\tprint(\"telnetGetControlChars not implemented\")", Py_single_input, pBuiltinsDict, pBuiltinsDict), true);
 }
 
-
+/*!
+ \brief Ziskanie referencie na zariadenie
+ \param id ID zariadenia
+ \return Navratovou hodotou je referencia zariadenia ak existuje, NULL ak neexistuje.
+ */
 SNDevice *SNSimulate::device(uint32_t id) const
 {
 	map<int, pair<int, SNDevice*> >::const_iterator dev;
@@ -355,6 +402,9 @@ SNDevice *SNSimulate::device(uint32_t id) const
 	return dev->second.second;
 }
 
+/*!
+  \brief Vrati zoznam zariadeni vo zvolenom adresari.
+*/
 const vector<int> *SNSimulate::devicesList(int parent) const
 {
 	map<int, vector<int> >::const_iterator subtree;
@@ -366,6 +416,15 @@ const vector<int> *SNSimulate::devicesList(int parent) const
 	return &subtree->second;
 }
 
+/*!
+  \brief Vrati riadok na ktorom je zariadenie.
+
+  \param devId ID zariadenia o ktorom chceme zistit na ktorom riadku je.
+  \param parent ID adresara v ktorom sa ma zariadenie nachadzat.
+
+  Tato funkcia vracia cislo riadku na ktorom je zariadenie ak sa zariadenie
+  nachadza v zadanom adresari. Ak sa zariadenie nenaslo tato funkcia vrati -1-
+*/
 int SNSimulate::findIndexOfDevice(int devId, int parent) const
 {
 	map<int, vector<int> >::const_iterator subtree;
@@ -385,6 +444,12 @@ int SNSimulate::findIndexOfDevice(int devId, int parent) const
 	}
 }
 
+/*!
+  \overload
+
+  Tato metoda nevyzaduje spacifikovanie adresara. Vyhladava zariadenie vo
+  vsetkych adresaroch a vrati riadok na ktorom sa nachadza.
+*/
 int SNSimulate::findIndexOfDevice(int devId) const
 {
 	int parent = 0;
@@ -425,6 +490,11 @@ int SNSimulate::findIndexOfDevice(int devId) const
 	}
 }
 
+/*!
+  \brief Najdenie nadradenej polozky v adresarovej strukture.
+
+  \param devId ID zariadenia alebo adresara kroreho nadradenu polozku chceme zistit.
+*/
 int SNSimulate::parent(int devId) const
 {
 	if (devId > 0)
@@ -453,6 +523,16 @@ int SNSimulate::parent(int devId) const
 	}
 }
 
+/*!
+  \brief Presun zariadenia alebo adresara na ine miesto.
+
+  \param devId ID zariadenia alebo adresara ktore presuvame.
+  \param row Riadok na ktory sa ma zariadenie alebo adresar presunut.
+  \param parent ID adresara do ktoreho zariadenie presunieme.
+
+  Adresar do ktoreho chceme zariadenie presunut je nepovinny. V pripade,
+  ze ho vynechame bude zariadenie presunute do korenoveho adresara.
+*/
 void SNSimulate::move(int devId, int row, int parent)
 {
 	int dev1Parent = m_devices[devId].first;
@@ -486,6 +566,18 @@ void SNSimulate::move(int devId, int row, int parent)
 	vector<int>::iterator subtreeDev;
 }
 
+/*!
+  \brief Odstranenie zariadenia z adresara.
+
+  Tato funkcia sa pouziva spolu s addToSubtree() namiesto funkcie move() pri
+  pouziti model / view programovania.
+
+  \warning Tato metoda sa nema pouzivat samostatne ale len spolu s funkciou
+  addToSubtree(). Medzi volaniami tychto 2 metod by sa nemali zariadenia
+  modifikovat.
+
+  \sa addToSubtree() move()
+*/
 void SNSimulate::removeFromSubtree(int devId, int parent)
 {
 	map<int, vector<int> >::iterator subtree = m_devicesTree.find(parent);
@@ -508,6 +600,17 @@ void SNSimulate::removeFromSubtree(int devId, int parent)
 	}
 }
 
+/*!
+  \brief Pridanie existujuceho zariadenia do adresara.
+
+  Parametre tejto metody su identicke s move(). Tato metoda sa pouziva len
+  pri model / view programovani.
+
+  \warning Tato metoda sa pouziva po volani removeFromSubtree(). Medzi volanim
+  removeFromSubtree() a addToSubtree() by sa zariadenia nemali modifikovat.
+
+  \sa removeFromSubtree() move()
+*/
 void SNSimulate::addToSubtree(int devId, int row, int parent)
 {
 	map<int, vector<int> >::iterator subtree = m_devicesTree.find(parent);
@@ -535,6 +638,20 @@ void SNSimulate::addToSubtree(int devId, int row, int parent)
 	subtree->second.insert(dev, devId);
 }
 
+/*!
+  \brief Vytvorenie adresara vo virtualnej adresarovej strukture.
+
+  \param name Nazov novo vytvoreneho adresara.
+  \param parent ID nadradeneho adresara.
+  \param row Riadok na ktorom sa ma vytvorit novy adresar.
+
+  Nazvy adresarov su kodovane v utf-8. Dlzka ani znaky nie su obmedzene.
+  Nadradeny adresar je nepovinny, v pripade vynechania sa adresar zaradi
+  do korenoveho adresara. Po vynechani riadku sa zariadenie zaradi na koniec
+  zoznamu zariadeni v danom adresari.
+
+  \sa removeDirectory()
+*/
 void SNSimulate::addDirectory(const std::string &name, int parent, int row)
 {
 	// pridanie do zoznamu adresarov
@@ -563,6 +680,14 @@ void SNSimulate::addDirectory(const std::string &name, int parent, int row)
 	m_nextFolderId++;
 }
 
+/*!
+  \brief Premenovanie adresara.
+
+  \param name Novy nazov adresara.
+  \param directoryId ID adresra ktory chceme premenovat.
+
+  \sa addDirectory()
+*/
 void SNSimulate::renameDirectory(const std::string &name, int directoryId)
 {
 	map<int, pair<int, string> >::iterator dir = m_folders.find(-directoryId);
@@ -572,6 +697,14 @@ void SNSimulate::renameDirectory(const std::string &name, int directoryId)
 	}
 }
 
+/*!
+  \brief Odstranenie adresara.
+
+  \param directoryId ID adresara ktory chceme odstranit.
+
+  \warning Tato metoda odstrani adresar spolocne so vsetkymi podadresarmi
+  a zariadeniami v nich.
+*/
 bool SNSimulate::removeDirectory(int directoryId)
 {
 	map<int, pair<int, string> >::iterator dir;
@@ -628,6 +761,13 @@ bool SNSimulate::removeDirectory(int directoryId)
 	return false;
 }
 
+/*!
+  \brief Vrati nazov adresara.
+
+  \param directoryId ID adresara.
+
+  V pripade najdenia adresara vrati jeho nazov, v opacnom pripade NULL.
+*/
 string *SNSimulate::directory(int directoryId)
 {
 	map<int, pair<int, string> >::iterator dir;

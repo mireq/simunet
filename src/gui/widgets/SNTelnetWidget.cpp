@@ -31,7 +31,17 @@
 
 #include <QDebug>
 
+/*!
+  \class SNTelnetWidget
+  \brief Widget emulujuci terminal.
+  \ingroup widgets
 
+  Pomocou tohto widgetu sa konfiguruju zariadenia cez telnet.
+*/
+
+/*!
+  Vytvorenie telnet widgetu.
+*/
 SNTelnetWidget::SNTelnetWidget(QWidget* parent): QWidget(parent)
 {
 	setObjectName("TelnetConfig");
@@ -55,21 +65,36 @@ SNTelnetWidget::SNTelnetWidget(QWidget* parent): QWidget(parent)
 	m_document->setPalette(palette);
 }
 
-
+/*!
+  Zrusenie telnet widgetu.
+*/
 SNTelnetWidget::~SNTelnetWidget()
 {
 }
 
+/*!
+  Vypis textu na obrazovku.
+
+  Text sa moze vypisovat aj pocas zadavania textu uzivatelom. V tom pripade
+  ale nebude zarucene, ze text ktory vidi uzivatel na obrazovke sa aj odosle.
+  Taketo spravanie maju aj realne terminaly.
+*/
 void SNTelnetWidget::write(const QString &text)
 {
 	m_document->textCursor().insertText(text);
 }
 
+/*!
+  \reimp
+*/
 void SNTelnetWidget::showEvent(QShowEvent *event)
 {
 	m_document->setFocus();
 }
 
+/*!
+  Vola sa pri odoslani riadku.
+*/
 void SNTelnetWidget::sendLineEvent(char controlChar)
 {
 	if (controlChar == '\n')

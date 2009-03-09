@@ -24,8 +24,8 @@
 #define CONFIGUREDLG_H
 
 #include <QDialog>
+#include "SNTitleWidget.h"
 
-class SNTitleWidget;
 class SNConfigPanel;
 class QDialogButtonBox;
 class QListWidget;
@@ -33,8 +33,7 @@ class QListWidgetItem;
 class QStackedWidget;
 
 /**
- @author Miroslav Bendik <miroslav.bendik@gmail.com>
- @brief Konfiguracne okno.
+ @author Miroslav Bendik
 */
 class ConfigureDlg : public QDialog
 {
@@ -42,37 +41,31 @@ class ConfigureDlg : public QDialog
 	public:
 		ConfigureDlg(QWidget* parent = 0, Qt::WindowFlags f = 0);
 		~ConfigureDlg();
-
-/*!
- \brief Pridanie konfiguracneho panelu
-*/
 		void addPanel(SNConfigPanel *panel);
 
 	public slots:
-/*!
- \brief Zobrazenie informacie v informacnej casti okna.
-*/
 		void showInfo(const QString &text, int msecs = 0);
 		void showInfo(const QString &text, const QString &comment, int msecs = 0);
 
-/*!
- \brief Zobrazenie varovania v informacnej casti okna.
-*/
 		void showWarning(const QString &text, int msecs = 0);
 		void showWarning(const QString &text, const QString &comment, int msecs = 0);
 
-/*!
- \brief Zobrazenie chyby v informacnej casti okna.
-*/
 		void showError(const QString &text, int msecs = 0);
 		void showError(const QString &text, const QString &comment, int msecs = 0);
+
+		void showMsg(const QString &text, const QString &comment = QString(), int msecs = 0);
+		void hideMsg();
+
+		void setMsgPixmap(const QString &name);
+		void setMsgPixmap(const QPixmap &pixmap);
+		void setMsgPixmap(const QIcon &icon);
+		void setMsgPixmap(SNTitleWidget::MessageType type);
 
 	protected:
 		void closeEvent(QCloseEvent *e);
 		void showEvent(QShowEvent *e);
 
 	private:
-		void showMsg(const QString &text, const QString &comment, int msecs);
 		void connectPanel(SNConfigPanel *panel);
 		void disconnectPanel(SNConfigPanel *panel);
 		SNConfigPanel *currentPanel();

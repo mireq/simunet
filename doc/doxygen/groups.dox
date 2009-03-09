@@ -1,0 +1,7 @@
+/*!
+  @defgroup widgets Widgets
+  @defgroup dialogs Dialogs
+  @defgroup core Core
+  @defgroup exceptions Exceptions
+  @defgroup models Models
+*/

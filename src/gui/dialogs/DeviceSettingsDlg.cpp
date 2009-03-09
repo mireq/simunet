@@ -36,6 +36,20 @@
 #include <QWebView>
 #include <QProgressBar>
 
+/*!
+  \class DeviceSettingsDlg
+  \brief Nastavenie vlastnosti zariadenia.
+
+  V tomto dialogu je mozne nastavovat zariadenia cez ich webove rozhranie,
+  alebo cez telnet.
+*/
+
+/*!
+  Vytvorenie dialogu pre dane zariadenie.
+
+  \param devId Unikatne ID zariadenia pre ktore ma byt vytvoreny dialog.
+  \param parent Nadradeny widget.
+*/
 DeviceSettingsDlg::DeviceSettingsDlg(int devId, QWidget* parent): QDialog(parent), m_deviceId(devId), m_errorsVisible(false), m_loadProgressVisible(false)
 {
 	m_statusBar = new QStatusBar;
@@ -87,22 +101,36 @@ DeviceSettingsDlg::DeviceSettingsDlg(int devId, QWidget* parent): QDialog(parent
 	connect(m_errorButton, SIGNAL(clicked()), SLOT(switchJsErrors()));
 }
 
-
+/*!
+  Zrusenie konfiguracneho dialogu zariadenia.
+*/
 DeviceSettingsDlg::~DeviceSettingsDlg()
 {
 	saveWindowState();
 }
 
+/*!
+  Vrati status bar okna.
+
+  Status bar sluzi na zobrazovanie informacii ako ciel odkazu ktory je pod
+  kurzorom, stav nacitavania, alebo pritomnost chyb v javascripte.
+*/
 QStatusBar *DeviceSettingsDlg::statusBar() const
 {
 	return m_statusBar;
 }
 
+/*!
+  Vrati ID zariadenia ktoremu patri konfiguracny dialog.
+*/
 int DeviceSettingsDlg::deviceId() const
 {
 	return m_deviceId;
 }
 
+/*!
+  \reimp
+*/
 bool DeviceSettingsDlg::event(QEvent *event)
 {
 	if (event->type() == QEvent::StatusTip)

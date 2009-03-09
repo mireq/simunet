@@ -29,7 +29,7 @@
 class QPlainTextEdit;
 
 /**
- @author Miroslav Bendik <miroslav.bendik@gmail.com>
+ @author Miroslav Bendik
 */
 class SNTelnetWidget : public QWidget
 {
@@ -40,8 +40,8 @@ class SNTelnetWidget : public QWidget
 	public slots:
 		void write(const QString &text);
 	protected:
-		void showEvent(QShowEvent *event);
-		void sendLineEvent(char controlChar);
+		virtual void showEvent(QShowEvent *event);
+		virtual void sendLineEvent(char controlChar);
 	private:
 		const char *getControlChars() const;
 		bool eventFilter(QObject *obj, QEvent *event);

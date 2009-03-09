@@ -33,6 +33,17 @@
 #include <QCloseEvent>
 #include <QListWidget>
 
+/*!
+  \class ConfigureDlg
+  \brief Konfiguracne okno.
+  \ingroup dialogs
+
+  Okno pomocou ktoreho sa konfiguruje SimuNet.
+*/
+
+/*!
+  Vytvorenie konfiguracneho okna.
+*/
 ConfigureDlg::ConfigureDlg(QWidget* parent, Qt::WindowFlags f): QDialog(parent, f)
 {
 	setWindowTitle(tr("Configure - SimuNet"));
@@ -73,11 +84,18 @@ ConfigureDlg::ConfigureDlg(QWidget* parent, Qt::WindowFlags f): QDialog(parent, 
 	connect(m_buttons->button(QDialogButtonBox::Apply), SIGNAL(clicked()), SLOT(onApplyClicked()));
 }
 
-
+/*!
+  Zrusenie konfiguracneho dialogu.
+*/
 ConfigureDlg::~ConfigureDlg()
 {
 }
 
+/*!
+  Pridanie konfiguracneho panelu
+
+  Do zoznamu konfiguracnych panelov sa prida novy panel.
+*/
 void ConfigureDlg::addPanel(SNConfigPanel *panel)
 {
 	QListWidgetItem *newItem = new QListWidgetItem();
@@ -92,42 +110,71 @@ void ConfigureDlg::addPanel(SNConfigPanel *panel)
 	}
 }
 
+/*!
+  \overload
+*/
 void ConfigureDlg::showInfo(const QString &text, int msecs)
 {
 	m_titleWidget->setPixmap(SNTitleWidget::InfoMessage);
 	showMsg(text, QString(), msecs);
 }
 
+/*!
+  Tato metoda zobrazi informacnu spravu (ikona informacie).
+
+  \sa showMessage() setMsgPixmap()
+*/
 void ConfigureDlg::showInfo(const QString &text, const QString &comment, int msecs)
 {
 	m_titleWidget->setPixmap(SNTitleWidget::InfoMessage);
 	showMsg(text, comment, msecs);
 }
 
+/*!
+  \overload
+*/
 void ConfigureDlg::showWarning(const QString &text, int msecs)
 {
 	m_titleWidget->setPixmap(SNTitleWidget::WarningMessage);
 	showMsg(text, QString(), msecs);
 }
 
+/*!
+
+  Tato metoda zobrazi varovnu spravu (ikona varovania).
+
+  \sa showMessage() setMsgPixmap()
+ */
 void ConfigureDlg::showWarning(const QString &text, const QString &comment, int msecs)
 {
 	m_titleWidget->setPixmap(SNTitleWidget::WarningMessage);
 	showMsg(text, comment, msecs);
 }
 
+/*!
+  \overload
+*/
 void ConfigureDlg::showError(const QString &text, int msecs)
 {
 	m_titleWidget->setPixmap(SNTitleWidget::ErrorMessage);
 	showMsg(text, QString(), msecs);
 }
 
+/*!
+
+  Tato metoda zobrazi chybovu spravu (ikona chyby).
+
+  \sa showMessage() setMsgPixmap()
+ */
 void ConfigureDlg::showError(const QString &text, const QString &comment, int msecs)
 {
 	m_titleWidget->setPixmap(SNTitleWidget::ErrorMessage);
 	showMsg(text, comment, msecs);
 }
 
+/*!
+  \reimp
+*/
 void ConfigureDlg::closeEvent(QCloseEvent *e)
 {
 	QWidget *w = m_panel->currentWidget();
@@ -142,6 +189,9 @@ void ConfigureDlg::closeEvent(QCloseEvent *e)
 	}
 }
 
+/*!
+  \reimp
+*/
 void ConfigureDlg::showEvent(QShowEvent *e)
 {
 	m_currentItem = NULL;
@@ -152,6 +202,21 @@ void ConfigureDlg::showEvent(QShowEvent *e)
 	listSelectionChanged();
 }
 
+/*!
+  Zobrazenie spravy v informacnej casti okna.
+
+  \param text Text ktory sa ma zobrazit.
+  \param comment Komentar k danej sprave.
+  \param msecs Cas v milisekundach po ktorom informacia zmzne.
+
+  Sprava sa zobrazi v ramceku v dolnej casti okna. Text by mal byt strucny
+  a vystizny. Ak nestaci kratke vysvetlenie je lepsie pouzit atribut
+  \a comment. Komentar sa zobrazi pod spravou nezvyraznenym textom. Spravu
+  je mozne automaticky po zvolenom casovom intervale skryt. Cas urcuje atribut
+  \a msecs. Po nastaveni pixmapy sa vpravo zobrazi zvolena ikona.
+
+  \sa setMsgPixmap() hideMsg()
+ */
 void ConfigureDlg::showMsg(const QString &text, const QString &comment, int msecs)
 {
 	m_titleWidget->setText(text);
@@ -159,6 +224,48 @@ void ConfigureDlg::showMsg(const QString &text, const QString &comment, int msec
 	m_titleWidget->show();
 	m_titleWidget->setHideTimeout(msecs);
 }
+
+/*!
+  Skrytie informacnej spravu.
+*/
+void ConfigureDlg::hideMsg()
+{
+}
+
+/*!
+  Nastavenie ikony pre informacnu spravu.
+*/
+void ConfigureDlg::setMsgPixmap(const QPixmap &pixmap)
+{
+	m_titleWidget->setPixmap(pixmap);
+}
+
+/*!
+  \overload
+*/
+void ConfigureDlg::setMsgPixmap(const QString &name)
+{
+	m_titleWidget->setPixmap(name);
+}
+
+/*!
+  \overload
+*/
+void ConfigureDlg::setMsgPixmap(const QIcon &icon)
+{
+	m_titleWidget->setPixmap(icon);
+}
+
+/*!
+  \overload
+
+  \sa SNTitleWidget::MessageType
+*/
+void ConfigureDlg::setMsgPixmap(SNTitleWidget::MessageType type)
+{
+	m_titleWidget->setPixmap(type);
+}
+
 
 void ConfigureDlg::connectPanel(SNConfigPanel *panel)
 {
@@ -245,5 +352,6 @@ void ConfigureDlg::onApplyClicked()
 {
 	currentPanel()->saveChanges();
 }
+
 
 

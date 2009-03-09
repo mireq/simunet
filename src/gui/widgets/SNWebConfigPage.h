@@ -26,7 +26,7 @@
 #include <QWebPage>
 
 /**
- @author Miroslav Bendik <miroslav.bendik@gmail.com>
+ @author Miroslav Bendik
 */
 class SNWebConfigPage : public QWebPage
 {

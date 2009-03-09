@@ -27,9 +27,7 @@
 #include "SNIcon.h"
 
 /**
- @author Miroslav Bendik <miroslav.bendik@gmail.com>
- @brief Konfiguracny panel.
- Od tejto triedy sa odvadzaju jednotlive konfiguracne panely.
+ @author Miroslav Bendik
 */
 class SNConfigPanel : public QWidget
 {
@@ -37,28 +35,11 @@ class SNConfigPanel : public QWidget
 	public:
 		SNConfigPanel(QWidget* parent = 0);
 		~SNConfigPanel();
-
-/*!
- \brief Nazov panelu zobrazujuci sa v zozname panelov.
-*/
 		virtual QString panelName() const = 0;
-
-/*!
- \brief Ikona konfiguracneho panelu.
- */
 		virtual SNIcon icon() const = 0;
-
-/*!
- \brief Ulozenie zmien urobenych v konfiguracnom paneli.
- */
 		virtual void saveChanges() = 0;
-
-/*!
- \brief Tato funkcia vracia true ak uzivatel neklikol na cancel pri prechode na iny panel.
-*/
 		virtual bool panelChanged() {return true;};
 		virtual bool panelSelected() {return true;};
-
 	signals:
 		void info(QString msg, QString comment = QString(), int msecs = 0);
 		void warning(QString msg, QString comment = QString(), int msecs = 0);

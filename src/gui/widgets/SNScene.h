@@ -29,16 +29,14 @@
 class SNSceneAttribDialog;
 
 /**
- @author Miroslav Bendik <miroslav.bendik@gmail.com>
- @brief Graficka (OpenGL) scena.
+ @author Miroslav Bendik
 */
 class SNScene : public QGraphicsScene
 {
 		Q_OBJECT
 	public:
-
 /*!
- \brief Vymenovane hodnoty navigacneho modu.
+  Sposob navigacie v grafickej scene.
 */
 		enum NavigationMode
 		{
@@ -47,22 +45,18 @@ class SNScene : public QGraphicsScene
 		};
 	public:
 		SNScene(QObject* parent = 0);
-
-/*!
- \brief Nastavenie navigacneho modu.
-*/
 		void setNavigationMode(NavigationMode mode);
 		~SNScene();
 
-	protected:
+	private:
 		void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
 		void mousePressEvent(QGraphicsSceneMouseEvent *event);
 		void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 		void keyPressEvent(QKeyEvent *event);
 		void drawBackground(QPainter *painter, const QRectF &rect);
+
 		void zmenOtocenie(float rozdiel);
 		void zmenPoziciu(const QPointF &rozdiel);
-
 		void vykreslenieMriezky();
 
 	private:

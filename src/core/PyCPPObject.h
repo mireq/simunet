@@ -25,9 +25,6 @@
 
 #include <Python.h>
 
-/**
- @author Miroslav Bendik <miroslav.bendik@gmail.com>
-*/
 class PyCPPObject
 {
 	public:

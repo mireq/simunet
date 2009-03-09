@@ -22,6 +22,15 @@
  ***************************************************************************/
 #include "AboutDlg.h"
 
+/*!
+  \class AboutDlg
+  \brief Okno zobrazujuce informacie o autoroch aplikacie
+  \ingroup dialogs
+*/
+
+/*!
+  Vytvorenie dialogu "o aplikacii".
+*/
 AboutDlg::AboutDlg(QWidget *parent)
 		: QDialog(parent)
 {

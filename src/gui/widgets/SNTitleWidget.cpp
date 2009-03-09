@@ -31,17 +31,36 @@
 #include <QColor>
 #include <QTimer>
 
+/*!
+  \class SNTitleWidget
+  \brief Widget na zobrazenie titulku / varovania v ramceku
+  \ingroup widgets
+
+  Tento widget je znamy hlavne z KDE 4. Pouziva sa na zobrazenie titulku
+  roznych konfiguracnych dialogov alebo roznych hlaseni priamo v okne
+  (ziadne modalne okno, tym je najlepsie sa vyhnut ak sa to da).
+*/
+
+/*!
+  Vytvorenie prazdneho title widgetu.
+*/
 SNTitleWidget::SNTitleWidget(QWidget *parent): QWidget(parent)
 {
 	setupGui();
 }
 
+/*!
+  Vytvorenie title widgetu s textom.
+*/
 SNTitleWidget::SNTitleWidget(const QString &text, QWidget *parent): QWidget(parent)
 {
 	setupGui();
 	setText(text);
 }
 
+/*!
+  Vytvorenie title widgetu s textom a ikonou.
+*/
 SNTitleWidget::SNTitleWidget(const QString &text, const QIcon &icon, QWidget *parent): QWidget(parent)
 {
 	setupGui();
@@ -49,6 +68,9 @@ SNTitleWidget::SNTitleWidget(const QString &text, const QIcon &icon, QWidget *pa
 	setPixmap(icon);
 }
 
+/*!
+  \overload
+*/
 SNTitleWidget::SNTitleWidget(const QString &text, const QString &iconName, QWidget *parent): QWidget(parent)
 {
 	setupGui();
@@ -56,6 +78,9 @@ SNTitleWidget::SNTitleWidget(const QString &text, const QString &iconName, QWidg
 	setPixmap(iconName);
 }
 
+/*!
+  \overload
+*/
 SNTitleWidget::SNTitleWidget(const QString &text, MessageType type, QWidget *parent): QWidget(parent)
 {
 	setupGui();
@@ -63,11 +88,17 @@ SNTitleWidget::SNTitleWidget(const QString &text, MessageType type, QWidget *par
 	setPixmap(type);
 }
 
+/*!
+  Zrusenie title widgetu.
+*/
 SNTitleWidget::~SNTitleWidget()
 {
 	delete m_timer;
 }
 
+/*!
+  \overload
+*/
 void SNTitleWidget::setPixmap(const QString &name)
 {
 	SNIcon icon(name);
@@ -75,18 +106,27 @@ void SNTitleWidget::setPixmap(const QString &name)
 	m_icon->show();
 }
 
+/*!
+  Nastavenie ikony zobrazenej vedla spravy.
+*/
 void SNTitleWidget::setPixmap(const QPixmap &pixmap)
 {
 	m_icon->setPixmap(pixmap);
 	m_icon->show();
 }
 
+/*!
+  \overload
+*/
 void SNTitleWidget::setPixmap(const QIcon &icon)
 {
 	m_icon->setPixmap(icon.pixmap(32, 32));
 	m_icon->show();
 }
 
+/*!
+  Zobrazenie preddefinovanej ikony.
+*/
 void SNTitleWidget::setPixmap(MessageType type)
 {
 	switch(type)
@@ -98,12 +138,25 @@ void SNTitleWidget::setPixmap(MessageType type)
 	}
 }
 
+/*!
+  Nastavenie textu spravy.
+
+  \param text Text spravy
+*/
 void SNTitleWidget::setText(const QString &text)
 {
 	m_text->setText(text);
 	m_text->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
 }
 
+
+/*!
+  Nastavenie komentaru.
+
+  \param comment Text komentaru.
+  Tato funkcia nastavuje volitelny komentar. Pre zrusenie zobrazenia komentaru
+  treba parameter comment nastavit na NULL (QString())
+ */
 void SNTitleWidget::setComment(const QString &comment)
 {
 	if (comment.isNull())
@@ -118,6 +171,12 @@ void SNTitleWidget::setComment(const QString &comment)
 	}
 }
 
+
+/*!
+  Nastavenie casu po ktorom sprava zmizne.
+
+  \param msecs Cas v milisekundach. Ak je cas nulovy bude sprava zobrazena permanentne.
+ */
 void SNTitleWidget::setHideTimeout(int msecs)
 {
 	if (msecs != 0)

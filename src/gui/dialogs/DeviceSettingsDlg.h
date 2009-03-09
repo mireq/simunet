@@ -33,7 +33,7 @@ class QSplitter;
 class QProgressBar;
 
 /**
- @author Miroslav Bendik <miroslav.bendik@gmail.com>
+ @author Miroslav Bendik
 */
 class DeviceSettingsDlg : public QDialog
 {
@@ -44,9 +44,12 @@ class DeviceSettingsDlg : public QDialog
 		QStatusBar *statusBar() const;
 		int deviceId() const;
 	signals:
+/*!
+  Vysle signal pred zatvorenim konfiguracneho dialogu.
+*/
 		void dialogClosed(DeviceSettingsDlg *);
 	protected:
-		bool event(QEvent *event);
+		virtual bool event(QEvent *event);
 	private:
 		void saveWindowState();
 		void restoreWindowState();

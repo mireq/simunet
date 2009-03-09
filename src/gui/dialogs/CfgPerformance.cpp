@@ -28,6 +28,15 @@
 #include <QSpinBox>
 #include <QSettings>
 
+/*!
+  \class CfgPerformance
+  \brief Konfiguracia vykonu aplikacie
+  \ingroup dialogs
+*/
+
+/*!
+  Vytvorenie panelu s nastavenim vykonu.
+*/
 CfgPerformance::CfgPerformance(QWidget* parent): SNConfigPanel(parent)
 {
 	QFormLayout *layout = new QFormLayout(this);
@@ -38,7 +47,9 @@ CfgPerformance::CfgPerformance(QWidget* parent): SNConfigPanel(parent)
 	connect(m_threadsCount, SIGNAL(valueChanged(int)), SLOT(updateThreads(int)));
 }
 
-
+/*!
+  Zrusenie panelu.
+*/
 CfgPerformance::~CfgPerformance()
 {
 }

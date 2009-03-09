@@ -22,14 +22,132 @@
  ***************************************************************************/
 #include "SNConfigPanel.h"
 
+/*!
+  \class SNConfigPanel
+  \brief Konfiguracny panel.
+  \ingroup widgets
+
+  Od tejto triedy sa odvadzaju jednotlive konfiguracne panely.
+*/
+
+/*!
+  Vytvorenie konfiguracneho panelu.
+*/
 SNConfigPanel::SNConfigPanel(QWidget* parent): QWidget(parent)
 {
 }
 
-
+/*!
+  Zrusenie konfiguracneho panelu.
+*/
 SNConfigPanel::~SNConfigPanel()
 {
 }
 
+// ----------------------------------------------------------------
 
+/*!
+  \fn QString SNConfigPanel::panelName() const
 
+  Nazov panelu zobrazujuci sa v zozname panelov.
+ */
+
+// ----------------------------------------------------------------
+
+/*!
+  \fn SNIcon SNConfigPanel::icon() const
+
+  Ikona konfiguracneho panelu.
+ */
+
+// ----------------------------------------------------------------
+
+/*!
+  \fn void SNConfigPanel::saveChanges()
+
+  Ulozenie zmien urobenych v konfiguracnom paneli.
+ */
+
+// ----------------------------------------------------------------
+
+/*!
+  \fn bool SNConfigPanel::panelChanged()
+
+  Tato funkcia sa vola pri pokuse o prechod na iny panel.
+
+  Pri zmene panelu je zvykom spytat sa uzivatela ci chce ulozit neulozene
+  zmeny (ak take existuju). Ak sa ma prejst na iny panel vracia tato funkcia
+  by mala vraciat true. Ak uzivatel klikol na to, ze nechce prejst na iny panl
+  mala by vratit false.
+
+  Priklad pouzitia:
+\code
+if (settingsChanged())
+{
+	QMessageBox::StandardButton btn = QMessageBox::question(
+	this,
+	tr("Unsaved Changes"),
+	tr("The settings have been changed.\n"
+	"Do you want to save your changes?"),
+	QMessageBox::Save | QMessageBox::Cancel | QMessageBox::Discard, QMessageBox::Save);
+	switch (btn)
+	{
+		case QMessageBox::Cancel: return false; break;
+		case QMessageBox::Discard: dropChanges(); break;
+		case QMessageBox::Save: saveChanges(); break;
+		default: break;
+	}
+}
+return true;
+\endcode
+ */
+
+// ----------------------------------------------------------------
+
+/*!
+  \fn bool SNConfigPanel::panelSelected()
+
+  Spusta sa pri prechode na tento panel.
+
+  Ak nedojde k chybe pri prepinani panelu vracia tato funkcia true.
+ */
+
+// ----------------------------------------------------------------
+
+/*!
+  \fn void SNConfigPanel::info(QString msg, QString comment = QString(), int msecs = 0)
+
+  Vyvolanie info spravy. Tato sprava sa zobrazi v dolnej casti konfigruacneho
+  panelu.
+ */
+
+// ----------------------------------------------------------------
+
+/*!
+  \fn SNConfigPanel::warning(QString msg, QString comment = QString(), int msecs = 0)
+
+  Vyvolanie varovnej spravy.
+
+  \sa info()
+ */
+
+// ----------------------------------------------------------------
+
+/*!
+  \fn SNConfigPanel::error(QString msg, QString comment = QString(), int msecs = 0)
+
+  Vyvolanie chybovej spravy.
+
+  \sa info()
+ */
+
+// ----------------------------------------------------------------
+
+/*!
+  \fn SNConfigPanel::changed(bool)
+
+  Singal sa vyvola pri zmene nastaveni.
+
+  Pri zmene nastaveni ma hodnotu true. Ak uzivatel zmenil nastavenie na povodnu
+  hodnotu vyvola false.
+ */

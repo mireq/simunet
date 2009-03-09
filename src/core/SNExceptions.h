@@ -26,39 +26,36 @@
 #include <string>
 
 /**
- @author Miroslav Bendik <miroslav.bendik@gmail.com>
- @brief Vynimka ktora sa vyvolava pri chybe importu zariadenia.
+ @author Miroslav Bendik
 */
 class SNDeviceImportException
 {
 	public:
-		SNDeviceImportException(const std::string &a_moduleName);
-/*!
- @brief Zistenie nazvu chybneho zariadenia.
-*/
+		SNDeviceImportException(const std::string &moduleName);
 		const std::string &moduleName();
 	private:
 		std::string m_moduleName;
 };
 
 /**
- @author Miroslav Bendik <miroslav.bendik@gmail.com>
- @brief Vynimka sa vykonava pri chybe spoluprace s python intepreterom.
+ @author Miroslav Bendik
  */
 class SNPythonInterpreterException
 {
 	public:
-		enum pythonErr {CREATE, IMPORT, ATTR, CALL, SET};
-
-		SNPythonInterpreterException(const std::string &a_problem, pythonErr a_type);
 /*!
- @brief Popis problemu ktory nastal.
+  Typ chyby ktoru vracia interpreter pythonu.
 */
+		enum pythonErr {
+			CREATE, /*!< Chyba pri vytvarani objektov. */
+			IMPORT, /*!< Chyba pri importe. */
+			ATTR,   /*!< Chyba pri nastavovani alebo citani atributov. */
+			CALL,   /*!< Chyba pri volani. */
+			SET     /*!< Chyba pri nastavovani premennych. */
+		};
+
+		SNPythonInterpreterException(const std::string &problem, pythonErr type);
 		const std::string &problem();
-
-/*!
- @brief Typ problemu.
-*/
 		pythonErr problemType();
 	private:
 		std::string m_problem;
@@ -66,7 +63,7 @@ class SNPythonInterpreterException
 };
 
 /**
- @author Miroslav Bendik <miroslav.bendik@gmail.com>
+ @author Miroslav Bendik
  */
 class PyObjectNULLException
 {

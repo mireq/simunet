@@ -46,6 +46,15 @@ class GraphicsView : public QGraphicsView
 		}
 };
 
+/*!
+  \class MainWindow
+  \brief Hlavne okno aplikacie.
+  \ingroup dialogs
+*/
+
+/*!
+  Vytvorenie hlavneho okna.
+*/
 MainWindow::MainWindow(QWidget* parent, Qt::WindowFlags flags): QMainWindow(parent, flags)
 {
 	setObjectName("MainWindow");
@@ -60,13 +69,21 @@ MainWindow::MainWindow(QWidget* parent, Qt::WindowFlags flags): QMainWindow(pare
 	QTimer::singleShot(0, this, SLOT(initSimuNet()));
 }
 
-
+/*!
+  Zrusenie hlavneho okna.
+*/
 MainWindow::~MainWindow()
 {
 	saveWindowState();
 }
 
+/*!
+  Nastavenie enabled / disabled stavu vsetkych zobrazenych okien.
 
+  Tato metoda sa vyuziva pri operaciach kedy sa nesmu zariadenia modifikovat
+  (napr. ukladanie). Vsetky otvorene okna sa vtedy prepnu do stavu disabled
+  kedy sa v nich neda nic modifikovat.
+*/
 void MainWindow::setWindowsEnabled(bool enabled)
 {
 	foreach (QWidget *widget, QApplication::topLevelWidgets())
