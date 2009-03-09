@@ -85,6 +85,7 @@ set(simunet_SRCS
 	src/gui/widgets/SNDevicesListModel.cpp
 	src/gui/widgets/SNIcon.cpp
 	src/gui/widgets/SNScene.cpp
+	src/gui/widgets/SNSplash.cpp
 	src/gui/widgets/SNTelnetWidget.cpp
 	src/gui/widgets/SNTitleWidget.cpp
 	src/gui/widgets/SNWebConfigPage.cpp
@@ -101,6 +102,7 @@ set(simunet_MOC_HDRS
 	src/gui/widgets/SNConfigPanel.h
 	src/gui/widgets/SNDevicesListModel.h
 	src/gui/widgets/SNScene.h
+	src/gui/widgets/SNSplash.h
 	src/gui/widgets/SNTitleWidget.h
 	src/gui/widgets/SNTelnetWidget.h
 	src/gui/widgets/SNWebConfigPage.h

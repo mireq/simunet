@@ -25,6 +25,7 @@
 #include "ConfigureDlg.h"
 #include "SNDevicesListModel.h"
 #include "SNScene.h"
+#include "SNSplash.h"
 #include "SNIcon.h"
 #include "SecondaryWindow.h"
 #include "CfgPerformance.h"
@@ -57,6 +58,10 @@ class GraphicsView : public QGraphicsView
 */
 MainWindow::MainWindow(QWidget* parent, Qt::WindowFlags flags): QMainWindow(parent, flags)
 {
+	m_splash = new SNSplash(":/splash_styles/default/");
+	m_splash->setDisplayed(true);
+	m_splash->moveToCenter();
+
 	setObjectName("MainWindow");
 	setWindowTitle(tr("SimuNet"));
 	setupVariables();
@@ -74,6 +79,7 @@ MainWindow::MainWindow(QWidget* parent, Qt::WindowFlags flags): QMainWindow(pare
 */
 MainWindow::~MainWindow()
 {
+	m_splash->deleteLater();
 	saveWindowState();
 }
 
@@ -209,14 +215,20 @@ void MainWindow::sceneNavigationModeActionTriggered(QAction *action)
 
 void MainWindow::initSimuNet()
 {
+	m_splash->setProgress(50);
+	m_splash->setMessage(tr("Starting devices"));
 	m_devicesModel = new SNDevicesListModel(this);
 	m_toolWindow->setModel(m_devicesModel);
 	for (int i = 0; i < 10; ++i)
 	{
 		m_devicesModel->startDevice("router");
+		qApp->processEvents();
 	}
 	setWindowsEnabled(true);
 	statusBar()->showMessage(tr("Ready"), 5000);
+	m_splash->setProgress(100);
+	m_splash->setMessage(tr("Ready"));
+	m_splash->closeDelayed();
 }
 
 void MainWindow::restoreWindowState()

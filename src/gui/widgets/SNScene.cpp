@@ -2,7 +2,7 @@
  *   Simunet - Computer Network Simulator                                  *
  *   http://simunet.eu/                                                    *
  *                                                                         *
- *   Copyright (C) 2008 by Miroslav Bendik                                 *
+ *   Copyright (C) 2009 by Miroslav Bendik                                 *
  *   miroslav.bendik@gmail.com                                             *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *

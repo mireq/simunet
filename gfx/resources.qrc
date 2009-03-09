@@ -15,4 +15,8 @@
   <file>web/webstyle.css</file>
   <file>web/examplesettings.html</file>
 </qresource>
+<qresource prefix="/splash_styles/default/">
+  <file alias="splash.png">splash/default/splash.png</file>
+  <file alias="style.ini">splash/default/style.ini</file>
+</qresource>
 </RCC>

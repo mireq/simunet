@@ -33,6 +33,7 @@ class AboutDlg;
 class ConfigureDlg;
 class SNDevicesListModel;
 class SNScene;
+class SNSplash;
 class SecondaryWindow;
 
 /**
@@ -85,6 +86,7 @@ class MainWindow : public QMainWindow
 		AboutDlg *m_aboutDlg;
 		ConfigureDlg *m_configureDlg;
 		SecondaryWindow *m_toolWindow;
+		SNSplash *m_splash;
 };
 
 #endif
