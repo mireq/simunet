@@ -12,9 +12,11 @@ set(CMAKE_CXX_FLAGS_DEBUG   "-O2 -g3 -ggdb -Wall -fexceptions -DDEBUG")
 # ak kompilujeme s debug
 if(CMAKE_BUILD_TYPE MATCHES Debug)
 	message(STATUS "Configured to compile including full debug information in the executables")
+	add_definitions(-DQT_DEBUG)
 else(CMAKE_BUILD_TYPE MATCHES Debug)
 	message(STATUS "Configured to compile including debug information in the executables")
 	set(CMAKE_BUILD_TYPE Release)
+	add_definitions(-DQT_NO_DEBUG)
 endif(CMAKE_BUILD_TYPE MATCHES Debug)
 
 # vyzadujeme Qt4
@@ -176,8 +178,8 @@ target_link_libraries(simunet smlib ${PYTHON_LIBRARIES} ${QT_LIBRARIES} ${OPENSS
 
 install (TARGETS simunet DESTINATION bin)
 
-# podpora pch z
-# projektu rosegarden
+# podpora pch
+# podrobnosti v adresari cmake, subor README
 option(WANT_PCH "Whether to use pre-compiled headers" OFF)
 
 set(USE_PCH FALSE)
@@ -194,8 +196,7 @@ endif (WANT_PCH)
 # SET(CMAKE_VERBOSE_MAKEFILE ON)
 
 if (USE_PCH)
-	add_precompiled_header(simunet_pch src/pch.h)
-	add_dependencies(simunet simunet_pch)
+	add_precompiled_header(simunet src/pch.h)
 endif (USE_PCH)
 
 install(TARGETS simunet

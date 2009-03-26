@@ -1,0 +1,9 @@
+Sem patria dodatocne moduly pre CMake.
+
+Pre podporu PCH (prekompilovane hlavicky)
+pre vyssiu rychlost kompilacie navstivte
+http://www.vtk.org/Bug/view.php?id=1260
+a stiahnite PCHSupport_26.cmake a premenujte
+na FindPCHSupport.cmake.
+Pri spusteni treba pouzit volbu
+-DWANT_PCH=ON
