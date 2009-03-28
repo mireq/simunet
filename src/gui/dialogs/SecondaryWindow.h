@@ -46,6 +46,7 @@ class SecondaryWindow : public QDockWidget
 	private slots:
 		void showContextMenu(const QPoint &point);
 		void settingsClosed(DeviceSettingsDlg *dialog);
+		void closeSettingsDialog(int devId);
 
 	private:
 		QAction *m_newAct;

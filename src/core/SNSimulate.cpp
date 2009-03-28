@@ -701,18 +701,20 @@ void SNSimulate::renameDirectory(const std::string &name, int directoryId)
   \brief Odstranenie adresara.
 
   \param directoryId ID adresara ktory chceme odstranit.
+  \return Zoznam zariadeni a adresarov, ktore boli odstranene.
 
   \warning Tato metoda odstrani adresar spolocne so vsetkymi podadresarmi
   a zariadeniami v nich.
 */
-bool SNSimulate::removeDirectory(int directoryId)
+const list<int> SNSimulate::removeDirectory(int directoryId)
 {
+	list<int> odstranene;
 	map<int, pair<int, string> >::iterator dir;
 	dir = m_folders.find(-directoryId);
 	if (dir == m_folders.end())
 	{
 		qWarning("Directory %d not found", directoryId);
-		return true;
+		return odstranene;
 	}
 
 	// odstranenie podpoloziek
@@ -730,13 +732,16 @@ bool SNSimulate::removeDirectory(int directoryId)
 			if (*rm > 0)
 			{
 				stopDevice(*rm);
+				odstranene.push_back(*rm);
 			}
 			else
 			{
-				removeDirectory(*rm);
+				const list<int> adresar = removeDirectory(*rm);
+				odstranene.insert(--odstranene.begin(), adresar.begin(), adresar.end());
 			}
 		}
 	}
+	odstranene.push_back(directoryId);
 
 	int subtreeId = dir->second.first;
 
@@ -747,18 +752,18 @@ bool SNSimulate::removeDirectory(int directoryId)
 	if (subtree == m_devicesTree.end())
 	{
 		qWarning("Missing subtree: %d", subtreeId);
-		return false;
+		return odstranene;
 	}
 
 	vector<int>::iterator subtreeDir = find(subtree->second.begin(), subtree->second.end(), int(directoryId));
 	if (subtreeDir == subtree->second.end())
 	{
 		qWarning("Missing directory: %d in subtree %d", directoryId, subtreeId);
-		return false;
+		return odstranene;
 	}
 	subtree->second.erase(subtreeDir);
 
-	return false;
+	return odstranene;
 }
 
 /*!

@@ -66,6 +66,9 @@ class SNDevicesListModel : public QAbstractItemModel
 		SNSimulate *m_simulate;
 		QItemSelectionModel *m_selection;
 
+	signals:
+		void itemRemoved(int devId);
+
 };
 
 #endif

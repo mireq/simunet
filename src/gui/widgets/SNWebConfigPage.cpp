@@ -24,6 +24,7 @@
 
 #include <QWebSettings>
 #include <QUrl>
+#include <QWebFrame>
 
 #include <QNetworkRequest>
 #include <QDebug>
@@ -69,7 +70,13 @@ void SNWebConfigPage::javaScriptConsoleMessage(const QString &message, int lineN
 bool SNWebConfigPage::acceptNavigationRequest(QWebFrame *frame, const QNetworkRequest &request, NavigationType type)
 {
 	qDebug()<<request.url();
-	//return true;
+	QUrl url = request.url();
+	if (url.scheme() == "simunet")
+	{
+		/// TODO dopisat nastavenie html
+		//mainFrame()->setHtml();
+		return false;
+	}
 	return QWebPage::acceptNavigationRequest(frame, request, type);
 }
 

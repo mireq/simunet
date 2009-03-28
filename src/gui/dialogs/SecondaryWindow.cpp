@@ -79,6 +79,7 @@ void SecondaryWindow::setModel(SNDevicesListModel *model)
 	if (m_list == NULL)
 	{
 		m_model = model;
+		connect(m_model, SIGNAL(itemRemoved(int)), SLOT(closeSettingsDialog(int)));
 		m_list = new QTreeView();
 		m_list->setIconSize(QSize(32, 32));
 		m_list->setModel(model);
@@ -178,6 +179,14 @@ void SecondaryWindow::settingsClosed(DeviceSettingsDlg *dialog)
 	int deviceId = dialog->deviceId();
 	m_settingsDialogs.remove(deviceId);
 	dialog->deleteLater();
+}
+
+void SecondaryWindow::closeSettingsDialog(int devId)
+{
+	if (m_settingsDialogs.contains(devId))
+	{
+		m_settingsDialogs[devId]->close();
+	}
 }
 
 

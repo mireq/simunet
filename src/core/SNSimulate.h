@@ -55,7 +55,7 @@ class SNSimulate
 		void addToSubtree(int devId, int row, int parent = 0);
 		void addDirectory(const std::string &name, int parent = 0, int row = -1);
 		void renameDirectory(const std::string &name, int directoryId);
-		bool removeDirectory(int directoryId);
+		const std::list<int> removeDirectory(int directoryId);
 		std::string *directory(int directoryId);
 
 	private:

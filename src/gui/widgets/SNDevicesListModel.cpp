@@ -30,6 +30,7 @@
 #include <QItemSelectionModel>
 
 #include <string>
+#include <list>
 
 #include <QDebug>
 
@@ -217,10 +218,24 @@ bool SNDevicesListModel::removeDevice(const QModelIndex &index)
 	if (id > 0)
 	{
 		ret = m_simulate->stopDevice(id);
+		emit itemRemoved(id);
 	}
 	else
 	{
-		ret = m_simulate->removeDirectory(id);
+		const list<int> odstranene = m_simulate->removeDirectory(id);
+		if (odstranene.size() > 0)
+		{
+			ret = false;
+			list<int>::const_iterator it;
+			for (it = odstranene.begin(); it != odstranene.end(); ++it)
+			{
+				emit itemRemoved(*it);
+			}
+		}
+		else
+		{
+			ret = true;
+		}
 	}
 	endRemoveRows();
 	return ret;
@@ -501,4 +516,15 @@ void SNDevicesListModel::insertCompute(const QModelIndex &index, int &parent, in
 		}
 	}
 }
+
+// ----------------------------------------------------------------
+
+/*!
+  \fn void SNDevicesListModel::itemRemoved(int devId)
+
+  Signál je vyvolaný po odstránení položky zo zoznamu zariadení. V prípade
+  záporného devId ide o adresár, kladné devId signalizuje odstránenie zariadenia.
+
+  Po odstránení adresára sa podadresáre prehľadávajú do hĺbky.
+*/
 

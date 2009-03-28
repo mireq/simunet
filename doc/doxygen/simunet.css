@@ -145,3 +145,26 @@ span.keyword {
   font-style: italic;
 }
 
+table.memname tr {
+  display : inline;
+}
+
+table.memname tr td {
+  display : inline;
+}
+
+table.memname {
+  margin : 1px;
+}
+
+table.memname tr {
+  display : block;
+  float : left;
+}
+
+table.memname tr td {
+  margin : 1px;
+  width : auto !important;
+  float : left;
+}
+
