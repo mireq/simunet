@@ -475,6 +475,7 @@ QModelIndex SNDevicesListModel::parent(const QModelIndex &index) const
 */
 int SNDevicesListModel::columnCount(const QModelIndex &parent) const
 {
+	Q_UNUSED(parent);
 	return 1;
 }
 

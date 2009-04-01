@@ -325,7 +325,7 @@ char *SNDevice::telnetGetControlChars(void)
 	}
 }
 
-PyObject *SNDevice::frameResponseWrapper(PyObject *self, PyObject *args)
+PyObject *SNDevice::frameResponseWrapper(PyObject *, PyObject *args)
 {
 	if (PyTuple_Size(args) != 3)
 	{
@@ -346,7 +346,7 @@ PyObject *SNDevice::frameResponseWrapper(PyObject *self, PyObject *args)
 	Py_RETURN_NONE;
 }
 
-PyObject* SNDevice::telnetResponseWrapper(PyObject *self, PyObject *args)
+PyObject* SNDevice::telnetResponseWrapper(PyObject *, PyObject *args)
 {
 	if (PyTuple_Size(args) != 4)
 	{

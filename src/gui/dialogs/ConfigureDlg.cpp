@@ -194,6 +194,7 @@ void ConfigureDlg::closeEvent(QCloseEvent *e)
 */
 void ConfigureDlg::showEvent(QShowEvent *e)
 {
+	Q_UNUSED(e);
 	m_currentItem = NULL;
 	m_previousItem = NULL;
 	m_titleWidget->setHideTimeout(0);

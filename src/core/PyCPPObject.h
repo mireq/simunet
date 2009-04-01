@@ -36,8 +36,8 @@ class PyCPPObject
 		bool isCallable();
 
 	private:
-		PyCPPObject&  operator = (const PyCPPObject& other) { return *this; }
-		PyCPPObject(const PyCPPObject& other) {}
+		PyCPPObject&  operator = (const PyCPPObject &) { return *this; }
+		PyCPPObject(const PyCPPObject &) {}
 
 		PyObject *m_object;
 		bool m_clean;

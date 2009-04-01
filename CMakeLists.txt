@@ -7,7 +7,7 @@ cmake_policy(SET CMP0003 NEW)
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
 set(CMAKE_CXX_FLAGS_RELEASE "-O2 -Wall -fexceptions -DNDEBUG")
-set(CMAKE_CXX_FLAGS_DEBUG   "-O2 -g3 -ggdb -Wall -fexceptions -DDEBUG")
+set(CMAKE_CXX_FLAGS_DEBUG   "-O2 -g3 -ggdb -Wall -Wextra -fexceptions -DDEBUG")
 
 # ak kompilujeme s debug
 if(CMAKE_BUILD_TYPE MATCHES Debug)

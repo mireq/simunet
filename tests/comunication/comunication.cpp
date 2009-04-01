@@ -32,7 +32,7 @@
 using namespace std;
 
 
-PyObject *processFrameWrapper(PyObject *self, PyObject *args)
+PyObject *processFrameWrapper(PyObject *, PyObject *args)
 {
 	if (PyTuple_Size(args) != 3)
 	{
@@ -57,7 +57,7 @@ PyObject *processFrameWrapper(PyObject *self, PyObject *args)
 	Py_RETURN_NONE;
 }
 
-PyObject* telnetResponseWrapper(PyObject *self, PyObject *args)
+PyObject* telnetResponseWrapper(PyObject *, PyObject *args)
 {
 	if (PyTuple_Size(args) != 4)
 	{

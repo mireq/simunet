@@ -174,6 +174,7 @@ void SNScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
 void SNScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
+	Q_UNUSED(event);
 	m_tahanie = false;
 }
 

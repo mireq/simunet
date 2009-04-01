@@ -89,6 +89,7 @@ void SNTelnetWidget::write(const QString &text)
 */
 void SNTelnetWidget::showEvent(QShowEvent *event)
 {
+	Q_UNUSED(event);
 	m_document->setFocus();
 }
 

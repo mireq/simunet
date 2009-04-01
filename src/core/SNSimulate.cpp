@@ -30,8 +30,7 @@
 
 #include <iostream>
 #include <algorithm>
-
-#include <QDebug>
+#include <QFile>
 
 using namespace std;
 
@@ -365,25 +364,10 @@ void SNSimulate::createSNSimulateModule()
 void SNSimulate::createBaseClass()
 {
 	PyCPPObject pBuiltinsDict(PyEval_GetBuiltins());
-	PyCPPObject ret(PyRun_String("class SNDevice:\n"
-			"\tdef sendFrame(self, data):\n"
-			"\t\tsnsimulate.sendFrame(self.pSNDevice, self.deviceId, data)\n"
-			"\tdef sendTelnet(self, text, cmd):\n"
-			"\t\tsnsimulate.sendTelnet(self.pSNDevice, self.deviceId, text, cmd)\n"
-			"\tdef processFrame(self, data):\n"
-			"\t\tprint(\"processFrame not implemented\")\n"
-			"\tdef resetConfig(self):\n"
-			"\t\tprint(\"resetConfig not implemented\")\n"
-			"\tdef setConfig(self, data):\n"
-			"\t\tprint(\"setConfig not implemented\")\n"
-			"\tdef dumpConfig(self):\n"
-			"\t\tprint(\"dumpConfig not implemented\")\n"
-			"\tdef httpRequest(self, url, post):\n"
-			"\t\tprint(\"httpRequest not implemented\")\n"
-			"\tdef telnetRequest(self, line, symbol):\n"
-			"\t\tprint(\"telnetRequest not implemented\")\n"
-			"\tdef telnetGetControlChars(self):"
-			"\t\tprint(\"telnetGetControlChars not implemented\")", Py_single_input, pBuiltinsDict, pBuiltinsDict), true);
+	QFile file(":/devices/baseDevice/device.py");
+	file.open(QIODevice::ReadOnly);
+	PyCPPObject ret(PyRun_String(file.readAll().constData(), Py_single_input, pBuiltinsDict, pBuiltinsDict), true);
+	file.close();
 }
 
 /*!
