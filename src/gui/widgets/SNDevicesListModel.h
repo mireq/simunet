@@ -27,6 +27,7 @@
 #include <QVector>
 #include <string>
 
+class SNDevice;
 class SNSimulate;
 class QItemSelectionModel;
 
@@ -61,6 +62,7 @@ class SNDevicesListModel : public QAbstractItemModel
 		void addDirectory(const QString &name, const QModelIndex &index = QModelIndex());
 		bool removeDevice(const QModelIndex &index);
 		QItemSelectionModel *selectionModel() const;
+		SNDevice *device(const QModelIndex &index) const;
 	private:
 		void insertCompute(const QModelIndex &index, int &parent, int &row, QModelIndex &parentIndex);
 		SNSimulate *m_simulate;

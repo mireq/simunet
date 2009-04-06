@@ -117,6 +117,14 @@ SNDevice::~SNDevice()
 	std::cout<<std::flush;
 }
 
+/*!
+  Získanie ID zariadenia.
+*/
+uint32_t SNDevice::deviceId() const
+{
+	return m_deviceId;
+}
+
 
 /*!
   Odoslanie ramca zariadeniu.

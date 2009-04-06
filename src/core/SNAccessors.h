@@ -2,7 +2,7 @@
  *   Simunet - Computer Network Simulator                                  *
  *   http://simunet.eu/                                                    *
  *                                                                         *
- *   Copyright (C) 2008 by Miroslav Bendik                                 *
+ *   Copyright (C) 2009 by Miroslav Bendik                                 *
  *   miroslav.bendik@gmail.com                                             *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -20,43 +20,21 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef SNDEVICE_H
-#define SNDEVICE_H
-
-#include <Python.h>
-#include <string>
-#include <map>
+#ifndef SNACCESSORS_H
+#define SNACCESSORS_H
 
 class SNSimulate;
 
 /**
- @author Miroslav Bendik
+ @author Miroslav Bendik <miroslav.bendik@gmail.com>
 */
-class SNDevice
+class SNSingleton
 {
 	public:
-		SNDevice(const std::string &filename, uint32_t deviceId, SNSimulate *parent = 0);
-		~SNDevice();
-
-		uint32_t deviceId() const;
-
-		bool processFrame(PyObject *data);
-		bool resetConfig(void);
-		bool setConfig(PyObject *data);
-		PyObject *dumpConfig(void);
-		char *httpRequest(const std::string &url, PyObject *post);
-		char *httpRequest(const std::string &url, const std::map<std::string, std::string> post);
-		char *telnetRequest(const std::string &line, char symbol);
-		char *telnetGetControlChars(void);
-		static const PyMethodDef SNSimulateMethods[];
-
+		static SNSimulate *getSimulate();
+		static void deleteSimulate();
 	private:
-		uint32_t m_deviceId;
-		PyObject *m_pDeviceInstance;
-		SNSimulate *m_simulate;
-		static PyObject *frameResponseWrapper(PyObject *self, PyObject *args);
-		static PyObject *telnetResponseWrapper(PyObject *self, PyObject *args);
-
+		static SNSimulate *m_simulate;
 };
 
 #endif

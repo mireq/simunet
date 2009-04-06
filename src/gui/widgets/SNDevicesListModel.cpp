@@ -25,6 +25,7 @@
 #include "SNIcon.h"
 #include "core/SNConfig.h"
 #include "core/SNSimulate.h"
+#include "core/SNAccessors.h"
 
 #include <QMimeData>
 #include <QItemSelectionModel>
@@ -54,7 +55,7 @@ SNDevicesListModel::SNDevicesListModel(QObject* parent):
 		QAbstractItemModel(parent)
 {
 	SNConfig config;
-	m_simulate = new SNSimulate(config.threadsCount());
+	m_simulate = SNSingleton::getSimulate();
 	m_selection = new QItemSelectionModel(this);
 }
 
@@ -63,7 +64,6 @@ SNDevicesListModel::SNDevicesListModel(QObject* parent):
 */
 SNDevicesListModel::~SNDevicesListModel()
 {
-	delete m_simulate;
 }
 
 /*!
@@ -477,6 +477,19 @@ int SNDevicesListModel::columnCount(const QModelIndex &parent) const
 {
 	Q_UNUSED(parent);
 	return 1;
+}
+
+
+SNDevice *SNDevicesListModel::device(const QModelIndex &index) const
+{
+	if (!index.isValid())
+	{
+		return NULL;
+	}
+	else
+	{
+		return m_simulate->device(index.internalId());
+	}
 }
 
 void SNDevicesListModel::insertCompute(const QModelIndex &index, int &parent, int &row, QModelIndex &parentIndex)

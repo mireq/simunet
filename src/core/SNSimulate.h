@@ -45,11 +45,15 @@ class SNSimulate
 		uint32_t startDevice(const std::string &filename, int directory = 0, int row = -1);
 		void frameResponse(uint32_t id, PyObject *data);
 		void telnetResponse(uint32_t id, const char *text, const char *cmd);
+
+		// zistovanie informacii o zariadeniach pre model
 		SNDevice *device(uint32_t id) const;
 		const std::vector<int> *devicesList(int parent = 0) const;
 		int findIndexOfDevice(int devId, int parent) const;
 		int findIndexOfDevice(int devId) const;
 		int parent(int devId) const;
+
+		// praca s virtualnymi adresarmi
 		void move(int devId, int row, int parent = 0);
 		void removeFromSubtree(int devId, int parent = 0);
 		void addToSubtree(int devId, int row, int parent = 0);

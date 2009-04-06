@@ -30,6 +30,8 @@
 #include "SecondaryWindow.h"
 #include "CfgPerformance.h"
 
+#include "core/SNAccessors.h"
+
 #include <QAction>
 #include <QMenuBar>
 #include <QStatusBar>
@@ -59,6 +61,7 @@ class GraphicsView : public QGraphicsView
 MainWindow::MainWindow(QWidget* parent, Qt::WindowFlags flags): QMainWindow(parent, flags)
 {
 	m_splash = new SNSplash(":/splash_styles/default/");
+	m_splash->show();
 	m_splash->setDisplayed(true);
 	m_splash->moveToCenter();
 
@@ -81,6 +84,7 @@ MainWindow::~MainWindow()
 {
 	m_splash->deleteLater();
 	saveWindowState();
+	SNSingleton::deleteSimulate();
 }
 
 /*!

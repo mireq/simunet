@@ -132,6 +132,7 @@ set(simunet_PCH
 
 set(core_SRCS
 	src/core/PyCPPObject.cpp
+	src/core/SNAccessors.cpp
 	src/core/SNConfig.cpp
 	src/core/SNDevice.cpp
 	src/core/SNExceptions.cpp
@@ -143,6 +144,7 @@ set(core_SRCS
 
 set(core_HDRS
 	src/core/PyCPPObject.h
+	src/core/SNAccessors.h
 	src/core/SNConfig.h
 	src/core/SNDevice.h
 	src/core/SNExceptions.h

@@ -2,7 +2,7 @@
  *   Simunet - Computer Network Simulator                                  *
  *   http://simunet.eu/                                                    *
  *                                                                         *
- *   Copyright (C) 2008 by Miroslav Bendik                                 *
+ *   Copyright (C) 2009 by Miroslav Bendik                                 *
  *   miroslav.bendik@gmail.com                                             *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -20,43 +20,51 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef SNDEVICE_H
-#define SNDEVICE_H
+#include "SNAccessors.h"
+#include "SNSimulate.h"
+#include "SNConfig.h"
 
-#include <Python.h>
-#include <string>
-#include <map>
+SNSimulate *SNSingleton::m_simulate = NULL;
 
-class SNSimulate;
+/*!
+  \class SNSingleton
+  \brief Zaistenie globalneho pristupu k triedam, ktore mozu mat 1 instanciu.
 
-/**
- @author Miroslav Bendik
+  \ingroup core
 */
-class SNDevice
+
+
+/*!
+  Ziskanie smernika na instanciu SNSimulate.
+
+ Vytvori novu instanciu SNSimulate (ak este nebola vytvorena) a vrati smernik
+ na tuto instanciu.
+
+ \sa SNSimulate
+*/
+SNSimulate *SNSingleton::getSimulate()
 {
-	public:
-		SNDevice(const std::string &filename, uint32_t deviceId, SNSimulate *parent = 0);
-		~SNDevice();
+	if (m_simulate == NULL)
+	{
+		SNConfig config;
+		m_simulate = new SNSimulate(config.threadsCount());
+	}
+	return m_simulate;
+}
 
-		uint32_t deviceId() const;
+/*!
+ Zrusenie instancie SNSimulate.
 
-		bool processFrame(PyObject *data);
-		bool resetConfig(void);
-		bool setConfig(PyObject *data);
-		PyObject *dumpConfig(void);
-		char *httpRequest(const std::string &url, PyObject *post);
-		char *httpRequest(const std::string &url, const std::map<std::string, std::string> post);
-		char *telnetRequest(const std::string &line, char symbol);
-		char *telnetGetControlChars(void);
-		static const PyMethodDef SNSimulateMethods[];
+ Ak instancia nebola vytvorena neurobi tato funkcia nic.
 
-	private:
-		uint32_t m_deviceId;
-		PyObject *m_pDeviceInstance;
-		SNSimulate *m_simulate;
-		static PyObject *frameResponseWrapper(PyObject *self, PyObject *args);
-		static PyObject *telnetResponseWrapper(PyObject *self, PyObject *args);
+ \warning Tato instancia sa nezrusi sama, je nutne volat destruktor rucne.
+*/
+void SNSingleton::deleteSimulate()
+{
+	if (m_simulate != NULL)
+	{
+		delete m_simulate;
+	}
+	m_simulate = NULL;
+}
 
-};
-
-#endif
