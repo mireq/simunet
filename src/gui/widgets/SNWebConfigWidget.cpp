@@ -23,9 +23,18 @@
 #include "SNWebConfigWidget.h"
 #include "SNWebConfigPage.h"
 
+#include "core/SNAccessors.h"
+#include "core/SNSimulate.h"
+
 #include <QtGui>
 #include <QtWebKit>
 #include <QSettings>
+#include <QtConcurrentRun>
+#include <QFuture>
+
+#include <map>
+#include <string>
+
 
 QString SNWebConfigWidget::m_webConfigJs;
 
@@ -37,7 +46,7 @@ QString SNWebConfigWidget::m_webConfigJs;
 /*!
   Vytvorenie webovej konfiguracie pre zariadenie.
 */
-SNWebConfigWidget::SNWebConfigWidget(QWidget* parent): QWidget(parent), m_errorsVisible(false)
+SNWebConfigWidget::SNWebConfigWidget(uint32_t devId, QWidget* parent): QWidget(parent), m_devId(devId), m_errorsVisible(false)
 {
 	setObjectName("WebConfig");
 	QVBoxLayout *layout = new QVBoxLayout(this);
@@ -83,7 +92,6 @@ SNWebConfigWidget::SNWebConfigWidget(QWidget* parent): QWidget(parent), m_errors
 	//connect(m_view->page(), SIGNAL(linkHovered(QString,QString,QString)), SLOT(setStatusBarLink(QString)));
 
 	loadJavascript();
-	setUrl("url");
 
 	m_hSplitter->addWidget(m_menuTree);
 	m_hSplitter->addWidget(webFrame);
@@ -105,6 +113,10 @@ SNWebConfigWidget::SNWebConfigWidget(QWidget* parent): QWidget(parent), m_errors
 	layout->addWidget(m_vSplitter);
 	setLayout(layout);
 	restoreWindowState();
+
+	m_htmlLoadWatcher = new QFutureWatcher<char *>;
+	connect(m_htmlLoadWatcher, SIGNAL(finished()), SLOT(htmlLoadFinished()));
+	setUrl("url");
 }
 
 /*!
@@ -173,12 +185,14 @@ void SNWebConfigWidget::setPageTitle(const QString &title)
 */
 void SNWebConfigWidget::setUrl(const QString &url)
 {
-	qDebug()<<url;
+	QFuture<char *> future = QtConcurrent::run(SNWebConfigWidget::startLoadHtml, this, m_devId, url);
+	m_htmlLoadWatcher->setFuture(future);
+	/*
 	QFile exampleFile(":web/examplesettings.html");
 	if (!exampleFile.open(QIODevice::ReadOnly | QIODevice::Text))
 		return;
 	m_view->setHtml(QString::fromUtf8(exampleFile.readAll()), QUrl("simunet:/"));
-	exampleFile.close();
+	exampleFile.close();*/
 }
 
 /*!
@@ -339,9 +353,29 @@ void SNWebConfigWidget::menuActivated(const QModelIndex &index)
 	}
 }
 
+void SNWebConfigWidget::setHtml(const QString &html)
+{
+	m_view->setHtml(html);
+}
+
+void SNWebConfigWidget::htmlLoadFinished()
+{
+	QFutureWatcher<char *> *w = static_cast<QFutureWatcher<char *> *>(sender());
+	setHtml(w->result());
+}
+
+
+
+char *SNWebConfigWidget::startLoadHtml(SNWebConfigWidget *self, uint32_t devId, const QString &url)
+{
+	/// @todo Dopisat post data
+	std::map<std::string, std::string> a;
+	return SNSingleton::getSimulate()->httpRequest(devId, url.toLatin1().constData(), a);
+}
+
+
 /*!
   \fn void SNWebConfigWidget::jsErrorsAvitable(bool)
 
   Indikacia dostupnosti javascript-ovych chyb.
 */
-

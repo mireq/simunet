@@ -62,6 +62,10 @@ class SNSimulate
 		const std::list<int> removeDirectory(int directoryId);
 		std::string *directory(int directoryId);
 
+		// komunikacia so zariadeniami
+		char *httpRequest(uint32_t devId, const std::string &url, PyObject *post);
+		char *httpRequest(uint32_t devId, const std::string &url, const std::map<std::string, std::string> post);
+
 	private:
 		void setPath();
 		void createDevicesDictionary();

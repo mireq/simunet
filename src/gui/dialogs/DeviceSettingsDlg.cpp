@@ -24,8 +24,8 @@
 
 #include "SNTelnetWidget.h"
 #include "SNWebConfigWidget.h"
-#include <QBoxLayout>
 
+#include <QBoxLayout>
 #include <QTabWidget>
 #include <QStatusBar>
 #include <QPushButton>
@@ -56,7 +56,7 @@ DeviceSettingsDlg::DeviceSettingsDlg(int devId, QWidget* parent): QDialog(parent
 	m_errorButton = new QPushButton(tr("Show javascript errors"));
 	m_loadProgress = new QProgressBar;
 	m_errorsTree = new QTreeWidget;
-	m_webConfig = new SNWebConfigWidget;
+	m_webConfig = new SNWebConfigWidget(devId);
 	SNTelnetWidget *tw = new SNTelnetWidget;
 	QTabWidget *tabs = new QTabWidget;
 	QBoxLayout *layout = new QBoxLayout(QBoxLayout::TopToBottom, this);

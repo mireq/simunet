@@ -26,6 +26,7 @@
 #include <QWidget>
 #include <QString>
 #include <QModelIndex>
+#include <QFutureWatcher>
 
 class QWebView;
 class QLabel;
@@ -40,7 +41,7 @@ class SNWebConfigWidget : public QWidget
 {
 		Q_OBJECT
 	public:
-		SNWebConfigWidget(QWidget* parent = 0);
+		SNWebConfigWidget(uint32_t devId, QWidget* parent = 0);
 		~SNWebConfigWidget();
 		void render(const QString &string);
 		int errorsCount() const;
@@ -60,7 +61,12 @@ class SNWebConfigWidget : public QWidget
 		void addJavascriptObject();
 		void addJsError(QString errorMsg, int line);
 		void menuActivated(const QModelIndex &index);
+		void setHtml(const QString &html);
+		void htmlLoadFinished();
 	private:
+		static char *startLoadHtml(SNWebConfigWidget *self, uint32_t devId, const QString &url);
+		uint32_t m_devId;
+
 		QSplitter *m_vSplitter;
 		QSplitter *m_hSplitter;
 		QWebView *m_view;
@@ -71,6 +77,7 @@ class SNWebConfigWidget : public QWidget
 		bool m_errorsVisible;
 
 		static QString m_webConfigJs;
+		QFutureWatcher<char *> *m_htmlLoadWatcher;
 	signals:
 		void jsErrorsAvitable(bool);
 };
