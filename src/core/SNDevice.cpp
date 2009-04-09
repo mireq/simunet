@@ -238,8 +238,16 @@ char *SNDevice::httpRequest(const std::string &url, PyObject *post)
 
 		PyTuple_SetItem(args, 0, pUrl);
 		PyTuple_SetItem(args, 1, post);
-		PyCPPObject pRet(PyObject_Call(httpRequestFunc, args, NULL));
-		return PyString_AsString(pRet);
+		PyCPPObject pRet(PyObject_CallObject(httpRequestFunc, args));
+		//return PyString_AsString(pRet);
+		if (!PyString_Check(pRet))
+		{
+			return NULL;
+		}
+		else
+		{
+			return PyString_AsString(pRet);
+		}
 	}
 	catch (PyObjectNULLException e)
 	{
@@ -273,6 +281,7 @@ char *SNDevice::httpRequest(const std::string &url, const std::map<std::string, 
   Odoslanie vstupneho riadku z telnetu a symbolu ktory prenos odstartoval.
 
   Pomocou tejto metody sa posilaju telnet data pre konkretne zariadenie.
+  Tato funkcia vracia string ktory sa po spracovani requestu vypise na obrazovku.
 
   \param line Vstupny riadok.
   \param symbol Znak ktory odstartoval prenos (napr \\n, alebo ? na CISCO zariadeniach.)
@@ -294,7 +303,7 @@ char *SNDevice::telnetRequest(const std::string &line, char symbol)
 		PyTuple_SetItem(args, 0, pLine);
 		PyTuple_SetItem(args, 1, pSymbol);
 
-		PyCPPObject pRet(PyObject_Call(telnetRequestFunc, args, NULL));
+		PyCPPObject pRet(PyObject_CallObject(telnetRequestFunc, args));
 		if (!PyString_Check(pRet))
 		{
 			return NULL;

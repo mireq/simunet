@@ -30,14 +30,17 @@
 #include <map>
 #include <vector>
 
+#include <QObject>
+
 class SNDevice;
 class SNSimulateHelper;
 
 /**
  @author Miroslav Bendik
 */
-class SNSimulate
+class SNSimulate: public QObject
 {
+	Q_OBJECT
 	public:
 		SNSimulate(int threads);
 		~SNSimulate();
@@ -65,6 +68,10 @@ class SNSimulate
 		// komunikacia so zariadeniami
 		char *httpRequest(uint32_t devId, const std::string &url, PyObject *post);
 		char *httpRequest(uint32_t devId, const std::string &url, const std::map<std::string, std::string> post);
+		char *telnetRequest(uint32_t devId, const std::string &line, char symbol);
+
+	signals:
+		void telnetResponseRecived(uint32_t id, const char *text, const char *cmd);
 
 	private:
 		void setPath();

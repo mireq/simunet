@@ -26,12 +26,15 @@
 #include <QApplication>
 #include <QTranslator>
 #include <QLocale>
+#include <QMetaType>
 
 #include "MainWindow.h"
 
 int main(int argc, char *argv[])
 {
 	QApplication app(argc, argv);
+	// registracia (zatial neznameho) typu uint32_t
+	qRegisterMetaType<uint32_t>("uint32_t");
 
 	/*QFile cssFile(":guiStyle.css");
 	if (cssFile.open(QIODevice::ReadOnly | QIODevice::Text))

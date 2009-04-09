@@ -57,7 +57,7 @@ DeviceSettingsDlg::DeviceSettingsDlg(int devId, QWidget* parent): QDialog(parent
 	m_loadProgress = new QProgressBar;
 	m_errorsTree = new QTreeWidget;
 	m_webConfig = new SNWebConfigWidget(devId);
-	SNTelnetWidget *tw = new SNTelnetWidget;
+	SNTelnetWidget *tw = new SNTelnetWidget(devId);
 	QTabWidget *tabs = new QTabWidget;
 	QBoxLayout *layout = new QBoxLayout(QBoxLayout::TopToBottom, this);
 

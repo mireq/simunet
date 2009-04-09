@@ -22,6 +22,9 @@
  ***************************************************************************/
 #include "SNTelnetWidget.h"
 
+#include "core/SNAccessors.h"
+#include "core/SNSimulate.h"
+
 #include <QPlainTextEdit>
 #include <QVBoxLayout>
 #include <QKeyEvent>
@@ -40,9 +43,10 @@
 */
 
 /*!
-  Vytvorenie telnet widgetu.
+  Vytvorenie telnet widgetu pridelenému k zariadeniu \a devId.
 */
-SNTelnetWidget::SNTelnetWidget(QWidget* parent): QWidget(parent)
+SNTelnetWidget::SNTelnetWidget(uint32_t devId, QWidget* parent):
+		QWidget(parent), m_devId(devId)
 {
 	setObjectName("TelnetConfig");
 	m_font.setFamily("courier");
@@ -63,6 +67,9 @@ SNTelnetWidget::SNTelnetWidget(QWidget* parent): QWidget(parent)
 	palette.setColor(QPalette::Base, Qt::black);
 	palette.setColor(QPalette::Text, Qt::white);
 	m_document->setPalette(palette);
+	connect(SNSingleton::getSimulate(),
+	        SIGNAL(telnetResponseRecived(uint32_t, const char *, const char *)),
+	        SLOT(processTelnetResponse(uint32_t, const char *, const char *)));
 }
 
 /*!
@@ -81,6 +88,9 @@ SNTelnetWidget::~SNTelnetWidget()
 */
 void SNTelnetWidget::write(const QString &text)
 {
+	m_document->textCursor().clearSelection();
+	m_document->moveCursor(QTextCursor::End);
+	m_document->ensureCursorVisible();
 	m_document->textCursor().insertText(text);
 }
 
@@ -106,6 +116,19 @@ void SNTelnetWidget::sendLineEvent(char controlChar)
 	{
 		qDebug()<<m_currentLine<<controlChar;
 	}
+	char *out = SNSingleton::getSimulate()->telnetRequest(m_devId, m_currentLine.toLatin1().data(), controlChar);
+	write(out);
+}
+
+
+void SNTelnetWidget::processTelnetResponse(uint32_t id, const char *text, const char *cmd)
+{
+	if (id != m_devId)
+	{
+		return;
+	}
+	write(text);
+	write(cmd);
 }
 
 const char *SNTelnetWidget::getControlChars() const
@@ -179,5 +202,6 @@ bool SNTelnetWidget::eventFilter(QObject *obj, QEvent *event)
 	}
 	return QWidget::eventFilter(obj, event);
 }
+
 
 

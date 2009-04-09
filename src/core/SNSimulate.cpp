@@ -254,11 +254,16 @@ void SNSimulate::frameResponse(uint32_t id, PyObject *data)
  */
 void SNSimulate::telnetResponse(uint32_t id, const char *text, const char *cmd)
 {
-    /// @todo implement me
+	emit telnetResponseRecived(id, text, cmd);
 }
 
+/*!
+  Odoslanie HTTP požiadavky zariadeniu špecifikovanému atribútom \a devId.
+  V prípade, že toto zariadenie neexistuje bude návratovou hodnotou NULL.
 
-char *SNSimulate::httpRequest(uint32_t devId, const string &url, PyObject *post)
+  \sa SNDevice::httpRequest
+*/
+char *SNSimulate::httpRequest(uint32_t devId, const std::string &url, PyObject *post)
 {
 	SNDevice *dev = device(devId);
 	if (dev == NULL)
@@ -273,8 +278,10 @@ char *SNSimulate::httpRequest(uint32_t devId, const string &url, PyObject *post)
 	return out;
 }
 
-
-char *SNSimulate::httpRequest(uint32_t devId, const string &url, const map<string, string> post)
+/*!
+  \overload
+*/
+char *SNSimulate::httpRequest(uint32_t devId, const std::string &url, const std::map<std::string, std::string> post)
 {
 	SNDevice *dev = device(devId);
 	if (dev == NULL)
@@ -289,6 +296,26 @@ char *SNSimulate::httpRequest(uint32_t devId, const string &url, const map<strin
 	return out;
 }
 
+/*!
+  Odoslanie telnet požiadavky vybranému zariadeniu. Ak zariadenie s daným
+  \a devId neexistuje váti táto funkcia NULL.
+
+  \sa SNDevice::telnetRequest
+*/
+char *SNSimulate::telnetRequest(uint32_t devId, const std::string &line, char symbol)
+{
+	SNDevice *dev = device(devId);
+	if (dev == NULL)
+	{
+		return NULL;
+	}
+	PyEval_AcquireLock();
+	PyThreadState_Swap(m_mainThreadState);
+	char *out = dev->telnetRequest(line, symbol);
+	PyThreadState_Swap(NULL);
+	PyEval_ReleaseLock();
+	return out;
+}
 
 /*!
   \brief Nastavime cesty v ktorych su hladane moduly.
@@ -803,3 +830,8 @@ string *SNSimulate::directory(int directoryId)
 	}
 }
 
+/*!
+  \fn SNSimulate::telnetResponseRecived(uint32_t id, const char *text, const char *cmd)
+
+  Tento signal sa emituje po prijati telnet dat od zariadenia.
+*/

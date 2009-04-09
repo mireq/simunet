@@ -35,13 +35,15 @@ class SNTelnetWidget : public QWidget
 {
 		Q_OBJECT
 	public:
-		SNTelnetWidget(QWidget* parent = 0);
+		SNTelnetWidget(uint32_t devId, QWidget* parent = 0);
 		~SNTelnetWidget();
 	public slots:
 		void write(const QString &text);
 	protected:
 		virtual void showEvent(QShowEvent *event);
 		virtual void sendLineEvent(char controlChar);
+	private slots:
+		void processTelnetResponse(uint32_t id, const char *text, const char *cmd);
 	private:
 		const char *getControlChars() const;
 		bool eventFilter(QObject *obj, QEvent *event);
@@ -49,6 +51,7 @@ class SNTelnetWidget : public QWidget
 		QTextCharFormat m_format;
 		QPlainTextEdit *m_document;
 		QString m_currentLine;
+		uint32_t m_devId;
 };
 
 

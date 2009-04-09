@@ -480,6 +480,10 @@ int SNDevicesListModel::columnCount(const QModelIndex &parent) const
 }
 
 
+/*!
+  Tato metoda vrati smernik na zariadenie specifikovane indexom modelu.
+  Ak zariadenie neexistuje vrati tato metoda NULL.
+*/
 SNDevice *SNDevicesListModel::device(const QModelIndex &index) const
 {
 	if (!index.isValid())

@@ -93,6 +93,11 @@ set(simunet_SRCS
 	src/gui/widgets/SNWebConfigPage.cpp
 	src/gui/widgets/SNWebConfigWidget.cpp)
 
+set(simunet_core_MOC_HDRS
+	src/core/SNSimulate.h
+	src/core/SNSimulateHelper.h
+)
+
 # hlavickove subory ktore musi spracovat moc
 set(simunet_MOC_HDRS
 	src/gui/dialogs/AboutDlg.h
@@ -154,7 +159,7 @@ set(core_HDRS
 	src/core/SNBloatList.h
 	src/core/SNLog.h)
 
-qt4_wrap_cpp(simunet_MOC_SIMULATE_HELPER src/core/SNSimulateHelper.h)
+qt4_wrap_cpp(simunetcore_MOC_SRCS ${simunet_core_MOC_HDRS})
 qt4_wrap_cpp(simunet_MOC_SRCS ${simunet_MOC_HDRS})
 qt4_wrap_ui(simunet_UIS_SRCS ${simunet_UIS})
 qt4_add_resources(simunet_QRC_SRCS ${simunet_QRC})
@@ -163,7 +168,7 @@ qt4_add_translation(lrelease_outputs ${simunet_TRANS})
 add_library(smlib STATIC
 	${core_SRCS}
 	${core_HDRS}
-	${simunet_MOC_SIMULATE_HELPER}
+	${simunetcore_MOC_SRCS}
 )
 
 add_executable(simunet
