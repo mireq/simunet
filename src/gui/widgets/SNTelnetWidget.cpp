@@ -24,6 +24,7 @@
 
 #include "core/SNAccessors.h"
 #include "core/SNSimulate.h"
+#include "core/SNDynamicSettings.h"
 
 #include <QPlainTextEdit>
 #include <QVBoxLayout>
@@ -49,9 +50,12 @@ SNTelnetWidget::SNTelnetWidget(uint32_t devId, QWidget* parent):
 		QWidget(parent), m_devId(devId)
 {
 	setObjectName("TelnetConfig");
-	m_font.setFamily("courier");
-	m_font.setStyleHint(QFont::Courier);
-	m_format.setFont(m_font);
+
+	SNGuiSettings *settings = SNSingleton::getDynSettings<SNGuiSettings>();
+	connect(settings, SIGNAL(termFontChanged(QFont)), SLOT(changeTermFont(QFont)));
+	m_format.setFont(settings->guiFont(SNGuiSettings::TERM_FONT));
+	/*m_font.setStyleHint(QFont::TypeWriter);
+	m_format.setFont(m_font);*/
 
 	m_document = new QPlainTextEdit();
 	m_document->setCurrentCharFormat(m_format);
@@ -129,6 +133,22 @@ void SNTelnetWidget::processTelnetResponse(uint32_t id, const char *text, const 
 	}
 	write(text);
 	write(cmd);
+}
+
+void SNTelnetWidget::changeTermFont(const QFont &font)
+{
+	m_format.setFont(font);
+
+	QTextCharFormat fmt;
+	fmt.setFont(font);
+
+	QTextCursor cursor = m_document->textCursor();
+	cursor.select(QTextCursor::Document);
+	cursor.mergeCharFormat(fmt);
+	m_document->mergeCurrentCharFormat(fmt);
+	m_document->textCursor().clearSelection();
+	m_document->moveCursor(QTextCursor::End);
+	m_document->setCurrentCharFormat(m_format);
 }
 
 const char *SNTelnetWidget::getControlChars() const

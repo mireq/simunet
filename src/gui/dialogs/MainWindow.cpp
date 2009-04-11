@@ -62,6 +62,9 @@ class GraphicsView : public QGraphicsView
 */
 MainWindow::MainWindow(QWidget* parent, Qt::WindowFlags flags): QMainWindow(parent, flags)
 {
+	SNGuiSettings *m_settings = SNSingleton::getDynSettings<SNGuiSettings>();
+	qApp->setFont(m_settings->guiFont(SNGuiSettings::APP_FONT), "QWidget");
+
 	m_splash = new SNSplash(":/splash_styles/default/");
 	m_splash->show();
 	m_splash->setDisplayed(true);
@@ -77,6 +80,8 @@ MainWindow::MainWindow(QWidget* parent, Qt::WindowFlags flags): QMainWindow(pare
 
 	setWindowsEnabled(false);
 	QTimer::singleShot(0, this, SLOT(initSimuNet()));
+
+	SNSingleton::getDynSettings<SNGuiSettings>();
 }
 
 /*!

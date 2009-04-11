@@ -44,6 +44,7 @@ class SNTelnetWidget : public QWidget
 		virtual void sendLineEvent(char controlChar);
 	private slots:
 		void processTelnetResponse(uint32_t id, const char *text, const char *cmd);
+		void changeTermFont(const QFont &font);
 	private:
 		const char *getControlChars() const;
 		bool eventFilter(QObject *obj, QEvent *event);

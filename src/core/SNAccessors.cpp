@@ -72,6 +72,11 @@ void SNSingleton::deleteSimulate()
 	m_simulate = NULL;
 }
 
+/*!
+  Zrusenie dynamickych nastaveni alokovanych SNSingleton-om.
+
+  \sa SNDynamicSettings
+*/
 void SNSingleton::deleteDynSettings()
 {
 	QMap<int, SNDynamicSettings*>::iterator it;
@@ -79,8 +84,12 @@ void SNSingleton::deleteDynSettings()
 	{
 		delete (*it);
 	}
+	m_dynSettings.clear();
 }
 
+/*!
+  Zrusenie vsetkych objektov, ktore SNSingleton alokoval.
+*/
 void SNSingleton::deleteObjects()
 {
 	deleteSimulate();

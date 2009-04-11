@@ -47,6 +47,9 @@ class SNSingleton
 		static QMap<int, SNDynamicSettings*> m_dynSettings;
 };
 
+/*!
+  Ziskanie referencie na subtriedu dynamickych nastaveni urcenu parametrom T.
+*/
 template<class T> T *SNSingleton::getDynSettings()
 {
 	int id = qMetaTypeId<T*>();
@@ -54,7 +57,7 @@ template<class T> T *SNSingleton::getDynSettings()
 	{
 		m_dynSettings[id] = new T;
 	}
-	return m_dynSettings[id];
+	return static_cast<T*>(m_dynSettings[id]);
 }
 
 

@@ -78,6 +78,7 @@ endforeach(SUBDIR)
 set(simunet_SRCS
 	src/simunet.cpp
 	src/gui/dialogs/AboutDlg.cpp
+	src/gui/dialogs/CfgApperance.cpp
 	src/gui/dialogs/CfgPerformance.cpp
 	src/gui/dialogs/ConfigureDlg.cpp
 	src/gui/dialogs/DeviceSettingsDlg.cpp
@@ -85,6 +86,7 @@ set(simunet_SRCS
 	src/gui/dialogs/SecondaryWindow.cpp
 	src/gui/widgets/SNConfigPanel.cpp
 	src/gui/widgets/SNDevicesListModel.cpp
+	src/gui/widgets/SNFontSelect.cpp
 	src/gui/widgets/SNIcon.cpp
 	src/gui/widgets/SNScene.cpp
 	src/gui/widgets/SNSplash.cpp
@@ -102,6 +104,8 @@ set(simunet_core_MOC_HDRS
 # hlavickove subory ktore musi spracovat moc
 set(simunet_MOC_HDRS
 	src/gui/dialogs/AboutDlg.h
+	src/gui/dialogs/CfgApperance.h
+	src/gui/dialogs/CfgApperance_p.h
 	src/gui/dialogs/CfgPerformance.h
 	src/gui/dialogs/ConfigureDlg.h
 	src/gui/dialogs/DeviceSettingsDlg.h
@@ -109,6 +113,7 @@ set(simunet_MOC_HDRS
 	src/gui/dialogs/SecondaryWindow.h
 	src/gui/widgets/SNConfigPanel.h
 	src/gui/widgets/SNDevicesListModel.h
+	src/gui/widgets/SNFontSelect.h
 	src/gui/widgets/SNScene.h
 	src/gui/widgets/SNSplash.h
 	src/gui/widgets/SNTitleWidget.h

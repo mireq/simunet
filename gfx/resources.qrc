@@ -4,10 +4,12 @@
   <file>icons/32x32/dialog-information.png</file>
   <file>icons/32x32/dialog-warning.png</file>
   <file>icons/32x32/folder.png</file>
+  <file>icons/32x32/preferences-desktop-theme.png</file>
   <file>icons/32x32/preferences-system-performance.png</file>
   <file>icons/32x32/unknown.png</file>
   <file>icons/16x16/folder.png</file>
   <file>icons/16x16/move.png</file>
+  <file>icons/16x16/preferences-desktop-font.png</file>
   <file>icons/16x16/rotate.png</file>
   <file>web/menu_h.png</file>
   <file>web/menu_v.png</file>

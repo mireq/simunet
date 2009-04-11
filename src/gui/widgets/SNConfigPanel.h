@@ -38,8 +38,10 @@ class SNConfigPanel : public QWidget
 		virtual QString panelName() const = 0;
 		virtual SNIcon icon() const = 0;
 		virtual void saveChanges() = 0;
-		virtual bool panelChanged() {return true;};
+		virtual bool panelChanged();
 		virtual bool panelSelected() {return true;};
+		virtual bool settingsChanged() {return true;};
+		virtual void dropChanges() {};
 	signals:
 		void info(QString msg, QString comment = QString(), int msecs = 0);
 		void warning(QString msg, QString comment = QString(), int msecs = 0);

@@ -40,14 +40,13 @@ class CfgPerformance : public SNConfigPanel
 		~CfgPerformance();
 		virtual QString panelName() const;
 		virtual SNIcon icon() const;
-		virtual bool panelChanged();
 		virtual bool panelSelected();
 		virtual void saveChanges();
+		virtual bool settingsChanged();
+		virtual void dropChanges();
 
 	private:
 		void readConfig();
-		bool settingsChanged();
-		void dropChanges();
 
 		QSpinBox *m_threadsCount;
 		int m_sThreadsCount;

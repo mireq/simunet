@@ -22,6 +22,8 @@
  ***************************************************************************/
 #include "SNConfigPanel.h"
 
+#include <QMessageBox>
+
 /*!
   \class SNConfigPanel
   \brief Konfiguracny panel.
@@ -71,8 +73,6 @@ SNConfigPanel::~SNConfigPanel()
 // ----------------------------------------------------------------
 
 /*!
-  \fn bool SNConfigPanel::panelChanged()
-
   Tato funkcia sa vola pri pokuse o prechod na iny panel.
 
   Pri zmene panelu je zvykom spytat sa uzivatela ci chce ulozit neulozene
@@ -101,6 +101,26 @@ if (settingsChanged())
 return true;
 \endcode
  */
+bool SNConfigPanel::panelChanged()
+{
+	if (settingsChanged())
+	{
+		QMessageBox::StandardButton btn = QMessageBox::question(
+			this,
+			tr("Unsaved Changes"),
+			tr("The settings have been changed.\n"
+			"Do you want to save your changes?"),
+		QMessageBox::Save | QMessageBox::Cancel | QMessageBox::Discard, QMessageBox::Save);
+		switch (btn)
+		{
+			case QMessageBox::Cancel: return false; break;
+			case QMessageBox::Discard: dropChanges(); break;
+			case QMessageBox::Save: saveChanges(); break;
+			default: break;
+		}
+	}
+	return true;
+}
 
 // ----------------------------------------------------------------
 
@@ -150,4 +170,22 @@ return true;
 
   Pri zmene nastaveni ma hodnotu true. Ak uzivatel zmenil nastavenie na povodnu
   hodnotu vyvola false.
+ */
+
+// ----------------------------------------------------------------
+
+/*!
+  \fn SNConfigPanel::settingsChanged()
+
+  Tato funkcia vracia \b true v pripade, ze boli urobene zmeny v danom
+  konfiguracnom paneli. Ak ziadne zmeny urobene neboli vrati false.
+ */
+
+// ----------------------------------------------------------------
+
+/*!
+  \fn SNConfigPanel::dropChanges()
+
+  Tato metoda sa vola v pripade, ze uzivatel nechce pouzit zmeny ktore
+  urobil v konfigracnom paneli.
  */

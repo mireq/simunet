@@ -64,26 +64,6 @@ SNIcon CfgPerformance::icon() const
 	return SNIcon("preferences-system-performance");
 }
 
-bool CfgPerformance::panelChanged()
-{
-	if (settingsChanged())
-	{
-		QMessageBox::StandardButton btn = QMessageBox::question(
-			this,
-			tr("Unsaved Changes"),
-			tr("The settings have been changed.\n"
-			   "Do you want to save your changes?"),
-			QMessageBox::Save | QMessageBox::Cancel | QMessageBox::Discard, QMessageBox::Save);
-		switch (btn)
-		{
-			case QMessageBox::Cancel: return false; break;
-			case QMessageBox::Discard: dropChanges(); break;
-			case QMessageBox::Save: saveChanges(); break;
-			default: break;
-		}
-	}
-	return true;
-}
 
 bool CfgPerformance::panelSelected()
 {
@@ -109,6 +89,9 @@ void CfgPerformance::readConfig()
 	m_threadsCount->setValue(m_sThreadsCount);
 }
 
+/*!
+  \reimp
+*/
 bool CfgPerformance::settingsChanged()
 {
 	if (m_sThreadsCount != m_threadsCount->value())

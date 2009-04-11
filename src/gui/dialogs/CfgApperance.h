@@ -20,64 +20,49 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef SNDYNAMICSETTINGS_H
-#define SNDYNAMICSETTINGS_H
+#ifndef CFGAPPERANCE_H
+#define CFGAPPERANCE_H
 
-#include <QObject>
-#include <QMetaType>
+#include "SNConfigPanel.h"
+#include "core/SNDynamicSettings.h"
 
-#include <QFont>
+class QGridLayout;
+class QPushButton;
+class QSignalMapper;
+
+class FontSelect;
+class SNGUiSettings;
 
 /**
  @author Miroslav Bendik <miroslav.bendik@gmail.com>
 */
-class SNDynamicSettings : public QObject
+class CfgApperance : public SNConfigPanel
 {
-	Q_OBJECT
+		Q_OBJECT
 	public:
-		SNDynamicSettings(QObject *parent = 0);
-		virtual ~SNDynamicSettings() = 0;
-	signals:
-		void settingsChanged();
+		CfgApperance(QWidget* parent = 0);
 
-};
+		~CfgApperance();
 
-Q_DECLARE_METATYPE(SNDynamicSettings *);
+		virtual QString panelName() const;
+		virtual SNIcon icon() const;
+		virtual void saveChanges();
+		virtual bool settingsChanged();
 
-/**
- @author Miroslav Bendik <miroslav.bendik@gmail.com>
- */
-class SNGuiSettings : public SNDynamicSettings
-{
-	Q_OBJECT
-	public:
-/*!
-  Typy fontov ktore mozu byt nastavene v aplikacii.
-*/
-		enum FontType
-		{
-			APP_FONT = 0, /*!< Aplikacny font platny pre celu aplikaciu. */
-			TERM_FONT     /*!< Font pouzivany v integrovanom emulatore terminalu */
-		};
-
-		SNGuiSettings(QObject *parent = 0);
-		~SNGuiSettings();
-
-		QFont guiFont(FontType type) const;
-		void setGuiFont(const QFont &font, FontType type);
-		QFont defaultFont(FontType type) const;
-		static const int NumFonts;
-
-	signals:
-		void termFontChanged(const QFont &font);
+	private slots:
+		void fontChanged(const QFont &font, SNGuiSettings::FontType type);
+		void fontReset(int type);
 
 	private:
-		QFont **m_defaultFont;
-		QFont **m_font;
-		static const char *m_fontNames[];
+		void addFontSelectRow(const QString &label, FontSelect *fontSelect);
+		QGridLayout *m_fontsSelectLayout;
+		FontSelect *m_appFontSelect;
+		FontSelect *m_termFontSelect;
+		QPushButton **m_resetButtons;
+		bool *m_changed;
+		SNGuiSettings *m_settings;
+		QSignalMapper *m_mapper;
 
 };
-
-Q_DECLARE_METATYPE(SNGuiSettings *);
 
 #endif

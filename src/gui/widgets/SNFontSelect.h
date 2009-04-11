@@ -20,64 +20,32 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef SNDYNAMICSETTINGS_H
-#define SNDYNAMICSETTINGS_H
+#ifndef SNFONTSELECT_H
+#define SNFONTSELECT_H
 
-#include <QObject>
-#include <QMetaType>
+#include <QWidget>
 
-#include <QFont>
+class QLabel;
 
 /**
  @author Miroslav Bendik <miroslav.bendik@gmail.com>
 */
-class SNDynamicSettings : public QObject
+class SNFontSelect : public QWidget
 {
-	Q_OBJECT
+		Q_OBJECT
 	public:
-		SNDynamicSettings(QObject *parent = 0);
-		virtual ~SNDynamicSettings() = 0;
+		SNFontSelect(const QFont &font, QWidget *parent = 0);
+		~SNFontSelect();
+
+		QFont selectedFont() const;
+		void setSelectedFont(const QFont &font);
 	signals:
-		void settingsChanged();
-
-};
-
-Q_DECLARE_METATYPE(SNDynamicSettings *);
-
-/**
- @author Miroslav Bendik <miroslav.bendik@gmail.com>
- */
-class SNGuiSettings : public SNDynamicSettings
-{
-	Q_OBJECT
-	public:
-/*!
-  Typy fontov ktore mozu byt nastavene v aplikacii.
-*/
-		enum FontType
-		{
-			APP_FONT = 0, /*!< Aplikacny font platny pre celu aplikaciu. */
-			TERM_FONT     /*!< Font pouzivany v integrovanom emulatore terminalu */
-		};
-
-		SNGuiSettings(QObject *parent = 0);
-		~SNGuiSettings();
-
-		QFont guiFont(FontType type) const;
-		void setGuiFont(const QFont &font, FontType type);
-		QFont defaultFont(FontType type) const;
-		static const int NumFonts;
-
-	signals:
-		void termFontChanged(const QFont &font);
-
+		void fontChanged(const QFont &font);
+	private slots:
+		void selectFont();
 	private:
-		QFont **m_defaultFont;
-		QFont **m_font;
-		static const char *m_fontNames[];
-
+		QFont m_font;
+		QLabel *m_label;
 };
-
-Q_DECLARE_METATYPE(SNGuiSettings *);
 
 #endif
