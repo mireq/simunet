@@ -28,9 +28,11 @@
 #include "SNSplash.h"
 #include "SNIcon.h"
 #include "SecondaryWindow.h"
+#include "CfgApperance.h"
 #include "CfgPerformance.h"
 
 #include "core/SNAccessors.h"
+#include "core/SNDynamicSettings.h"
 
 #include <QAction>
 #include <QMenuBar>
@@ -84,7 +86,7 @@ MainWindow::~MainWindow()
 {
 	m_splash->deleteLater();
 	saveWindowState();
-	SNSingleton::deleteSimulate();
+	SNSingleton::deleteObjects();
 }
 
 /*!
@@ -201,6 +203,7 @@ void MainWindow::configure()
 	{
 		m_configureDlg = new ConfigureDlg(this);
 		m_configureDlg->addPanel(new CfgPerformance());
+		m_configureDlg->addPanel(new CfgApperance());
 	}
 	m_configureDlg->exec();
 }

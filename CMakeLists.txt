@@ -94,6 +94,7 @@ set(simunet_SRCS
 	src/gui/widgets/SNWebConfigWidget.cpp)
 
 set(simunet_core_MOC_HDRS
+	src/core/SNDynamicSettings.h
 	src/core/SNSimulate.h
 	src/core/SNSimulateHelper.h
 )
@@ -140,6 +141,7 @@ set(core_SRCS
 	src/core/SNAccessors.cpp
 	src/core/SNConfig.cpp
 	src/core/SNDevice.cpp
+	src/core/SNDynamicSettings.cpp
 	src/core/SNExceptions.cpp
 	src/core/SNSimulate.cpp
 	src/core/SNSimulateHelper.cpp

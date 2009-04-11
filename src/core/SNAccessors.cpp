@@ -24,7 +24,11 @@
 #include "SNSimulate.h"
 #include "SNConfig.h"
 
+#include "SNDynamicSettings.h"
+
+
 SNSimulate *SNSingleton::m_simulate = NULL;
+QMap<int, SNDynamicSettings*> SNSingleton::m_dynSettings = QMap<int, SNDynamicSettings*>();
 
 /*!
   \class SNSingleton
@@ -67,4 +71,22 @@ void SNSingleton::deleteSimulate()
 	}
 	m_simulate = NULL;
 }
+
+void SNSingleton::deleteDynSettings()
+{
+	QMap<int, SNDynamicSettings*>::iterator it;
+	for (it = m_dynSettings.begin(); it != m_dynSettings.end(); ++it)
+	{
+		delete (*it);
+	}
+}
+
+void SNSingleton::deleteObjects()
+{
+	deleteSimulate();
+	deleteDynSettings();
+}
+
+
+
 
