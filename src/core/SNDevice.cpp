@@ -107,8 +107,7 @@ SNDevice::~SNDevice()
 {
 	PyCPPObject pDeviceId(PyLong_FromUnsignedLong(m_deviceId), true);
 
-	PyCPPObject pMainModuleName(PyString_FromString("__main__"), true);
-	PyCPPObject pMainModule(PyImport_Import(pMainModuleName));
+	PyCPPObject pMainModule(PyImport_AddModule("__main__"));
 	PyCPPObject pDevicesDict(PyObject_GetAttrString(pMainModule, "devices"), true);
 	if (PyDict_Contains(pDevicesDict, pDeviceId) == 1)
 	{

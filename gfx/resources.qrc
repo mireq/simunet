@@ -23,5 +23,6 @@
 </qresource>
 <qresource prefix="/devices/baseDevice/">
   <file alias="device.py">../devices/baseDevice/device.py</file>
+  <file alias="simulatehelper.py">../devices/baseDevice/simulatehelper.py</file>
 </qresource>
 </RCC>

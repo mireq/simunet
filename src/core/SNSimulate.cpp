@@ -31,6 +31,7 @@
 #include <iostream>
 #include <algorithm>
 #include <QFile>
+#include <QDebug>
 
 using namespace std;
 
@@ -64,6 +65,9 @@ SNSimulate::SNSimulate(int threads)
 
 	PyRun_SimpleString("import gc");
 	PyRun_SimpleString("gc.set_debug(gc.DEBUG_LEAK)");
+
+	PyRun_SimpleString("from threading import Thread");
+	PyRun_SimpleString("import Queue");
 
 
 	setPath();
@@ -391,8 +395,7 @@ void SNSimulate::setPath()
 void SNSimulate::createDevicesDictionary()
 {
 	// vytvorime globalnu premennu devices
-	PyCPPObject pMainName(PyString_FromString("__main__"));
-	PyCPPObject pMainModule(PyImport_Import(pMainName));
+	PyCPPObject pMainModule(PyImport_AddModule("__main__"));
 	PyCPPObject pDevicesDict(PyDict_New());
 	//m_pDevicesDict = pDevicesDict;
 	if (PyObject_SetAttrString(pMainModule, "devices", pDevicesDict))
@@ -422,11 +425,27 @@ void SNSimulate::createSNSimulateModule()
  */
 void SNSimulate::createBaseClass()
 {
+	PyCPPObject pSimuNetModule(PyImport_AddModule("SimuNet"));
+	PyCPPObject pSimuNetDict(PyModule_GetDict(pSimuNetModule));
+	if (PyDict_GetItemString(pSimuNetDict, "__builtins__") == NULL)
+	{
+		PyCPPObject builtins(PyImport_ImportModule("__builtin__"), true);
+		PyDict_SetItemString(pSimuNetDict, "__builtins__", builtins);
+	}
+
+
 	PyCPPObject pBuiltinsDict(PyEval_GetBuiltins());
 	QFile file(":/devices/baseDevice/device.py");
 	file.open(QIODevice::ReadOnly);
-	PyCPPObject ret(PyRun_String(file.readAll().constData(), Py_single_input, pBuiltinsDict, pBuiltinsDict), true);
+	QByteArray data = file.readAll();
 	file.close();
+	PyCPPObject ret(PyRun_String(data.constData(), Py_single_input, pSimuNetDict, NULL), true);
+
+	file.setFileName(":/devices/baseDevice/simulatehelper.py");
+	file.open(QIODevice::ReadOnly);
+	data = file.readAll();
+	file.close();
+	PyCPPObject ret2(PyRun_String(data.constData(), Py_single_input, pSimuNetDict, NULL), true);
 }
 
 /*!
