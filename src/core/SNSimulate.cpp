@@ -66,13 +66,9 @@ SNSimulate::SNSimulate(int threads)
 	PyRun_SimpleString("import gc");
 	PyRun_SimpleString("gc.set_debug(gc.DEBUG_LEAK)");
 
-	PyRun_SimpleString("from threading import Thread");
-	PyRun_SimpleString("import Queue");
-
-
 	setPath();
-	createDevicesDictionary();
 	createSNSimulateModule();
+	createDevicesDictionary();
 	createBaseClass();
 
 	PyThreadState_Swap(NULL);
@@ -108,7 +104,7 @@ SNSimulate::~SNSimulate()
 	}
 	PyThreadState_Swap(NULL);
 	PyEval_ReleaseLock();
-	list<SNSimulateHelper *>::iterator helper;
+	vector<SNSimulateHelper *>::iterator helper;
 	for (helper = m_simulateHelpers.begin(); helper != m_simulateHelpers.end(); ++helper)
 	{
 		(*helper)->stop();
@@ -322,6 +318,14 @@ char *SNSimulate::telnetRequest(uint32_t devId, const std::string &line, char sy
 }
 
 /*!
+  Odosllanie ramca zariadeni urcenemu argumentom \a targetDevId.
+*/
+void SNSimulate::sendFrame(uint32_t targetDevId, PyObject *frame)
+{
+	m_simulateHelpers[targetDevId % m_threadCount]->sendFrame(targetDevId, frame);
+}
+
+/*!
   \brief Nastavime cesty v ktorych su hladane moduly.
  */
 void SNSimulate::setPath()
@@ -395,7 +399,7 @@ void SNSimulate::setPath()
 void SNSimulate::createDevicesDictionary()
 {
 	// vytvorime globalnu premennu devices
-	PyCPPObject pMainModule(PyImport_AddModule("__main__"));
+	PyCPPObject pMainModule(PyImport_AddModule("snsimulate"));
 	PyCPPObject pDevicesDict(PyDict_New());
 	//m_pDevicesDict = pDevicesDict;
 	if (PyObject_SetAttrString(pMainModule, "devices", pDevicesDict))
@@ -434,18 +438,17 @@ void SNSimulate::createBaseClass()
 	}
 
 
-	PyCPPObject pBuiltinsDict(PyEval_GetBuiltins());
 	QFile file(":/devices/baseDevice/device.py");
 	file.open(QIODevice::ReadOnly);
 	QByteArray data = file.readAll();
 	file.close();
-	PyCPPObject ret(PyRun_String(data.constData(), Py_single_input, pSimuNetDict, NULL), true);
+	PyCPPObject ret(PyRun_String(data.constData(), Py_single_input, pSimuNetDict, pSimuNetDict), true);
 
 	file.setFileName(":/devices/baseDevice/simulatehelper.py");
 	file.open(QIODevice::ReadOnly);
 	data = file.readAll();
 	file.close();
-	PyCPPObject ret2(PyRun_String(data.constData(), Py_single_input, pSimuNetDict, NULL), true);
+	PyCPPObject ret2(PyRun_String(data.constData(), Py_single_input, pSimuNetDict, pSimuNetDict), true);
 }
 
 /*!

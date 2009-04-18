@@ -29,6 +29,7 @@
 #include <list>
 #include <map>
 #include <vector>
+#include <vector>
 
 #include <QObject>
 
@@ -69,6 +70,7 @@ class SNSimulate: public QObject
 		char *httpRequest(uint32_t devId, const std::string &url, PyObject *post);
 		char *httpRequest(uint32_t devId, const std::string &url, const std::map<std::string, std::string> post);
 		char *telnetRequest(uint32_t devId, const std::string &line, char symbol);
+		void sendFrame(uint32_t targetDevId, PyObject *frame);
 
 	signals:
 		void telnetResponseRecived(uint32_t id, const char *text, const char *cmd);
@@ -87,7 +89,7 @@ class SNSimulate: public QObject
 /*!
   \brief Zoznam vlakien
 */
-		std::list<SNSimulateHelper *> m_simulateHelpers;
+		std::vector<SNSimulateHelper *> m_simulateHelpers;
 
 /*!
   \brief Iterator ukazujuci na nasledujuce vlakno
@@ -95,7 +97,7 @@ class SNSimulate: public QObject
   pridelovane postupne jednotlivym vlaknam. Pri poslednom vlakne sa znovu
   nastavi na zaciatok zoznamu.
 */
-		std::list<SNSimulateHelper *>::iterator m_nextSimulateHelper;
+		std::vector<SNSimulateHelper *>::iterator m_nextSimulateHelper;
 
 /*!
   \brief Pole zariadeni

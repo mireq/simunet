@@ -41,10 +41,12 @@ class SNSimulateHelper: public QThread
 		void run();
 		void stop();
 		void addDevice(SNDevice *device);
+		void sendFrame(uint32_t targetDevId, PyObject *frame);
 	private:
 		bool m_stop;
 		std::list<SNDevice *> m_devices;
 		PyObject *m_pDevicesDict;
+		PyObject *m_simulateHelper;
 		static PyThreadState *m_mainThreadState;
 		PyThreadState *m_threadState;
 

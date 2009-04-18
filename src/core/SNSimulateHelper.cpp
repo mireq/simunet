@@ -51,10 +51,13 @@ SNSimulateHelper::SNSimulateHelper(PyThreadState *mainThreadState)
 	{
 		m_mainThreadState = mainThreadState;
 	}
+
 	PyEval_AcquireLock();
-	/*PyInterpreterState *mainInterpreterState = m_mainThreadState->interp;
-	m_threadState = PyThreadState_New(mainInterpreterState);
-	PyThreadState_Swap(NULL);*/
+	PyThreadState_Swap(m_mainThreadState);
+	PyCPPObject pSimuNetModule(PyImport_AddModule("SimuNet"));
+	PyCPPObject pSimulateHelperClass(PyObject_GetAttrString(pSimuNetModule, "SimulateHelper"));
+	m_simulateHelper = PyInstance_New(pSimulateHelperClass, NULL, NULL);
+	PyThreadState_Swap(NULL);
 	PyEval_ReleaseLock();
 }
 
@@ -64,9 +67,7 @@ SNSimulateHelper::SNSimulateHelper(PyThreadState *mainThreadState)
 SNSimulateHelper::~SNSimulateHelper()
 {
 	PyEval_AcquireLock();
-	/*PyThreadState_Swap(NULL);
-	PyThreadState_Clear(m_threadState);
-	PyThreadState_Delete(m_threadState);*/
+	Py_XDECREF(m_simulateHelper);
 	PyEval_ReleaseLock();
 }
 
@@ -97,6 +98,7 @@ void SNSimulateHelper::run()
  */
 void SNSimulateHelper::stop()
 {
+	sendFrame(0, Py_None);
 	m_stop = true;
 }
 
@@ -106,5 +108,24 @@ void SNSimulateHelper::stop()
 void SNSimulateHelper::addDevice(SNDevice *device)
 {
 	m_devices.push_back(device);
+}
+
+void SNSimulateHelper::sendFrame(uint32_t targetDevId, PyObject *frame)
+{
+	PyEval_AcquireLock();
+	PyThreadState_Swap(m_mainThreadState);
+
+	PyCPPObject pPutJob(PyObject_GetAttrString(m_simulateHelper, "put"));
+	PyCPPObject putArgs(PyTuple_New(2), true);
+
+	PyCPPObject pTargetDevId(PyLong_FromUnsignedLong(targetDevId));
+
+	PyTuple_SetItem(putArgs, 0, pTargetDevId);
+	PyTuple_SetItem(putArgs, 1, frame);
+
+	PyCPPObject ret(PyObject_Call(pPutJob, putArgs, NULL));
+
+	PyThreadState_Swap(NULL);
+	PyEval_ReleaseLock();
 }
 
