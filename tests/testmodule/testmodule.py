@@ -1,4 +1,6 @@
-class testmodule(SNDevice):
+import SimuNet
+
+class testmodule(SimuNet.SNDevice):
 	__config = "";
 
 	def __init__(self):

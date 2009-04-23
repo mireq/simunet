@@ -56,11 +56,19 @@ void interpreterInit()
 	}
 	PyObject_Call(pAppendFunc, pAppendParams, NULL);
 	// natiahneme globalnu premennu devices
-	PyCPPObject pMainName(PyString_FromString("__main__"));
-	PyCPPObject pMainModule(PyImport_Import(pMainName));
-	PyCPPObject pDevicesDict(PyDict_New(), true);
+	PyCPPObject pMainModule(PyImport_AddModule("snsimulate"));
+	PyCPPObject pDevicesDict(PyDict_New());
+	//m_pDevicesDict = pDevicesDict;
 	if (PyObject_SetAttrString(pMainModule, "devices", pDevicesDict))
 	{
 		throw SNPythonInterpreterException("devices", SNPythonInterpreterException::SET);
+	}
+
+	PyCPPObject pSimuNetModule(PyImport_AddModule("SimuNet"));
+	PyCPPObject pSimuNetDict(PyModule_GetDict(pSimuNetModule));
+	if (PyDict_GetItemString(pSimuNetDict, "__builtins__") == NULL)
+	{
+		PyCPPObject builtins(PyImport_ImportModule("__builtin__"), true);
+		PyDict_SetItemString(pSimuNetDict, "__builtins__", builtins);
 	}
 }

@@ -36,9 +36,10 @@ int main(int argc, char *argv[])
 	PyRun_SimpleString("gc.set_debug(gc.DEBUG_LEAK)");
 	interpreterInit();
 
-	PyCPPObject pBuiltinsDict(PyEval_GetBuiltins());
+	PyCPPObject pSimuNetModule(PyImport_AddModule("SimuNet"));
+	PyCPPObject pSimuNetDict(PyModule_GetDict(pSimuNetModule));
 
-	PyRun_String("class SNDevice:\n\tdef sendFrame(self, data):\t\tpass", Py_single_input, pBuiltinsDict, pBuiltinsDict);
+	PyRun_String("class SNDevice:\n\tdef sendFrame(self, data):\t\tpass", Py_single_input, pSimuNetDict, pSimuNetDict);
 	for (int i = 1; i < argc; ++i)
 	{
 		SNDevice test(argv[i], i);
