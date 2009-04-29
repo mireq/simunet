@@ -34,6 +34,8 @@
 #include "core/SNAccessors.h"
 #include "core/SNDynamicSettings.h"
 
+#include "diagram/SNDevicesDiagramScene.h"
+
 #include <QAction>
 #include <QMenuBar>
 #include <QStatusBar>
@@ -60,7 +62,8 @@ class GraphicsView : public QGraphicsView
 /*!
   Vytvorenie hlavneho okna.
 */
-MainWindow::MainWindow(QWidget* parent, Qt::WindowFlags flags): QMainWindow(parent, flags)
+MainWindow::MainWindow(QWidget* parent, Qt::WindowFlags flags): QMainWindow(parent, flags),
+	m_2DView(NULL), m_3DView(NULL)
 {
 	SNGuiSettings *m_settings = SNSingleton::getDynSettings<SNGuiSettings>();
 	qApp->setFont(m_settings->guiFont(SNGuiSettings::APP_FONT), "QWidget");
@@ -117,6 +120,9 @@ void MainWindow::setupVariables()
 
 void MainWindow::setupUi()
 {
+	m_centralWidget = new QStackedWidget();
+	setCentralWidget(m_centralWidget);
+
 	setupActions();
 	setupMenus();
 	setupToolBars();
@@ -127,38 +133,64 @@ void MainWindow::setupToolBars()
 	m_navigateToolBar = new QToolBar("Navigate Tool Bar");
 	m_navigateToolBar->setObjectName("NavigateToolBar");
 
+	m_2DAct = new QAction(tr("2D"), this);
+	m_3DAct = new QAction(tr("3D"), this);
+
 	m_navigateMoveAct = new QAction(tr("Move"), this);
 	m_navigateRotateAct = new QAction(tr("Rotate"), this);
 	m_navigateMoveAct->setIcon(SNIcon("move", false));
 	m_navigateRotateAct->setIcon(SNIcon("rotate", false));
+
+	m_graphicsViewGroup = new QActionGroup(this);
+	m_graphicsViewGroup->setExclusive(true);
+	m_graphicsViewGroup->addAction(m_2DAct);
+	m_graphicsViewGroup->addAction(m_3DAct);
 
 	m_navigateGroup = new QActionGroup(this);
 	m_navigateGroup->setExclusive(true);
 	m_navigateGroup->addAction(m_navigateMoveAct);
 	m_navigateGroup->addAction(m_navigateRotateAct);
 
-	connect(m_navigateGroup, SIGNAL(triggered(QAction *)), SLOT(sceneNavigationModeActionTriggered(QAction *)));
+	connect(m_graphicsViewGroup, SIGNAL(triggered(QAction *)), SLOT(graphicsViewChanged(QAction *)));
+	connect(m_navigateGroup, SIGNAL(triggered(QAction *)), SLOT(sceneNavigationModeChanged(QAction *)));
 
-	m_navigateMoveAct->setCheckable(true);
-	m_navigateRotateAct->setCheckable(true);
-	m_navigateMoveAct->setChecked(true);
-	sceneNavigationModeActionTriggered(m_navigateMoveAct);
+	m_navigateToolBar->addAction(m_2DAct);
+	m_navigateToolBar->addAction(m_3DAct);
+
+	m_navigateToolBar->addSeparator();
 
 	m_navigateToolBar->addAction(m_navigateMoveAct);
 	m_navigateToolBar->addAction(m_navigateRotateAct);
 
 	addToolBar(m_navigateToolBar);
+
+	m_2DAct->setCheckable(true);
+	m_3DAct->setCheckable(true);
+	m_2DAct->setChecked(true);
+	graphicsViewChanged(m_2DAct);
+
+	m_navigateMoveAct->setCheckable(true);
+	m_navigateRotateAct->setCheckable(true);
+	m_navigateMoveAct->setChecked(true);
+	sceneNavigationModeChanged(m_navigateMoveAct);
 }
 
 void MainWindow::setupSNScene()
 {
 	m_scene = new SNScene();
-	GraphicsView *view = new GraphicsView;
+
+	m_diagram = new SNDevicesDiagramScene(this);
+	m_diagram->setSceneRect(0, 0, 500, 500);
+	m_diagram->cr();
+
+	/*GraphicsView *view = new GraphicsView;
 	view->setFrameStyle(QFrame::NoFrame);
 	view->setViewport(new QGLWidget(QGLFormat(QGL::SampleBuffers)));
 	view->setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
 	view->setScene(m_scene);
 	setCentralWidget(view);
+	QPushButton *btn = new QPushButton(this);
+	setCentralWidget(btn);*/
 }
 
 void MainWindow::setupSecondaryWindow()
@@ -213,7 +245,34 @@ void MainWindow::configure()
 	m_configureDlg->exec();
 }
 
-void MainWindow::sceneNavigationModeActionTriggered(QAction *action)
+void MainWindow::graphicsViewChanged(QAction *action)
+{
+	clearView();
+	if (action == m_2DAct)
+	{
+		m_2DView = new QGraphicsView;
+		m_2DView->setScene(m_diagram);
+		m_2DView->setCacheMode(QGraphicsView::CacheBackground);
+		m_2DView->setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
+		m_centralWidget->addWidget(m_2DView);
+
+		m_navigateToolBar->removeAction(m_navigateRotateAct);
+		m_navigateToolBar->removeAction(m_navigateMoveAct);
+	}
+	else if (action == m_3DAct)
+	{
+		m_3DView = new GraphicsView;
+		m_3DView->setFrameStyle(QFrame::NoFrame);
+		m_3DView->setViewport(new QGLWidget(QGLFormat(QGL::SampleBuffers)));
+		m_3DView->setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
+		m_3DView->setScene(m_scene);
+		m_centralWidget->addWidget(m_3DView);
+		m_navigateToolBar->addAction(m_navigateRotateAct);
+		m_navigateToolBar->addAction(m_navigateMoveAct);
+	}
+}
+
+void MainWindow::sceneNavigationModeChanged(QAction *action)
 {
 	if (action == m_navigateRotateAct)
 	{
@@ -259,6 +318,22 @@ void MainWindow::saveWindowState()
 	settings.setValue("state", saveState());
 	settings.setValue("size", size());
 	settings.endGroup();
+}
+
+void MainWindow::clearView()
+{
+	if (m_2DView != NULL)
+	{
+		m_centralWidget->removeWidget(m_2DView);
+		m_2DView->deleteLater();
+		m_2DView = NULL;
+	}
+	if (m_3DView != NULL)
+	{
+		m_centralWidget->removeWidget(m_3DView);
+		m_3DView->deleteLater();
+		m_3DView = NULL;
+	}
 }
 
 

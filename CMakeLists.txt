@@ -57,7 +57,8 @@ set (SUBDIRS
 	src
 	src/gui
 	src/gui/dialogs
-	src/gui/widgets)
+	src/gui/widgets
+)
 
 include_directories(
 	"${PROJECT_BINARY_DIR}"
@@ -93,7 +94,12 @@ set(simunet_SRCS
 	src/gui/widgets/SNTelnetWidget.cpp
 	src/gui/widgets/SNTitleWidget.cpp
 	src/gui/widgets/SNWebConfigPage.cpp
-	src/gui/widgets/SNWebConfigWidget.cpp)
+	src/gui/widgets/SNWebConfigWidget.cpp
+	src/gui/widgets/diagram/SNDevicesDiagramScene.cpp
+	src/gui/widgets/diagram/SNDiagramDevice.cpp
+	src/gui/widgets/diagram/SNDiagramItem.cpp
+	src/gui/widgets/diagram/SNDiagramLine.cpp
+)
 
 set(simunet_core_MOC_HDRS
 	src/core/SNDynamicSettings.h
@@ -119,7 +125,12 @@ set(simunet_MOC_HDRS
 	src/gui/widgets/SNTitleWidget.h
 	src/gui/widgets/SNTelnetWidget.h
 	src/gui/widgets/SNWebConfigPage.h
-	src/gui/widgets/SNWebConfigWidget.h)
+	src/gui/widgets/SNWebConfigWidget.h
+	src/gui/widgets/diagram/SNDevicesDiagramScene.h
+	src/gui/widgets/diagram/SNDiagramDevice.h
+	src/gui/widgets/diagram/SNDiagramItem.h
+	src/gui/widgets/diagram/SNDiagramLine.h
+)
 
 set(simunet_HDRS
 	src/gui/widgets/SNIcon.h)

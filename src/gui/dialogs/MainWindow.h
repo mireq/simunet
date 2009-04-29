@@ -25,16 +25,20 @@
 
 #include <QMainWindow>
 
+class QActionGroup;
 class QAction;
 class QMenu;
-class QActionGroup;
+class QStackedWidget;
+class QGraphicsView;
 
 class AboutDlg;
 class ConfigureDlg;
+class GraphicsView;
 class SNDevicesListModel;
 class SNScene;
 class SNSplash;
 class SecondaryWindow;
+class SNDevicesDiagramScene;
 
 /**
  @author Miroslav Bendik
@@ -57,16 +61,19 @@ class MainWindow : public QMainWindow
 		void setupMenus();
 		void restoreWindowState();
 		void saveWindowState();
+		void clearView();
 
 	private slots:
 		void about();
 		void configure();
-		void sceneNavigationModeActionTriggered(QAction *);
+		void graphicsViewChanged(QAction *);
+		void sceneNavigationModeChanged(QAction *);
 		void initSimuNet();
 
 	private:
 		SNDevicesListModel *m_devicesModel;
 		SNScene *m_scene;
+		SNDevicesDiagramScene *m_diagram;
 		//menu
 		QMenu *m_fileMenu;
 		QMenu *m_settingsMenu;
@@ -78,15 +85,25 @@ class MainWindow : public QMainWindow
 		QAction *m_aboutAct;
 		// navigateToolBar
 		QToolBar *m_navigateToolBar;
+
 		QActionGroup *m_navigateGroup;
 		QAction *m_navigateRotateAct;
 		QAction *m_navigateMoveAct;
+
+		QActionGroup *m_graphicsViewGroup;
+		QAction *m_2DAct;
+		QAction *m_3DAct;
 
 		// okna
 		AboutDlg *m_aboutDlg;
 		ConfigureDlg *m_configureDlg;
 		SecondaryWindow *m_toolWindow;
 		SNSplash *m_splash;
+
+		// centralna cast
+		QStackedWidget *m_centralWidget;
+		QGraphicsView *m_2DView;
+		GraphicsView *m_3DView;
 };
 
 #endif
