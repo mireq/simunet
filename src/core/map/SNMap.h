@@ -20,46 +20,18 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef SNACCESSORS_H
-#define SNACCESSORS_H
-
-#include <QMap>
-#include <QMetaType>
-
-class SNSimulate;
-class SNDynamicSettings;
-class SNMap;
+#ifndef SNMAP_H
+#define SNMAP_H
 
 /**
  @author Miroslav Bendik <miroslav.bendik@gmail.com>
 */
-class SNSingleton
+class SNMap
 {
 	public:
-		static SNSimulate *getSimulate();
-		static void deleteSimulate();
+		SNMap();
+		~SNMap();
 
-		template <class T> static T *getDynSettings();
-		static void deleteDynSettings();
-
-		static void deleteObjects();
-	private:
-		static SNSimulate *m_simulate;
-		static QMap<int, SNDynamicSettings*> m_dynSettings;
 };
-
-/*!
-  Ziskanie referencie na subtriedu dynamickych nastaveni urcenu parametrom T.
-*/
-template<class T> T *SNSingleton::getDynSettings()
-{
-	int id = qMetaTypeId<T*>();
-	if (!m_dynSettings.contains(id))
-	{
-		m_dynSettings[id] = new T;
-	}
-	return static_cast<T*>(m_dynSettings[id]);
-}
-
 
 #endif

@@ -163,7 +163,12 @@ set(core_SRCS
 	src/core/SNSimulateHelper.cpp
 	src/core/SNBloat.cpp
 	src/core/SNBloatList.cpp
-	src/core/SNLog.cpp)
+	src/core/SNLog.cpp
+	src/core/map/SNMap.cpp
+	src/core/map/SNMapDeviceItem.cpp
+	src/core/map/SNMapItem.cpp
+	src/core/map/SNMapLineItem.cpp
+	src/core/map/SNPoint3f.cpp)
 
 set(core_HDRS
 	src/core/PyCPPObject.h
@@ -175,7 +180,12 @@ set(core_HDRS
 	src/core/SNSimulateHelper.h
 	src/core/SNBloat.h
 	src/core/SNBloatList.h
-	src/core/SNLog.h)
+	src/core/SNLog.h
+	src/core/map/SNMap.h
+	src/core/map/SNMapDeviceItem.h
+	src/core/map/SNMapItem.h
+	src/core/map/SNMapLineItem.h
+	src/core/map/SNPoint3f.h)
 
 qt4_wrap_cpp(simunetcore_MOC_SRCS ${simunet_core_MOC_HDRS})
 qt4_wrap_cpp(simunet_MOC_SRCS ${simunet_MOC_HDRS})

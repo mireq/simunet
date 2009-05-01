@@ -26,6 +26,7 @@
 #include "SNDevice.h"
 #include "PyCPPObject.h"
 #include "SNExceptions.h"
+#include "map/SNMap.h"
 #include "config.h"
 
 #include <iostream>

@@ -20,46 +20,56 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef SNACCESSORS_H
-#define SNACCESSORS_H
+#include "SNPoint3f.h"
 
-#include <QMap>
-#include <QMetaType>
-
-class SNSimulate;
-class SNDynamicSettings;
-class SNMap;
-
-/**
- @author Miroslav Bendik <miroslav.bendik@gmail.com>
-*/
-class SNSingleton
+SNPoint3f::SNPoint3f()
+	:m_x(0.0), m_y(0.0), m_z(0.0)
 {
-	public:
-		static SNSimulate *getSimulate();
-		static void deleteSimulate();
-
-		template <class T> static T *getDynSettings();
-		static void deleteDynSettings();
-
-		static void deleteObjects();
-	private:
-		static SNSimulate *m_simulate;
-		static QMap<int, SNDynamicSettings*> m_dynSettings;
-};
-
-/*!
-  Ziskanie referencie na subtriedu dynamickych nastaveni urcenu parametrom T.
-*/
-template<class T> T *SNSingleton::getDynSettings()
-{
-	int id = qMetaTypeId<T*>();
-	if (!m_dynSettings.contains(id))
-	{
-		m_dynSettings[id] = new T;
-	}
-	return static_cast<T*>(m_dynSettings[id]);
 }
 
+SNPoint3f::SNPoint3f(float x, float y, float z)
+	:m_x(x), m_y(y), m_z(z)
+{
+}
 
-#endif
+SNPoint3f::~ SNPoint3f()
+{
+}
+
+void SNPoint3f::setX(float x)
+{
+	m_x = x;
+}
+
+void SNPoint3f::setY(float y)
+{
+	m_y = y;
+}
+
+void SNPoint3f::setZ(float z)
+{
+	m_z = z;
+}
+
+void SNPoint3f::setCoord(float x, float y, float z)
+{
+	m_x = x;
+	m_y = y;
+	m_z = z;
+}
+
+float SNPoint3f::x() const
+{
+	return m_x;
+}
+
+float SNPoint3f::y() const
+{
+	return m_y;
+}
+
+float SNPoint3f::z() const
+{
+	return m_z;
+}
+

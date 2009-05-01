@@ -182,15 +182,6 @@ void MainWindow::setupSNScene()
 	m_diagram = new SNDevicesDiagramScene(this);
 	m_diagram->setSceneRect(0, 0, 500, 500);
 	m_diagram->cr();
-
-	/*GraphicsView *view = new GraphicsView;
-	view->setFrameStyle(QFrame::NoFrame);
-	view->setViewport(new QGLWidget(QGLFormat(QGL::SampleBuffers)));
-	view->setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
-	view->setScene(m_scene);
-	setCentralWidget(view);
-	QPushButton *btn = new QPushButton(this);
-	setCentralWidget(btn);*/
 }
 
 void MainWindow::setupSecondaryWindow()
