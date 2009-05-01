@@ -6,6 +6,7 @@ import SimuNet
 
 class router(SimuNet.SNDevice):
 	timerStarted = False
+	timer = None
 	def __init__(self):
 		print("init")
 	def __del__(self):
@@ -14,13 +15,19 @@ class router(SimuNet.SNDevice):
 		print("ok")
 		self.sendTelnet("vystup\n", "cmd > ")
 		if (self.timerStarted):
-			t = Timer(random(), self.__sendMsg)
-			t.start()
+			self.timer = Timer(random(), self.__sendMsg)
+			self.timer.start()
 	def telnetRequest(self, line, symbol):
 		if symbol == '?':
-			t = Timer(random(), self.__sendMsg)
-			t.start()
+			self.timer = Timer(random(), self.__sendMsg)
+			self.timer.start()
 			self.timerStarted = True
 		else:
 			self.timerStarted = False
 			return "\nkoncim\ncmd > "
+	def stop(self):
+		SimuNet.SNDevice.stop(self)
+		self.timerStarted = False
+		if not self.timer is None:
+			self.timer.cancel()
+			self.timer = None

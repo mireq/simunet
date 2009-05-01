@@ -1,7 +1,12 @@
 class SNDevice:
+	stopped = False;
 	def sendFrame(self, data):
+		if self.stopped:
+			return
 		snsimulate.sendFrame(self.pSNDevice, self.deviceId, data)
 	def sendTelnet(self, text, cmd):
+		if self.stopped:
+			return
 		snsimulate.sendTelnet(self.pSNDevice, self.deviceId, text, cmd)
 	def processFrame(self, data):
 		print("processFrame not implemented")
@@ -17,3 +22,5 @@ class SNDevice:
 		print("telnetRequest not implemented")
 	def telnetGetControlChars(self):
 		print("telnetGetControlChars not implemented")
+	def stop(self, stopDev = True):
+		self.stopped = stopDev

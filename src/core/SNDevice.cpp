@@ -110,6 +110,19 @@ SNDevice::~SNDevice()
 	PyCPPObject pDevicesDict(PyObject_GetAttrString(pMainModule, "devices"), true);
 	if (PyDict_Contains(pDevicesDict, pDeviceId) == 1)
 	{
+		PyCPPObject pDevice(PyDict_GetItem(pDevicesDict, pDeviceId));
+		try
+		{
+			PyCPPObject pStopFunc(PyObject_GetAttrString(pDevice, "stop"), true);
+			if (pStopFunc.isCallable())
+			{
+				PyCPPObject args(PyTuple_New(0));
+				PyObject_Call(pStopFunc, args, NULL);
+			}
+		}
+		catch (PyObjectNULLException e)
+		{
+		}
 		PyDict_DelItem(pDevicesDict, pDeviceId);
 	}
 	std::cout<<std::flush;
