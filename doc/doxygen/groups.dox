@@ -4,4 +4,6 @@
   @defgroup core Core
   @defgroup exceptions Exceptions
   @defgroup models Models
+  @defgroup map Map
+  @defgroup diagram Diagram
 */

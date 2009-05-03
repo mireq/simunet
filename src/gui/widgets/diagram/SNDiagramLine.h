@@ -40,7 +40,7 @@ class SNDiagramLineSegment;
 class SNDiagramLine;
 
 /**
- @author Miroslav Bendik <miroslav.bendik@gmail.com>
+ @author Miroslav Bendik
  */
 class SNDiagramControlPoint : public SNDiagramItem
 {
@@ -93,7 +93,7 @@ class SNDiagramControlPoint : public SNDiagramItem
 };
 
 /**
- @author Miroslav Bendik <miroslav.bendik@gmail.com>
+ @author Miroslav Bendik
  */
 class SNDiagramLineSegment : public QGraphicsLineItem
 {
@@ -109,7 +109,7 @@ class SNDiagramLineSegment : public QGraphicsLineItem
 };
 
 /**
- @author Miroslav Bendik <miroslav.bendik@gmail.com>
+ @author Miroslav Bendik
 */
 class SNDiagramLine
 {

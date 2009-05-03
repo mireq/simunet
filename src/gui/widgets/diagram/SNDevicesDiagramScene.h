@@ -34,7 +34,7 @@ class SNDiagramDevice;
 class SNDiagramLine;
 
 /**
- @author Miroslav Bendik <miroslav.bendik@gmail.com>
+ @author Miroslav Bendik
 */
 class SNDevicesDiagramScene : public QGraphicsScene
 {

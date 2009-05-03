@@ -23,14 +23,64 @@
 #ifndef SNMAP_H
 #define SNMAP_H
 
+#include <string>
+#include <map>
+#include <list>
+
+#include "SNDevTreeNode.h"
+
+class SNSimulate;
+class SNDevTreeItem;
+class SNDevice;
+
 /**
- @author Miroslav Bendik <miroslav.bendik@gmail.com>
+ @author Miroslav Bendik
 */
 class SNMap
 {
 	public:
 		SNMap();
 		~SNMap();
+
+		bool stopDevice(uint32_t devId);
+		uint32_t startDevice(const std::string &filename);
+
+		void insertDevice(uint32_t devId, uint32_t parent, int pos);
+		void addDirectory(std::string name, uint32_t parent, int pos);
+
+		int numItems(uint32_t parent) const;
+
+		SNDevTreeItem *itemAt(int pos, uint32_t parent = 0) const;
+		SNDevTreeItem *item(uint32_t internalId) const;
+
+		int itemIndex(uint32_t internalId, uint32_t parent = 0) const;
+
+		void deleteItem(uint32_t internalId, uint32_t parent = 0);
+
+		void removeItem(uint32_t internalId, uint32_t parent = 0);
+		void insertItem(uint32_t internalId, uint32_t parent, int pos);
+
+		std::list<SNDevTreeItem *> itemsInTree(uint32_t parent) const;
+
+		SNDevice *device(uint32_t devId);
+	private:
+/*!
+  Odkaz na simulator.
+*/
+		SNSimulate *m_simulate;
+
+/*!
+  \brief Zozanm uzlov
+
+  Zoznam uzlov je asociativne pole. Klucom je cislo nadradeneho adresara.
+  Korenovy uzol ma cislo nadradeneho adresara 0.
+*/
+		std::map<uint32_t, SNDevTreeNode*> m_itemsTree;
+
+/*!
+  \brief Zoznam poloziek
+*/
+		std::map<uint32_t, SNDevTreeItem*> m_items;
 
 };
 

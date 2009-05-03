@@ -32,7 +32,7 @@
 class SNDiagramDevice;
 
 /**
- @author Miroslav Bendik <miroslav.bendik@gmail.com>
+ @author Miroslav Bendik
  */
 class SNDiagramConnector : public SNDiagramControlPoint
 {
@@ -56,7 +56,7 @@ class SNDiagramConnector : public SNDiagramControlPoint
 
 
 /**
- @author Miroslav Bendik <miroslav.bendik@gmail.com>
+ @author Miroslav Bendik
 */
 class SNDiagramDevice : public SNDiagramItem
 {

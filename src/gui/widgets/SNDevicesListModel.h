@@ -28,7 +28,7 @@
 #include <string>
 
 class SNDevice;
-class SNSimulate;
+class SNMap;
 class QItemSelectionModel;
 
 /**
@@ -64,8 +64,8 @@ class SNDevicesListModel : public QAbstractItemModel
 		QItemSelectionModel *selectionModel() const;
 		SNDevice *device(const QModelIndex &index) const;
 	private:
-		void insertCompute(const QModelIndex &index, int &parent, int &row, QModelIndex &parentIndex);
-		SNSimulate *m_simulate;
+		void insertCompute(const QModelIndex &index, uint32_t &parent, int &row, QModelIndex &parentIndex);
+		SNMap *m_map;
 		QItemSelectionModel *m_selection;
 
 	signals:

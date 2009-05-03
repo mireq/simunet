@@ -164,6 +164,8 @@ set(core_SRCS
 	src/core/SNBloat.cpp
 	src/core/SNBloatList.cpp
 	src/core/SNLog.cpp
+	src/core/map/SNDevTreeItem.cpp
+	src/core/map/SNDevTreeNode.cpp
 	src/core/map/SNMap.cpp
 	src/core/map/SNMapDeviceItem.cpp
 	src/core/map/SNMapItem.cpp
@@ -181,6 +183,8 @@ set(core_HDRS
 	src/core/SNBloat.h
 	src/core/SNBloatList.h
 	src/core/SNLog.h
+	src/core/map/SNDevTreeItem.h
+	src/core/map/SNDevTreeNode.h
 	src/core/map/SNMap.h
 	src/core/map/SNMapDeviceItem.h
 	src/core/map/SNMapItem.h

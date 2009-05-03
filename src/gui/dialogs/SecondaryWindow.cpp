@@ -20,6 +20,10 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
+
+#include "core/map/SNDevTreeItem.h"
+
+
 #include "SecondaryWindow.h"
 
 #include "SNDevicesListModel.h"
@@ -107,7 +111,7 @@ void SecondaryWindow::showContextMenu(const QPoint &point)
 		actions.append(m_newDirectoryAct);
 		if (index.isValid())
 		{
-			if (index.data(Qt::UserRole).toInt() > 0)
+			if (index.data(Qt::UserRole).toInt() == SNDevTreeItem::Device)
 			{
 				actions.append(m_settingsAct);
 			}
@@ -138,7 +142,7 @@ void SecondaryWindow::showContextMenu(const QPoint &point)
 			{
 				if (index.isValid())
 				{
-					int deviceId = index.data(Qt::UserRole).toInt();
+					int deviceId = index.data(Qt::UserRole + 1).toInt();
 					if (!m_settingsDialogs.contains(deviceId))
 					{
 						DeviceSettingsDlg *dlg = new DeviceSettingsDlg(deviceId, this);

@@ -23,11 +23,12 @@
 #include "SNAccessors.h"
 #include "SNSimulate.h"
 #include "SNConfig.h"
-
 #include "SNDynamicSettings.h"
 
+#include "map/SNMap.h"
 
 SNSimulate *SNSingleton::m_simulate = NULL;
+SNMap *SNSingleton::m_map = NULL;
 QMap<int, SNDynamicSettings*> SNSingleton::m_dynSettings = QMap<int, SNDynamicSettings*>();
 
 /*!
@@ -72,6 +73,25 @@ void SNSingleton::deleteSimulate()
 	m_simulate = NULL;
 }
 
+SNMap *SNSingleton::getMap()
+{
+	if (m_map == NULL)
+	{
+		m_map = new SNMap;
+	}
+	return m_map;
+
+}
+
+void SNSingleton::deleteMap()
+{
+	if (m_map != NULL)
+	{
+		delete m_map;
+	}
+	m_map = NULL;
+}
+
 /*!
   Zrusenie dynamickych nastaveni alokovanych SNSingleton-om.
 
@@ -93,8 +113,11 @@ void SNSingleton::deleteDynSettings()
 void SNSingleton::deleteObjects()
 {
 	deleteSimulate();
+	deleteMap();
 	deleteDynSettings();
 }
+
+
 
 
 

@@ -26,7 +26,7 @@
 #include "SNPoint3f.h"
 
 /**
- @author Miroslav Bendik <miroslav.bendik@gmail.com>
+ @author Miroslav Bendik
 */
 class SNMapItem
 {

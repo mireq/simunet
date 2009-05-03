@@ -24,7 +24,7 @@
 #define SNPOINT3F_H
 
 /**
- @author Miroslav Bendik <miroslav.bendik@gmail.com>
+ @author Miroslav Bendik
 */
 class SNPoint3f
 {

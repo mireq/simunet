@@ -72,6 +72,7 @@ MainWindow::MainWindow(QWidget* parent, Qt::WindowFlags flags): QMainWindow(pare
 	m_splash->show();
 	m_splash->setDisplayed(true);
 	m_splash->moveToCenter();
+	qApp->processEvents();
 
 	setObjectName("MainWindow");
 	setWindowTitle(tr("SimuNet"));

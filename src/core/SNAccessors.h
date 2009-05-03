@@ -38,6 +38,8 @@ class SNSingleton
 	public:
 		static SNSimulate *getSimulate();
 		static void deleteSimulate();
+		static SNMap *getMap();
+		static void deleteMap();
 
 		template <class T> static T *getDynSettings();
 		static void deleteDynSettings();
@@ -45,6 +47,7 @@ class SNSingleton
 		static void deleteObjects();
 	private:
 		static SNSimulate *m_simulate;
+		static SNMap *m_map;
 		static QMap<int, SNDynamicSettings*> m_dynSettings;
 };
 

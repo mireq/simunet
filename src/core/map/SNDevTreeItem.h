@@ -20,19 +20,77 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef SNMAPLINEITEM_H
-#define SNMAPLINEITEM_H
+#ifndef SNDEVTREEITEM_H
+#define SNDEVTREEITEM_H
+
+#include <stdint.h>
+#include <string>
 
 /**
  @author Miroslav Bendik
 */
-class SNMapLineItem
+class SNDevTreeItem
 {
 	public:
-		SNMapLineItem();
 
-		~SNMapLineItem();
+/*!
+  Typ polozky stromovej struktury.
+*/
+		enum ItemType
+		{
+			Device, /*!< Zariadenie */
+			Directory /*!< Adresar */
+		};
 
+		SNDevTreeItem(ItemType type = Device, SNDevTreeItem *parent = 0);
+		virtual ~SNDevTreeItem();
+
+		uint32_t internalId() const;
+		uint32_t id() const;
+		SNDevTreeItem *parent() const;
+		uint32_t parentId() const;
+		int type() const;
+
+		void setParent(SNDevTreeItem *parent);
+		void setId(uint32_t id);
+
+	private:
+		static uint32_t m_nextId;
+
+		uint32_t m_internalId;
+		uint32_t m_id;
+		SNDevTreeItem *m_parent;
+		ItemType m_type;
+};
+
+/* ----------------------------------------------------------------------- */
+
+/**
+ @author Miroslav Bendik
+ */
+class SNDevTreeDirectoryItem: public SNDevTreeItem
+{
+	public:
+		SNDevTreeDirectoryItem(const std::string &name, SNDevTreeItem *parent = 0);
+		~SNDevTreeDirectoryItem();
+		std::string name() const;
+		void setName(const std::string &name);
+	private:
+		std::string m_name;
+};
+
+/* ----------------------------------------------------------------------- */
+
+/**
+ @author Miroslav Bendik
+ */
+class SNDevTreeDeviceItem: public SNDevTreeItem
+{
+	public:
+		SNDevTreeDeviceItem(uint32_t devId, SNDevTreeItem *parent = 0);
+		~SNDevTreeDeviceItem();
+		uint32_t devId() const;
+		void setDevId(uint32_t devId);
 };
 
 #endif

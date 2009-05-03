@@ -46,25 +46,12 @@ class SNSimulate: public QObject
 		SNSimulate(int threads);
 		~SNSimulate();
 		bool stopDevice(uint32_t id);
-		uint32_t startDevice(const std::string &filename, int directory = 0, int row = -1);
+		uint32_t startDevice(const std::string &filename);
 		void frameResponse(uint32_t id, PyObject *data);
 		void telnetResponse(uint32_t id, const char *text, const char *cmd);
 
 		// zistovanie informacii o zariadeniach pre model
 		SNDevice *device(uint32_t id) const;
-		const std::vector<int> *devicesList(int parent = 0) const;
-		int findIndexOfDevice(int devId, int parent) const;
-		int findIndexOfDevice(int devId) const;
-		int parent(int devId) const;
-
-		// praca s virtualnymi adresarmi
-		void move(int devId, int row, int parent = 0);
-		void removeFromSubtree(int devId, int parent = 0);
-		void addToSubtree(int devId, int row, int parent = 0);
-		void addDirectory(const std::string &name, int parent = 0, int row = -1);
-		void renameDirectory(const std::string &name, int directoryId);
-		const std::list<int> removeDirectory(int directoryId);
-		std::string *directory(int directoryId);
 
 		// komunikacia so zariadeniami
 		char *httpRequest(uint32_t devId, const std::string &url, PyObject *post);
@@ -102,29 +89,17 @@ class SNSimulate: public QObject
 /*!
   \brief Pole zariadeni
   Asociativne pole ktoreho klucom je unikatne ID zariadenia.
-  Hodnotou je dvojica: ID nadradenej polozky, ukazovatel na zariadenie.
-  V pripade, ze ID nadradenej polozky je 0 znamena to, ze zariadenie je
-  v korenovom adresari.
+  Hodnotou je ukazovatel na zariadenie.
 */
-		std::map<int, std::pair<int, SNDevice*> > m_devices;
-		std::map<int, std::pair<int, std::string> > m_folders;
+		std::map<uint32_t, SNDevice*> m_devices;
 
-/*!
-  \brief Stromova struktura s indexmi zariadeni
-  Toto asociativne pole ma ako kluc ID virtualneho adresara kde je zariadenie
-  umiestnene. Hodnotou je zoznam zariadeni (kladne cislo) a podadresarov
-  (zaporne cislo v absolutnej hodnote reprezentuje ID adresara). Korenovy
-  adresar ma cislo 0.
-*/
-		std::map<int, std::vector<int> > m_devicesTree;
 
 /*!
   \brief ID nasledujuceho zariadenia
   Aby sme zabranili duplicitam pridelujeme kazdemu dalsiemu zariadeniu vzdy
   nasledujuce ID (aj keby sa niektore z predchadzajucich uvolnili).
 */
-		int m_nextDeviceId;
-		int m_nextFolderId;
+		uint32_t m_nextDeviceId;
 		PyThreadState *m_mainThreadState;
 };
 

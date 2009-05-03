@@ -26,7 +26,7 @@
 #include <QGraphicsItem>
 
 /**
- @author Miroslav Bendik <miroslav.bendik@gmail.com>
+ @author Miroslav Bendik
 */
 class SNDiagramItem : public QGraphicsItem
 {

@@ -20,18 +20,33 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef SNMAPLINEITEM_H
-#define SNMAPLINEITEM_H
+#ifndef SNDEVTREENODE_H
+#define SNDEVTREENODE_H
+
+#include <vector>
+#include <stdint.h>
+
+
+class SNDevTreeItem;
 
 /**
  @author Miroslav Bendik
 */
-class SNMapLineItem
+class SNDevTreeNode
 {
 	public:
-		SNMapLineItem();
+		SNDevTreeNode(SNDevTreeItem *parent);
+		~SNDevTreeNode();
+		void insert(SNDevTreeItem *item, int pos = -1);
+		SNDevTreeItem *itemAt(int pos) const;
+		int childCount() const;
+		std::vector<SNDevTreeItem *> *childs() const;
+		int index(uint32_t id) const;
+		void removeItem(uint32_t id, bool del = true);
 
-		~SNMapLineItem();
+	private:
+		SNDevTreeItem *m_parent;
+		std::vector<SNDevTreeItem *> *m_childs;
 
 };
 
