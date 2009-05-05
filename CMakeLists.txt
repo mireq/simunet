@@ -85,6 +85,7 @@ set(simunet_SRCS
 	src/gui/dialogs/DeviceSettingsDlg.cpp
 	src/gui/dialogs/MainWindow.cpp
 	src/gui/dialogs/SecondaryWindow.cpp
+	src/gui/widgets/SNAbstractDevicesScene.cpp
 	src/gui/widgets/SNConfigPanel.cpp
 	src/gui/widgets/SNDevicesListModel.cpp
 	src/gui/widgets/SNFontSelect.cpp
@@ -117,6 +118,7 @@ set(simunet_MOC_HDRS
 	src/gui/dialogs/DeviceSettingsDlg.h
 	src/gui/dialogs/MainWindow.h
 	src/gui/dialogs/SecondaryWindow.h
+	src/gui/widgets/SNAbstractDevicesScene.h
 	src/gui/widgets/SNConfigPanel.h
 	src/gui/widgets/SNDevicesListModel.h
 	src/gui/widgets/SNFontSelect.h

@@ -26,12 +26,15 @@
 #include <string>
 #include <map>
 #include <list>
-
-#include "SNDevTreeNode.h"
+#include <set>
 
 class SNSimulate;
 class SNDevTreeItem;
+class SNDevTreeNode;
 class SNDevice;
+class SNAbstractDevicesScene;
+class SNMapItem;
+
 
 /**
  @author Miroslav Bendik
@@ -63,6 +66,9 @@ class SNMap
 		std::list<SNDevTreeItem *> itemsInTree(uint32_t parent) const;
 
 		SNDevice *device(uint32_t devId);
+
+		void setScene(SNAbstractDevicesScene *scene);
+		SNAbstractDevicesScene *scene() const;
 	private:
 /*!
   Odkaz na simulator.
@@ -81,6 +87,16 @@ class SNMap
   \brief Zoznam poloziek
 */
 		std::map<uint32_t, SNDevTreeItem*> m_items;
+
+/*!
+  Scena do ktorej sa premietaju zmeny v modeli.
+*/
+		SNAbstractDevicesScene *m_scene;
+
+/*!
+  Zoznam poloziek na mape.
+*/
+		std::set<SNMapItem *> m_mapItems;
 
 };
 

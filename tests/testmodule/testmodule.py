@@ -7,7 +7,7 @@ class testmodule(SimuNet.SNDevice):
 		print("init")
 	def __del__(self):
 		print("del " + str(self.deviceId))
-	def processFrame(self, data):
+	def processFrame(self, data, port):
 		print(data)
 		self.sendFrame(data[::-1]);
 		return False

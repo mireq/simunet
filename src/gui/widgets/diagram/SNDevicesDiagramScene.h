@@ -26,6 +26,9 @@
 #include <QGraphicsScene>
 #include <QColor>
 #include <QSet>
+#include <QMap>
+
+#include "SNAbstractDevicesScene.h"
 
 class SNDiagramControlPoint;
 class SNDiagramLineSegment;
@@ -36,7 +39,7 @@ class SNDiagramLine;
 /**
  @author Miroslav Bendik
 */
-class SNDevicesDiagramScene : public QGraphicsScene
+class SNDevicesDiagramScene : public QGraphicsScene, public SNAbstractDevicesScene
 {
 		Q_OBJECT
 	public:
@@ -48,7 +51,9 @@ class SNDevicesDiagramScene : public QGraphicsScene
 		};
 		SNDevicesDiagramScene(QObject *parent = 0);
 		~SNDevicesDiagramScene();
-		void cr();
+		void addDevice(SNMapDeviceItem *item);
+		void removeDevice(SNMapDeviceItem *item);
+		void updateDevice(SNMapDeviceItem *item);
 	protected:
 		void drawBackground(QPainter *painter, const QRectF &rect);
 		void mousePressEvent(QGraphicsSceneMouseEvent *event);
@@ -65,15 +70,17 @@ class SNDevicesDiagramScene : public QGraphicsScene
 		QColor m_controlPointBgColor;
 		static const int m_gridSize;
 
-		// kontrolny bod na ktory bolo kliknute v rezime pridavania ciar
-		SNDiagramControlPoint *m_endControlPointClicked;
-
 		SceneMode m_mode;
 
 		// pomocne premenne vyuzivane pri pridavani novej ciary
 		SNDiagramControlPoint *m_newPoint;
 
+		// kontrolny bod na ktory bolo kliknute v rezime pridavania ciar
+		SNDiagramControlPoint *m_endControlPointClicked;
+
 		QSet<SNDiagramLine *> m_lines;
+
+		QMap<SNMapDeviceItem *, SNDiagramDevice *> m_devices;
 };
 
 #endif

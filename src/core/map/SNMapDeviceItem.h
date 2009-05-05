@@ -23,15 +23,26 @@
 #ifndef SNMAPDEVICEITEM_H
 #define SNMAPDEVICEITEM_H
 
+#include "SNMapItem.h"
+#include "sntypes.h"
+
 /**
  @author Miroslav Bendik
 */
-class SNMapDeviceItem
+class SNMapDeviceItem: public SNMapItem
 {
 	public:
-		SNMapDeviceItem();
-
+		SNMapDeviceItem(uint32_t deviceId = 0);
 		~SNMapDeviceItem();
+
+		uint32_t deviceId() const;
+		void setDeviceId(uint32_t deviceId);
+
+	private:
+/*!
+  Unikatne ID zaraidenia.
+*/
+		uint32_t m_deviceId;
 
 };
 

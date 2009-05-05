@@ -22,7 +22,11 @@
  ***************************************************************************/
 #include "SNMap.h"
 
+#include "SNAbstractDevicesScene.h"
 #include "SNDevTreeItem.h"
+#include "SNDevTreeNode.h"
+#include "SNMapDeviceItem.h"
+
 
 #include "core/SNAccessors.h"
 #include "core/SNConfig.h"
@@ -52,6 +56,7 @@ using namespace std;
   \sa SNSingleton
 */
 SNMap::SNMap()
+	: m_scene(NULL)
 {
 	SNConfig config;
 	m_simulate = SNSingleton::getSimulate();
@@ -97,7 +102,10 @@ uint32_t SNMap::startDevice(const std::string &filename)
 */
 void SNMap::insertDevice(uint32_t devId, uint32_t parent, int pos)
 {
-	SNDevTreeDeviceItem *item = new SNDevTreeDeviceItem(devId);
+	SNMapDeviceItem *device = new SNMapDeviceItem(devId);
+	m_mapItems.insert(device);
+
+	SNDevTreeDeviceItem *item = new SNDevTreeDeviceItem(device);
 	map<uint32_t, SNDevTreeNode*>::iterator it;
 	if (m_itemsTree.find(parent) == m_itemsTree.end())
 	{
@@ -105,6 +113,9 @@ void SNMap::insertDevice(uint32_t devId, uint32_t parent, int pos)
 	}
 	m_itemsTree[parent]->insert(item, pos);
 	m_items[item->internalId()] = item;
+
+	// vlozenie zariadenia do sceny
+	m_scene->addDevice(device);
 }
 
 /*!
@@ -226,22 +237,32 @@ void SNMap::deleteItem(uint32_t internalId, uint32_t parent)
 		{
 			vector<SNDevTreeItem *> *childs = subtree->second->childs();
 			vector<SNDevTreeItem *>::iterator childIt;
-			list<uint32_t> itemsToDelete;
+			list<SNDevTreeItem *> itemsToDelete;
 			for (childIt = childs->begin(); childIt != childs->end(); ++childIt)
 			{
-				itemsToDelete.push_back((*childIt)->internalId());
+				itemsToDelete.push_back(*childIt);
 			}
-			list<uint32_t>::iterator iter;
+			list<SNDevTreeItem *>::iterator iter;
 			for (iter = itemsToDelete.begin(); iter != itemsToDelete.end(); ++iter)
 			{
-				deleteItem(*iter, internalId);
+				deleteItem((*iter)->internalId(), internalId);
 			}
 		}
 
-		//deleteItem(it->internalId(), internalId);
 		if (it->type() == SNDevTreeItem::Device)
 		{
-			stopDevice(it->id());
+			stopDevice(static_cast<SNDevTreeDeviceItem *>(it)->devId());
+
+			set<SNMapItem *>::iterator mapItem = m_mapItems.find(it->mapItem());
+			if (mapItem != m_mapItems.end())
+			{
+				if (it->type() == SNDevTreeItem::Device)
+				{
+					m_scene->removeDevice(static_cast<SNMapDeviceItem *>(*mapItem));
+				}
+				m_mapItems.erase(mapItem);
+				delete (*mapItem);
+			}
 		}
 		m_items.erase(itemIter);
 	}
@@ -353,3 +374,19 @@ SNDevice *SNMap::device(uint32_t devId)
 	return m_simulate->device(devId);
 }
 
+/*!
+  Nastavenie sceny v ktorej sa vykresluje mapa.
+*/
+void SNMap::setScene(SNAbstractDevicesScene *scene)
+{
+	m_scene = scene;
+	scene->setMap(this);
+}
+
+/*!
+  Zistenie scene v ktorej sa vykresluje mapa.
+*/
+SNAbstractDevicesScene *SNMap::scene() const
+{
+	return m_scene;
+}

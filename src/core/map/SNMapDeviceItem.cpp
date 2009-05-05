@@ -22,13 +22,48 @@
  ***************************************************************************/
 #include "SNMapDeviceItem.h"
 
-SNMapDeviceItem::SNMapDeviceItem()
+/*!
+  \class SNMapDeviceItem
+  \brief Reprezentacia zariadenia na mape.
+  \ingroup map
+
+  Tato treieda uchovava rozsirujuce informacie o zariadeni. Zariadenie v
+  simulacnom jadre je len trieda prepajajuca pythonovske zariadenie s C++.
+  Jediny atribut ktory ma je unikatne ID. Tato trieda pridava informacie o
+  polohe zariadenia.
+
+  \sa SNDevice
+*/
+
+/*!
+  Vytvorenie noveho zariadenia so svojim unikatnym ID zariadenia.
+*/
+SNMapDeviceItem::SNMapDeviceItem(uint32_t deviceId)
+{
+	m_deviceId = deviceId;
+}
+
+/*!
+  Zrusenie zariadenia.
+*/
+SNMapDeviceItem::~SNMapDeviceItem()
 {
 }
 
-
-SNMapDeviceItem::~SNMapDeviceItem()
+/*!
+  Nastavenie ineho ID zariadenia.
+*/
+void SNMapDeviceItem::setDeviceId(uint32_t deviceId)
 {
+	m_deviceId = deviceId;
+}
+
+/*!
+  Zistenie ID zariadenia.
+*/
+uint32_t SNMapDeviceItem::deviceId() const
+{
+	return m_deviceId;
 }
 
 

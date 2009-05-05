@@ -118,14 +118,8 @@ int main(int argc, char *argv[])
 	interpreterInit();
 
 	Py_InitModule("snsimulate", const_cast<PyMethodDef *>(SNSimulateMethods));
-	//PyRun_SimpleString("import snsimulate");
-
 	PyCPPObject pSNSimulateName(PyString_FromString("snsimulate"));
 	PyCPPObject pSNSimulateModule(PyImport_Import(pSNSimulateName));
-
-	//PyObject_SetAttrString(PyEval_GetGlobals(), "snsimulate", pSNSimulateModule);
-
-	//PyCPPObject pBuiltinsDict(PyDict_New());
 	PyCPPObject pBuiltinsDict(PyEval_GetBuiltins());
 	PyDict_SetItemString(pBuiltinsDict, "snsimulate", pSNSimulateModule);
 
@@ -149,13 +143,16 @@ int main(int argc, char *argv[])
 			"\t\tprint(\"httpRequest not implemented\")\n"
 			"\tdef telnetRequest(self, line, symbol):\n"
 			"\t\tprint(\"telnetRequest not implemented\")\n"
-			"\tdef telnetGetControlChars(self):"
-			"\t\tprint(\"telnetGetControlChars not implemented\")", Py_single_input, pSimuNetDict, pSimuNetDict);
+			"\tdef telnetGetControlChars(self):\n"
+			"\t\tprint(\"telnetGetControlChars not implemented\")\n"
+			"\tdef stop(self):\n"
+			"\t\tpass\n", Py_single_input, pSimuNetDict, pSimuNetDict);
+
 	for (int i = 1; i < argc; ++i)
 	{
 		SNDevice test(argv[i], i);
 		PyCPPObject f1(PyString_FromString("frame"));
-		test.processFrame(f1);
+		test.processFrame(f1, 0);
 	}
 
 	Py_Finalize();

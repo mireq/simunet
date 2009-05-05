@@ -39,14 +39,14 @@ int main(int argc, char *argv[])
 	PyCPPObject pSimuNetModule(PyImport_AddModule("SimuNet"));
 	PyCPPObject pSimuNetDict(PyModule_GetDict(pSimuNetModule));
 
-	PyRun_String("class SNDevice:\n\tdef sendFrame(self, data):\t\tpass", Py_single_input, pSimuNetDict, pSimuNetDict);
+	PyRun_String("class SNDevice:\n\tdef sendFrame(self, data):\t\tpass\n\tdef stop(self):\n\t\tpass\n", Py_single_input, pSimuNetDict, pSimuNetDict);
 	for (int i = 1; i < argc; ++i)
 	{
 		SNDevice test(argv[i], i);
 		PyCPPObject frame1(PyString_FromString("frame1"));
-		test.processFrame(frame1);
+		test.processFrame(frame1, 0);
 		PyCPPObject frame2(PyString_FromString("frame2"));
-		test.processFrame(frame2);
+		test.processFrame(frame2, 0);
 	}
 //	Py_XDECREF(pDevicesDict);
 // 	PyRun_SimpleString("gc.collect()");

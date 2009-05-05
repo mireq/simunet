@@ -2,7 +2,7 @@
  *   Simunet - Computer Network Simulator                                  *
  *   http://simunet.eu/                                                    *
  *                                                                         *
- *   Copyright (C) 2008 by Miroslav Bendik                                 *
+ *   Copyright (C) 2009 by Miroslav Bendik                                 *
  *   miroslav.bendik@gmail.com                                             *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -20,45 +20,32 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef SNDEVICE_H
-#define SNDEVICE_H
+#ifndef SNABSTRACTDEVICESSCENE_H
+#define SNABSTRACTDEVICESSCENE_H
 
-#include <Python.h>
-#include <string>
-#include <map>
+#include <QObject>
+#include <QSet>
 
-#include "sntypes.h"
-
-class SNSimulate;
+class SNMap;
+class SNMapDeviceItem;
 
 /**
  @author Miroslav Bendik
 */
-class SNDevice
+class SNAbstractDevicesScene : public QObject
 {
+		Q_OBJECT
 	public:
-		SNDevice(const std::string &filename, uint32_t deviceId, SNSimulate *parent = 0);
-		~SNDevice();
+		SNAbstractDevicesScene(QObject *parent = 0);
+		~SNAbstractDevicesScene();
+		virtual void setMap(SNMap *map);
+		SNMap *map() const;
+		virtual void addDevice(SNMapDeviceItem *item);
+		virtual void removeDevice(SNMapDeviceItem *item);
 
-		uint32_t deviceId() const;
-
-		bool processFrame(PyObject *data, port_num hwPort);
-		bool resetConfig(void);
-		bool setConfig(PyObject *data);
-		PyObject *dumpConfig(void);
-		char *httpRequest(const std::string &url, PyObject *post);
-		char *httpRequest(const std::string &url, const std::map<std::string, std::string> post);
-		char *telnetRequest(const std::string &line, char symbol);
-		char *telnetGetControlChars(void);
-		static const PyMethodDef SNSimulateMethods[];
-
-	private:
-		uint32_t m_deviceId;
-		PyObject *m_pDeviceInstance;
-		SNSimulate *m_simulate;
-		static PyObject *frameResponseWrapper(PyObject *self, PyObject *args);
-		static PyObject *telnetResponseWrapper(PyObject *self, PyObject *args);
-
+	protected:
+		SNMap *m_map;
+		QSet<SNMapDeviceItem *> m_devices;
 };
 
 #endif

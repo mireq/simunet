@@ -43,6 +43,9 @@ class SNPoint3f
 		float y() const;
 		float z() const;
 
+		bool operator ==(const SNPoint3f &other) const;
+		bool operator !=(const SNPoint3f &other) const;
+
 	private:
 		float m_x;
 		float m_y;

@@ -33,6 +33,7 @@
 
 #include "core/SNAccessors.h"
 #include "core/SNDynamicSettings.h"
+#include "core/map/SNMap.h"
 
 #include "diagram/SNDevicesDiagramScene.h"
 
@@ -182,7 +183,6 @@ void MainWindow::setupSNScene()
 
 	m_diagram = new SNDevicesDiagramScene(this);
 	m_diagram->setSceneRect(0, 0, 500, 500);
-	m_diagram->cr();
 }
 
 void MainWindow::setupSecondaryWindow()
@@ -242,6 +242,9 @@ void MainWindow::graphicsViewChanged(QAction *action)
 	clearView();
 	if (action == m_2DAct)
 	{
+		SNMap *map = SNSingleton::getMap();
+		map->setScene(m_diagram);
+
 		m_2DView = new QGraphicsView;
 		m_2DView->setScene(m_diagram);
 		m_2DView->setCacheMode(QGraphicsView::CacheBackground);

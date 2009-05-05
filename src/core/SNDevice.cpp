@@ -138,17 +138,20 @@ uint32_t SNDevice::deviceId() const
 
 
 /*!
-  Odoslanie ramca zariadeniu.
+  Odoslanie ramca zariadeniu. Argument \a port_num urcuje port fyzicky port
+  na ktory sa ma ramec odoslat.
  */
-bool SNDevice::processFrame(PyObject *data)
+bool SNDevice::processFrame(PyObject *data, port_num hwPort)
 {
 	PyCPPObject pProcessFrameFunc(PyObject_GetAttrString(m_pDeviceInstance, "processFrame"), true);
 	if (!pProcessFrameFunc.isCallable())
 	{
 		return true;
 	}
-	PyCPPObject args(PyTuple_New(1), true);
+	PyCPPObject port(PyLong_FromUnsignedLong(hwPort));
+	PyCPPObject args(PyTuple_New(2), true);
 	PyTuple_SetItem(args, 0, data);
+	PyTuple_SetItem(args, 1, port);
 	PyCPPObject ret(PyObject_Call(pProcessFrameFunc, args, NULL));
 	if (!PyBool_Check(ret))
 	{

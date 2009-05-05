@@ -26,6 +26,9 @@
 #include <stdint.h>
 #include <string>
 
+class SNMapItem;
+class SNMapDeviceItem;
+
 /**
  @author Miroslav Bendik
 */
@@ -42,7 +45,7 @@ class SNDevTreeItem
 			Directory /*!< Adresar */
 		};
 
-		SNDevTreeItem(ItemType type = Device, SNDevTreeItem *parent = 0);
+		SNDevTreeItem(ItemType type = Device, SNMapItem *item = 0, SNDevTreeItem *parent = 0);
 		virtual ~SNDevTreeItem();
 
 		uint32_t internalId() const;
@@ -53,6 +56,12 @@ class SNDevTreeItem
 
 		void setParent(SNDevTreeItem *parent);
 		void setId(uint32_t id);
+
+		void setMapItem(SNMapItem *mapItem);
+		SNMapItem *mapItem() const;
+
+	protected:
+		SNMapItem *m_mapItem;
 
 	private:
 		static uint32_t m_nextId;
@@ -71,7 +80,7 @@ class SNDevTreeItem
 class SNDevTreeDirectoryItem: public SNDevTreeItem
 {
 	public:
-		SNDevTreeDirectoryItem(const std::string &name, SNDevTreeItem *parent = 0);
+		SNDevTreeDirectoryItem(const std::string &name, SNMapItem *item = 0, SNDevTreeItem *parent = 0);
 		~SNDevTreeDirectoryItem();
 		std::string name() const;
 		void setName(const std::string &name);
@@ -87,7 +96,7 @@ class SNDevTreeDirectoryItem: public SNDevTreeItem
 class SNDevTreeDeviceItem: public SNDevTreeItem
 {
 	public:
-		SNDevTreeDeviceItem(uint32_t devId, SNDevTreeItem *parent = 0);
+		SNDevTreeDeviceItem(SNMapDeviceItem *item = 0, SNDevTreeItem *parent = 0);
 		~SNDevTreeDeviceItem();
 		uint32_t devId() const;
 		void setDevId(uint32_t devId);

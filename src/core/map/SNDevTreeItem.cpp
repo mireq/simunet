@@ -21,6 +21,8 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 #include "SNDevTreeItem.h"
+#include "SNMapItem.h"
+#include "SNMapDeviceItem.h"
 
 /*!
   ID nasledujuceho interneho ID.
@@ -38,9 +40,10 @@ uint32_t SNDevTreeItem::m_nextId = 1;
   polozkou \a parent. Ak sa zavola bez uvedenia nadreadenej polozky znamena
   to, ze polozka je v korenovom adresari.
 */
-SNDevTreeItem::SNDevTreeItem(ItemType type, SNDevTreeItem *parent)
+SNDevTreeItem::SNDevTreeItem(ItemType type, SNMapItem *mapItem, SNDevTreeItem *parent)
 {
 	m_type = type;
+	m_mapItem = mapItem;
 	m_parent = parent;
 	m_internalId = m_nextId;
 	m_nextId++;
@@ -141,8 +144,8 @@ void SNDevTreeItem::setId(uint32_t id)
 /*!
   Vytvorenie noveho adresara s nazvom \a name a nadradenym adresarom \a parent.
 */
-SNDevTreeDirectoryItem::SNDevTreeDirectoryItem(const std::string &name, SNDevTreeItem *parent)
-	: SNDevTreeItem(Directory, parent)
+SNDevTreeDirectoryItem::SNDevTreeDirectoryItem(const std::string &name, SNMapItem *mapItem, SNDevTreeItem *parent)
+	: SNDevTreeItem(Directory, mapItem, parent)
 {
 	m_name = name;
 }
@@ -182,10 +185,9 @@ void SNDevTreeDirectoryItem::setName(const std::string &name)
   Vytvorenie novej polozky zoznamu zariadeni s ID zariadenia \a devId v
   adresari \a parent.
 */
-SNDevTreeDeviceItem::SNDevTreeDeviceItem(uint32_t devId, SNDevTreeItem *parent)
-	: SNDevTreeItem(Device, parent)
+SNDevTreeDeviceItem::SNDevTreeDeviceItem(SNMapDeviceItem *mapItem, SNDevTreeItem *parent)
+	: SNDevTreeItem(Device, mapItem, parent)
 {
-	setId(devId);
 }
 
 /*!
@@ -196,14 +198,16 @@ SNDevTreeDeviceItem::~ SNDevTreeDeviceItem()
 }
 
 /*!
-  Zistenie ID zariadenia. Interne tato metoda vyuziva SNDevTreeItem::id() preto
-  je volanie tejto funkcie ekvivalentne.
+  Zistenie ID zariadenia.
 
   \sa SNDevTreeItem::id
 */
 uint32_t SNDevTreeDeviceItem::devId() const
 {
-	return id();
+	if (m_mapItem != NULL)
+	{
+		return static_cast<SNMapDeviceItem *>(m_mapItem)->deviceId();
+	}
 }
 
 /*!
@@ -213,7 +217,19 @@ uint32_t SNDevTreeDeviceItem::devId() const
 */
 void SNDevTreeDeviceItem::setDevId(uint32_t devId)
 {
-	setId(devId);
+	if (m_mapItem != NULL)
+	{
+		static_cast<SNMapDeviceItem *>(m_mapItem)->setDeviceId(devId);
+	}
 }
 
+void SNDevTreeItem::setMapItem(SNMapItem *mapItem)
+{
+	m_mapItem = mapItem;
+}
+
+SNMapItem *SNDevTreeItem::mapItem() const
+{
+	return m_mapItem;
+}
 

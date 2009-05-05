@@ -30,6 +30,7 @@
 #include "SNDiagramItem.h"
 
 class SNDiagramDevice;
+class SNMapDeviceItem;
 
 /**
  @author Miroslav Bendik
@@ -61,7 +62,7 @@ class SNDiagramConnector : public SNDiagramControlPoint
 class SNDiagramDevice : public SNDiagramItem
 {
 	public:
-		SNDiagramDevice(const QPointF &pos = QPointF());
+		SNDiagramDevice(SNMapDeviceItem *device);
 		~SNDiagramDevice();
 		QRectF boundingRect() const;
 		void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
@@ -71,8 +72,12 @@ class SNDiagramDevice : public SNDiagramItem
 		void setPos(qreal x, qreal y);
 		void setItemDiff(QPointF diff);
 
+		SNMapDeviceItem *device() const;
+		void setDevice(SNMapDeviceItem *device);
+
 	private:
 		QList<SNDiagramConnector *> m_controlPoints;
+		SNMapDeviceItem *m_device;
 
 };
 

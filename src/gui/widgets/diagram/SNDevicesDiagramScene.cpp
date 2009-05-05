@@ -24,6 +24,10 @@
 #include "SNDiagramLine.h"
 #include "SNDiagramDevice.h"
 
+#include "core/map/SNPoint3f.h"
+#include "core/map/SNMapDeviceItem.h"
+
+
 #include <QPainter>
 #include <QPalette>
 #include <QGraphicsSceneMouseEvent>
@@ -55,33 +59,38 @@ SNDevicesDiagramScene::~SNDevicesDiagramScene()
 	}
 }
 
-
-void SNDevicesDiagramScene::cr()
+void SNDevicesDiagramScene::addDevice(SNMapDeviceItem *item)
 {
-	SNDiagramDevice *dev = new SNDiagramDevice(QPointF(50, 50));
+	SNAbstractDevicesScene::addDevice(item);
+	SNDiagramDevice *dev = new SNDiagramDevice(item);
 	addItem(dev);
-	SNDiagramControlPoint *point = dev->addConnector();
-	addItem(point);
-	point = dev->addConnector();
-	addItem(point);
-	point = dev->addConnector();
-	addItem(point);
+	m_devices[item] = dev;
+	updateDevice(item);
+}
 
-	dev = new SNDiagramDevice(QPointF(300, 50));
-	addItem(dev);
+void SNDevicesDiagramScene::removeDevice(SNMapDeviceItem *item)
+{
+	QMap<SNMapDeviceItem *, SNDiagramDevice *>::iterator dev;
+	dev = m_devices.find(item);
+	if (dev != m_devices.end())
+	{
+		dev.value()->setDevice(NULL);
+		removeItem(dev.value());
+		delete(dev.value());
+		m_devices.erase(dev);
+	}
+	SNAbstractDevicesScene::removeDevice(item);
+}
 
-	point = dev->addConnector();
-	addItem(point);
-	point = dev->addConnector();
-	addItem(point);
-	point = dev->addConnector();
-	addItem(point);
-	point = dev->addConnector();
-	addItem(point);
-	point = dev->addConnector();
-	addItem(point);
-	point = dev->addConnector();
-	addItem(point);
+void SNDevicesDiagramScene::updateDevice(SNMapDeviceItem *item)
+{
+	QMap<SNMapDeviceItem *, SNDiagramDevice *>::iterator dev;
+	dev = m_devices.find(item);
+	if (dev != m_devices.end())
+	{
+		SNPoint3f pos = dev.key()->pos();
+		dev.value()->setPos(pos.x(), pos.y());
+	}
 }
 
 void SNDevicesDiagramScene::drawBackground(QPainter *painter, const QRectF &rect)
@@ -386,3 +395,4 @@ void SNDevicesDiagramScene::newPoint(const QPointF &point)
 	m_newPoint = m_endControlPointClicked->line()->addControlPoint(point.x(), point.y(), pos);
 	m_endControlPointClicked = m_newPoint;
 }
+

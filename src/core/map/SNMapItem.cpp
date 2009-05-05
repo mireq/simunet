@@ -22,20 +22,44 @@
  ***************************************************************************/
 #include "SNMapItem.h"
 
+/*!
+  \class SNMapItem
+  \brief Polozka na mape so zariadeniami.
+  \ingroup map
+
+  Tato trieda ma za ulohu uchovavat informacie o polozkach na mape. Simulacne
+  jadro nema ziadne informacie o polohe jednotlivych zariadeni.
+*/
+
+/*!
+  Vytvorenie novej polozky mapy.
+*/
 SNMapItem::SNMapItem()
 {
+	m_pos = SNPoint3f(20, 20, 20);
 }
 
-
+/*!
+  Zrusenie polozky mapy.
+*/
 SNMapItem::~SNMapItem()
 {
 }
 
+/*!
+  Nastavenie polohy polozky v 3D priestore.
+*/
 void SNMapItem::setPos(const SNPoint3f &pos)
 {
-	m_pos = pos;
+	if (m_pos != pos)
+	{
+		m_pos = pos;
+	}
 }
 
+/*!
+  Zistenie polohy polozky v 3D priestore.
+*/
 SNPoint3f SNMapItem::pos() const
 {
 	return m_pos;

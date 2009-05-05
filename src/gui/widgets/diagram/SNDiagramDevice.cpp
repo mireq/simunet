@@ -25,6 +25,9 @@
 #include <QPainter>
 #include <QGraphicsSceneMouseEvent>
 
+#include "core/map/SNMapDeviceItem.h"
+#include "core/map/SNPoint3f.h"
+
 #include <QDebug>
 
 
@@ -92,10 +95,10 @@ bool SNDiagramConnector::isFull() const
 
 /* ------------------------------------------------------------------ */
 
-SNDiagramDevice::SNDiagramDevice(const QPointF &pos)
+SNDiagramDevice::SNDiagramDevice(SNMapDeviceItem *device)
 {
 	setFlag(ItemIsSelectable);
-	setPos(pos);
+	m_device = device;
 }
 
 
@@ -149,16 +152,36 @@ SNDiagramConnector *SNDiagramDevice::addConnector()
 
 void SNDiagramDevice::setPos(const QPointF &pos)
 {
+	if (pos == this->pos())
+	{
+		return;
+	}
+
 	SNDiagramConnector *point;
 	foreach(point, m_controlPoints)
 	{
 		point->setDevicePos(pos);
 	}
 	SNDiagramItem::setPos(pos);
+	QPointF realPos = QGraphicsItem::pos();
+	if (m_device != NULL)
+	{
+		m_device->setPos(SNPoint3f(realPos.x(), realPos.y(), m_device->pos().z()));
+	}
 }
 
 void SNDiagramDevice::setPos(qreal x, qreal y)
 {
 	setPos(QPointF(x, y));
+}
+
+SNMapDeviceItem *SNDiagramDevice::device() const
+{
+	return m_device;
+}
+
+void SNDiagramDevice::setDevice(SNMapDeviceItem *device)
+{
+	m_device = device;
 }
 
