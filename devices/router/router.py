@@ -3,12 +3,14 @@ from random import random
 import sys
 import types
 import SimuNet
+import re
 
 class router(SimuNet.SNDevice):
 	timerStarted = False
 	timer = None
 	def __init__(self):
 		print("init")
+		self.insertHwPort()
 	def __del__(self):
 		print("del")
 	def __sendMsg(self):
@@ -18,6 +20,14 @@ class router(SimuNet.SNDevice):
 			self.timer = Timer(random(), self.__sendMsg)
 			self.timer.start()
 	def telnetRequest(self, line, symbol):
+		p = re.compile('add')
+		m = p.match(line)
+		if m:
+			self.insertHwPort()
+		p = re.compile('rem (\d*)')
+		m = p.match(line)
+		if m:
+			self.removeHwPort(int(m.group(1)))
 		if symbol == '?':
 			self.timer = Timer(random(), self.__sendMsg)
 			self.timer.start()
@@ -31,3 +41,4 @@ class router(SimuNet.SNDevice):
 		if not self.timer is None:
 			self.timer.cancel()
 			self.timer = None
+

@@ -26,6 +26,8 @@
 #include <Python.h>
 #include <string>
 #include <map>
+#include <list>
+#include <vector>
 
 #include "sntypes.h"
 
@@ -52,12 +54,22 @@ class SNDevice
 		char *telnetGetControlChars(void);
 		static const PyMethodDef SNSimulateMethods[];
 
+		const std::vector<port_num> &portNumbers() const;
+
 	private:
 		uint32_t m_deviceId;
 		PyObject *m_pDeviceInstance;
 		SNSimulate *m_simulate;
+
 		static PyObject *frameResponseWrapper(PyObject *self, PyObject *args);
 		static PyObject *telnetResponseWrapper(PyObject *self, PyObject *args);
+
+		static PyObject *insertHwPortWrapper(PyObject *self, PyObject *args);
+		static PyObject *removeHwPortWrapper(PyObject *self, PyObject *args);
+		static PyObject *setHwPortHandlerWrapper(PyObject *self, PyObject *args);
+
+		port_num m_nextHwPortNum;
+		std::vector<port_num> m_portNumbers;
 
 };
 

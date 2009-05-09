@@ -28,12 +28,15 @@
 #include <list>
 #include <set>
 
+#include "sntypes.h"
+
 class SNSimulate;
 class SNDevTreeItem;
 class SNDevTreeNode;
 class SNDevice;
 class SNAbstractDevicesScene;
 class SNMapItem;
+class SNMapDeviceItem;
 
 
 /**
@@ -69,6 +72,10 @@ class SNMap
 
 		void setScene(SNAbstractDevicesScene *scene);
 		SNAbstractDevicesScene *scene() const;
+
+		// porty
+		void insertPort(uint32_t devId, port_num hwPort);
+		void removePort(uint32_t devId, port_num hwPort);
 	private:
 /*!
   Odkaz na simulator.
@@ -76,15 +83,13 @@ class SNMap
 		SNSimulate *m_simulate;
 
 /*!
-  \brief Zozanm uzlov
-
   Zoznam uzlov je asociativne pole. Klucom je cislo nadradeneho adresara.
   Korenovy uzol ma cislo nadradeneho adresara 0.
 */
 		std::map<uint32_t, SNDevTreeNode*> m_itemsTree;
 
 /*!
-  \brief Zoznam poloziek
+  Zoznam poloziek pricom klucom je ID polozky, hodnotou polozka samotna.
 */
 		std::map<uint32_t, SNDevTreeItem*> m_items;
 
@@ -97,6 +102,11 @@ class SNMap
   Zoznam poloziek na mape.
 */
 		std::set<SNMapItem *> m_mapItems;
+
+/*!
+  Zoznam zariadeni podla cisla zaraidenia.
+*/
+		std::map<uint32_t, SNMapDeviceItem *> m_devices;
 
 };
 

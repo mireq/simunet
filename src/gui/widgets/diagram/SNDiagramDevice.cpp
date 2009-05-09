@@ -125,29 +125,33 @@ QPainterPath SNDiagramDevice::shape() const
 	return path;
 }
 
-SNDiagramConnector *SNDiagramDevice::addConnector()
+SNDiagramConnector *SNDiagramDevice::addConnector(port_num port)
 {
-	const int width = 10;
-	const int pointSize = 10;
-
 	SNDiagramConnector *point = new SNDiagramConnector(this, 0, 0);
-	m_controlPoints.append(point);
+	m_connectors[port] = point;
 
-	QPointF diff;
-	QList<SNDiagramConnector *>::size_type numberPoints = m_controlPoints.size();
-	SNDiagramConnector *p;
-
-	diff.setX(width + pointSize + 5);
-	diff.setY(width / 2 - (numberPoints - 1) * pointSize / 2);
-	foreach(p, m_controlPoints)
-	{
-		p->setItemDiff(diff);
-		diff.setY(diff.y() + pointSize);
-	}
-
-	setPos(pos());
+	updateConnectorDiffs();
+	point->setDevicePos(pos());
 
 	return point;
+}
+
+SNDiagramConnector *SNDiagramDevice::removeConnector(port_num port)
+{
+	QMap<port_num, SNDiagramConnector *>::iterator connector;
+	connector = m_connectors.find(port);
+	if (connector == m_connectors.end())
+	{
+		return NULL;
+	}
+	else
+	{
+		SNDiagramConnector *oldConnector = connector.value();
+		m_connectors.erase(connector);
+		updateConnectorDiffs();
+
+		return oldConnector;
+	}
 }
 
 void SNDiagramDevice::setPos(const QPointF &pos)
@@ -158,7 +162,7 @@ void SNDiagramDevice::setPos(const QPointF &pos)
 	}
 
 	SNDiagramConnector *point;
-	foreach(point, m_controlPoints)
+	foreach(point, m_connectors)
 	{
 		point->setDevicePos(pos);
 	}
@@ -183,5 +187,23 @@ SNMapDeviceItem *SNDiagramDevice::device() const
 void SNDiagramDevice::setDevice(SNMapDeviceItem *device)
 {
 	m_device = device;
+}
+
+void SNDiagramDevice::updateConnectorDiffs()
+{
+	const int width = 10;
+	const int pointSize = 10;
+
+	QPointF diff;
+	QMap<port_num, SNDiagramConnector *>::size_type numberPoints = m_connectors.size();
+	SNDiagramConnector *p;
+
+	diff.setX(width + pointSize + 5);
+	diff.setY(width / 2 - (numberPoints - 1) * pointSize / 2);
+	foreach(p, m_connectors)
+	{
+		p->setItemDiff(diff);
+		diff.setY(diff.y() + pointSize);
+	}
 }
 

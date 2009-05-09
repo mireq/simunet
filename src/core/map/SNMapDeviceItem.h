@@ -26,6 +26,8 @@
 #include "SNMapItem.h"
 #include "sntypes.h"
 
+class SNDevice;
+
 /**
  @author Miroslav Bendik
 */
@@ -38,11 +40,18 @@ class SNMapDeviceItem: public SNMapItem
 		uint32_t deviceId() const;
 		void setDeviceId(uint32_t deviceId);
 
+		SNDevice *device();
+
 	private:
 /*!
   Unikatne ID zaraidenia.
 */
 		uint32_t m_deviceId;
+
+/*!
+  Cachovane zariadenie.
+*/
+		SNDevice *m_device;
 
 };
 

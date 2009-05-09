@@ -26,6 +26,9 @@
 #include "PyCPPObject.h"
 
 #include <iostream>
+#include <algorithm>
+
+#include <QDebug>
 
 using namespace std;
 
@@ -35,6 +38,9 @@ using namespace std;
 const PyMethodDef SNDevice::SNSimulateMethods[] = {
 	{"sendFrame", SNDevice::frameResponseWrapper, METH_VARARGS, "Odoslanie ramca"},
 	{"sendTelnet", SNDevice::telnetResponseWrapper, METH_VARARGS, "Odoslanie dat cez telnet"},
+	{"insertHwPort", SNDevice::insertHwPortWrapper, METH_VARARGS, "Pridanie konektoru"},
+	{"removeHwPort", SNDevice::removeHwPortWrapper, METH_VARARGS, "Odstranenie konektoru"},
+	{"setHwPortHandler", SNDevice::setHwPortHandlerWrapper, METH_VARARGS, "Nastavenie obsluhy po prijati ramca na dany konektor"},
 	{NULL, NULL, 0, NULL}
 };
 
@@ -54,6 +60,7 @@ const PyMethodDef SNDevice::SNSimulateMethods[] = {
   \param parent Odkaz na objekt typu SNSimulate
  */
 SNDevice::SNDevice(const std::string &filename, uint32_t deviceId, SNSimulate *parent)
+	: m_nextHwPortNum(1)
 {
 	m_simulate = parent;
 	try
@@ -356,6 +363,14 @@ char *SNDevice::telnetGetControlChars(void)
 	}
 }
 
+/*!
+  Ziskanie zoznamu portov, ktore ma zariadenie.
+*/
+const std::vector<port_num> &SNDevice::portNumbers() const
+{
+	return m_portNumbers;
+}
+
 PyObject *SNDevice::frameResponseWrapper(PyObject *, PyObject *args)
 {
 	if (PyTuple_Size(args) != 3)
@@ -405,3 +420,75 @@ PyObject* SNDevice::telnetResponseWrapper(PyObject *, PyObject *args)
 
 	Py_RETURN_NONE;
 }
+
+PyObject *SNDevice::insertHwPortWrapper(PyObject *self, PyObject *args)
+{
+	if (PyTuple_Size(args) != 1)
+	{
+		return NULL;
+	}
+
+	PyCPPObject pSNDeviceInstance(PyTuple_GetItem(args, 0));
+	/*PyCPPObject pHwPortPosition(PyTuple_GetItem(args, 1));
+	if (!PyInt_Check(pHwPortPosition))
+	{
+		Py_RETURN_FALSE;
+	}*/
+	SNDevice *dev = (SNDevice *)PyCObject_AsVoidPtr(pSNDeviceInstance);
+
+	/*list<port_num>::size_type position = PyInt_AsSsize_t(pHwPortPosition);
+	if (position > dev->m_portNumbers.size())
+	{
+		Py_RETURN_FALSE;
+	}
+
+	dev->m_portNumbers.insert(dev->m_portNumbers.begin() + position, dev->m_nextHwPortNum);*/
+	dev->m_portNumbers.push_back(dev->m_nextHwPortNum);
+	if (dev->m_simulate != NULL)
+	{
+		dev->m_simulate->hwPortInserted(dev->m_deviceId, dev->m_nextHwPortNum);
+	}
+
+	dev->m_nextHwPortNum++;
+
+	Py_RETURN_TRUE;
+}
+
+PyObject *SNDevice::removeHwPortWrapper(PyObject *self, PyObject *args)
+{
+	if (PyTuple_Size(args) != 2)
+	{
+		return NULL;
+	}
+
+	PyCPPObject pSNDeviceInstance(PyTuple_GetItem(args, 0));
+	PyCPPObject pPortNum(PyTuple_GetItem(args, 1));
+	SNDevice *dev = (SNDevice *)PyCObject_AsVoidPtr(pSNDeviceInstance);
+
+	if (!PyInt_Check(pPortNum))
+	{
+		Py_RETURN_FALSE;
+	}
+	port_num portNum = PyInt_AsLong(pPortNum);
+
+	vector<port_num>::iterator portIter;
+	portIter = find(dev->m_portNumbers.begin(), dev->m_portNumbers.end(), portNum);
+	if (portIter == dev->m_portNumbers.end())
+	{
+		Py_RETURN_FALSE;
+	}
+
+	if (dev->m_simulate != NULL)
+	{
+		dev->m_simulate->hwPortRemoved(dev->m_deviceId, portNum);
+	}
+	dev->m_portNumbers.erase(portIter);
+
+	Py_RETURN_TRUE;
+	
+}
+
+PyObject *SNDevice::setHwPortHandlerWrapper(PyObject *self, PyObject *args)
+{
+}
+

@@ -285,11 +285,11 @@ void MainWindow::initSimuNet()
 	m_splash->setMessage(tr("Starting devices"));
 	m_devicesModel = new SNDevicesListModel(this);
 	m_toolWindow->setModel(m_devicesModel);
-	for (int i = 0; i < 10; ++i)
+	/*for (int i = 0; i < 10; ++i)
 	{
 		m_devicesModel->startDevice("router");
 		qApp->processEvents();
-	}
+	}*/
 	setWindowsEnabled(true);
 	statusBar()->showMessage(tr("Ready"), 5000);
 	m_splash->setProgress(100);

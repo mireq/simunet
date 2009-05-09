@@ -22,6 +22,10 @@
  ***************************************************************************/
 #include "SNMapDeviceItem.h"
 
+#include "core/SNAccessors.h"
+#include "core/SNDevice.h"
+#include "core/SNSimulate.h"
+
 /*!
   \class SNMapDeviceItem
   \brief Reprezentacia zariadenia na mape.
@@ -39,6 +43,7 @@
   Vytvorenie noveho zariadenia so svojim unikatnym ID zariadenia.
 */
 SNMapDeviceItem::SNMapDeviceItem(uint32_t deviceId)
+	: m_device(NULL)
 {
 	m_deviceId = deviceId;
 }
@@ -56,6 +61,7 @@ SNMapDeviceItem::~SNMapDeviceItem()
 void SNMapDeviceItem::setDeviceId(uint32_t deviceId)
 {
 	m_deviceId = deviceId;
+	m_device = NULL;
 }
 
 /*!
@@ -64,6 +70,15 @@ void SNMapDeviceItem::setDeviceId(uint32_t deviceId)
 uint32_t SNMapDeviceItem::deviceId() const
 {
 	return m_deviceId;
+}
+
+SNDevice *SNMapDeviceItem::device()
+{
+	if (m_device == NULL)
+	{
+		m_device = SNSingleton::getSimulate()->device(m_deviceId);
+	}
+	return m_device;
 }
 
 

@@ -26,3 +26,7 @@ class SNDevice:
 		print("telnetGetControlChars not implemented")
 	def stop(self, stopDev = True):
 		self.__stopped = stopDev
+	def insertHwPort(self):
+		snsimulate.insertHwPort(self.pSNDevice)
+	def removeHwPort(self, port):
+		snsimulate.removeHwPort(self.pSNDevice, port)

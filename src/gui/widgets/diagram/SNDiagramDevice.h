@@ -24,10 +24,11 @@
 #define SNDIAGRAMDEVICE_H
 
 #include <QGraphicsItem>
-#include <QList>
+#include <QMap>
 
 #include "SNDiagramLine.h"
 #include "SNDiagramItem.h"
+#include "sntypes.h"
 
 class SNDiagramDevice;
 class SNMapDeviceItem;
@@ -67,7 +68,8 @@ class SNDiagramDevice : public SNDiagramItem
 		QRectF boundingRect() const;
 		void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
 		QPainterPath shape() const;
-		SNDiagramConnector *addConnector();
+		SNDiagramConnector *addConnector(port_num port);
+		SNDiagramConnector *removeConnector(port_num port);
 		void setPos(const QPointF &pos);
 		void setPos(qreal x, qreal y);
 		void setItemDiff(QPointF diff);
@@ -76,8 +78,10 @@ class SNDiagramDevice : public SNDiagramItem
 		void setDevice(SNMapDeviceItem *device);
 
 	private:
-		QList<SNDiagramConnector *> m_controlPoints;
+		void updateConnectorDiffs();
+		//QList<SNDiagramConnector *> m_controlPoints;
 		SNMapDeviceItem *m_device;
+		QMap<port_num, SNDiagramConnector *> m_connectors;
 
 };
 

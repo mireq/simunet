@@ -31,9 +31,12 @@
 #include <vector>
 #include <vector>
 
+#include "sntypes.h"
+
 #include <QObject>
 
 class SNDevice;
+class SNMap;
 class SNSimulateHelper;
 
 /**
@@ -58,6 +61,11 @@ class SNSimulate: public QObject
 		char *httpRequest(uint32_t devId, const std::string &url, const std::map<std::string, std::string> post);
 		char *telnetRequest(uint32_t devId, const std::string &line, char symbol);
 		void sendFrame(uint32_t targetDevId, PyObject *frame);
+
+		void hwPortInserted(uint32_t devId, port_num hwPort);
+		void hwPortRemoved(uint32_t devId, port_num hwPort);
+
+		void setMap(SNMap *map);
 
 	signals:
 		void telnetResponseRecived(uint32_t id, const char *text, const char *cmd);
@@ -101,6 +109,8 @@ class SNSimulate: public QObject
 */
 		uint32_t m_nextDeviceId;
 		PyThreadState *m_mainThreadState;
+
+		SNMap *m_map;
 };
 
 

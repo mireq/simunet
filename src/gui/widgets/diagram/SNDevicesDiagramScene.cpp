@@ -24,6 +24,7 @@
 #include "SNDiagramLine.h"
 #include "SNDiagramDevice.h"
 
+#include "core/SNDevice.h"
 #include "core/map/SNPoint3f.h"
 #include "core/map/SNMapDeviceItem.h"
 
@@ -32,7 +33,11 @@
 #include <QPalette>
 #include <QGraphicsSceneMouseEvent>
 
+#include <vector>
+
 #include <QDebug>
+
+using namespace std;
 
 const int SNDevicesDiagramScene::m_gridSize = 10;
 
@@ -84,12 +89,87 @@ void SNDevicesDiagramScene::removeDevice(SNMapDeviceItem *item)
 
 void SNDevicesDiagramScene::updateDevice(SNMapDeviceItem *item)
 {
-	QMap<SNMapDeviceItem *, SNDiagramDevice *>::iterator dev;
+	QMap<SNMapDeviceItem *, SNDiagramDevice *>::const_iterator dev;
 	dev = m_devices.find(item);
 	if (dev != m_devices.end())
 	{
 		SNPoint3f pos = dev.key()->pos();
 		dev.value()->setPos(pos.x(), pos.y());
+	}
+
+	SNDevice *device = dev.key()->device();
+	const vector<port_num> portNumbers = device->portNumbers();
+	vector<port_num>::const_iterator port;
+	QMap<uint32_t, QMap<port_num, SNDiagramConnector *> >::const_iterator devPortsList;
+	devPortsList = m_ports.find(item->deviceId());
+
+
+	for (port = portNumbers.begin(); port != portNumbers.end(); ++port)
+	{
+		if (devPortsList == m_ports.end())
+		{
+			addHwPort(item, *port);
+		}
+		else if (!devPortsList.value().contains(*port))
+		{
+			addHwPort(item, *port);
+		}
+	}
+
+	QSet<port_num> portSet;
+	for (port = portNumbers.begin(); port != portNumbers.end(); ++port)
+	{
+		portSet.insert(*port);
+	}
+
+
+
+	if (devPortsList != m_ports.end())
+	{
+		QMap<port_num, SNDiagramConnector *>::const_iterator portIter;
+		for (portIter = devPortsList.value().begin(); portIter != devPortsList.value().end(); ++portIter)
+		{
+			if (!portSet.contains(portIter.key()))
+			{
+				qDebug()<<"odstranovanie";
+			}
+		}
+	}
+}
+
+void SNDevicesDiagramScene::addHwPort(SNMapDeviceItem *item, port_num hwPort)
+{
+	QMap<SNMapDeviceItem *, SNDiagramDevice *>::iterator device;
+	device = m_devices.find(item);
+	if (device == m_devices.end())
+	{
+		return;
+	}
+
+	SNDiagramDevice *dev = device.value();
+	SNDiagramConnector *conn = dev->addConnector(hwPort);
+	addItem(conn);
+
+	m_ports[item->deviceId()][hwPort] = conn;
+	updateDevice(item);
+}
+
+void SNDevicesDiagramScene::removeHwPort(SNMapDeviceItem *item, port_num hwPort)
+{
+	QMap<SNMapDeviceItem *, SNDiagramDevice *>::iterator device;
+	device = m_devices.find(item);
+	if (device == m_devices.end())
+	{
+		return;
+	}
+
+	SNDiagramDevice *dev = device.value();
+	SNDiagramConnector *conn = dev->removeConnector(hwPort);
+	if (conn != NULL)
+	{
+		removeControlPoint(conn);
+		removeItem(conn);
+		delete conn;
 	}
 }
 
@@ -156,13 +236,7 @@ void SNDevicesDiagramScene::mousePressEventNorm(QGraphicsSceneMouseEvent *event)
 			SNDiagramControlPoint *point = dynamic_cast<SNDiagramControlPoint *>(item);
 			if (point != 0 && point->line() != 0)
 			{
-				SNDiagramLine *line = point->line();
-				line->removeControlPoint(point);
-				if (line->empty())
-				{
-					m_lines.remove(line);
-					delete line;
-				}
+				removeControlPoint(point);
 				return;
 			}
 		}
@@ -394,5 +468,21 @@ void SNDevicesDiagramScene::newPoint(const QPointF &point)
 	}
 	m_newPoint = m_endControlPointClicked->line()->addControlPoint(point.x(), point.y(), pos);
 	m_endControlPointClicked = m_newPoint;
+}
+
+void SNDevicesDiagramScene::removeControlPoint(SNDiagramControlPoint * point)
+{
+	SNDiagramLine *line = point->line();
+	if (line == NULL)
+	{
+		return;
+	}
+
+	line->removeControlPoint(point);
+	if (line->empty())
+	{
+		m_lines.remove(line);
+		delete line;
+	}
 }
 

@@ -25,6 +25,7 @@
 
 #include <QObject>
 #include <QSet>
+#include "sntypes.h"
 
 class SNMap;
 class SNMapDeviceItem;
@@ -42,6 +43,10 @@ class SNAbstractDevicesScene : public QObject
 		SNMap *map() const;
 		virtual void addDevice(SNMapDeviceItem *item);
 		virtual void removeDevice(SNMapDeviceItem *item);
+		virtual void updateDevice(SNMapDeviceItem *item) = 0;
+
+		virtual void addHwPort(SNMapDeviceItem *item, port_num hwPort) = 0;
+		virtual void removeHwPort(SNMapDeviceItem *item, port_num hwPort) = 0;
 
 	protected:
 		SNMap *m_map;

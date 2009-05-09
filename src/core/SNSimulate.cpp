@@ -52,7 +52,9 @@ using namespace std;
   Vytvorenie n vlakien SNSimulateHelper
 */
 SNSimulate::SNSimulate(int threads)
+	: m_map(NULL)
 {
+
 	Py_Initialize();
 
 	// inicializacia vlakien
@@ -84,7 +86,6 @@ SNSimulate::SNSimulate(int threads)
 		helper->start();
 	}
 	m_nextSimulateHelper = m_simulateHelpers.begin();
-
 }
 
 /*!
@@ -265,6 +266,40 @@ char *SNSimulate::telnetRequest(uint32_t devId, const std::string &line, char sy
 void SNSimulate::sendFrame(uint32_t targetDevId, PyObject *frame)
 {
 	m_simulateHelpers[targetDevId % m_threadCount]->sendFrame(targetDevId, frame);
+}
+
+/*!
+  Tato metoda sa vola priamo zo zariadenia pri pridani hardwaroveho portu na
+  zariadeni.
+
+  \sa hwPortRemoved
+*/
+void SNSimulate::hwPortInserted(uint32_t devId, port_num hwPort)
+{
+	if (m_map == NULL || m_devices.find(devId) == m_devices.end())
+	{
+		return;
+	}
+	m_map->insertPort(devId, hwPort);
+}
+
+/*!
+  Tato metoda sa vola pri odstraneni hardwaroveho portu zo zariadenia.
+
+  \sa hwPortInserted
+*/
+void SNSimulate::hwPortRemoved(uint32_t devId, port_num hwPort)
+{
+	if (m_map == NULL || m_devices.find(devId) == m_devices.end())
+	{
+		return;
+	}
+	m_map->removePort(devId, hwPort);
+}
+
+void SNSimulate::setMap(SNMap *map)
+{
+	m_map = map;
 }
 
 /*!

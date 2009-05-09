@@ -30,7 +30,7 @@
 
 #include "SNAbstractDevicesScene.h"
 
-class SNDiagramControlPoint;
+class SNDiagramConnector;
 class SNDiagramLineSegment;
 class SNDiagramControlPoint;
 class SNDiagramDevice;
@@ -54,6 +54,9 @@ class SNDevicesDiagramScene : public QGraphicsScene, public SNAbstractDevicesSce
 		void addDevice(SNMapDeviceItem *item);
 		void removeDevice(SNMapDeviceItem *item);
 		void updateDevice(SNMapDeviceItem *item);
+
+		void addHwPort(SNMapDeviceItem *item, port_num hwPort);
+		void removeHwPort(SNMapDeviceItem *item, port_num hwPort);
 	protected:
 		void drawBackground(QPainter *painter, const QRectF &rect);
 		void mousePressEvent(QGraphicsSceneMouseEvent *event);
@@ -65,6 +68,7 @@ class SNDevicesDiagramScene : public QGraphicsScene, public SNAbstractDevicesSce
 		void mouseMoveEventNorm(QGraphicsSceneMouseEvent *event);
 		void mouseMoveEventLine(QGraphicsSceneMouseEvent *event);
 		void newPoint(const QPointF &point);
+		void removeControlPoint(SNDiagramControlPoint *point);
 	private:
 		QColor m_controlPointLineColor;
 		QColor m_controlPointBgColor;
@@ -81,6 +85,7 @@ class SNDevicesDiagramScene : public QGraphicsScene, public SNAbstractDevicesSce
 		QSet<SNDiagramLine *> m_lines;
 
 		QMap<SNMapDeviceItem *, SNDiagramDevice *> m_devices;
+		QMap<uint32_t, QMap<port_num, SNDiagramConnector *> >m_ports;
 };
 
 #endif

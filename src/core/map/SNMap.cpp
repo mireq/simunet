@@ -34,6 +34,8 @@
 
 #include <vector>
 
+#include <QDebug>
+
 using namespace std;
 
 /*!
@@ -60,6 +62,7 @@ SNMap::SNMap()
 {
 	SNConfig config;
 	m_simulate = SNSingleton::getSimulate();
+	m_simulate->setMap(this);
 }
 
 /*!
@@ -104,6 +107,7 @@ void SNMap::insertDevice(uint32_t devId, uint32_t parent, int pos)
 {
 	SNMapDeviceItem *device = new SNMapDeviceItem(devId);
 	m_mapItems.insert(device);
+	m_devices[devId] = device;
 
 	SNDevTreeDeviceItem *item = new SNDevTreeDeviceItem(device);
 	map<uint32_t, SNDevTreeNode*>::iterator it;
@@ -258,7 +262,14 @@ void SNMap::deleteItem(uint32_t internalId, uint32_t parent)
 			{
 				if (it->type() == SNDevTreeItem::Device)
 				{
-					m_scene->removeDevice(static_cast<SNMapDeviceItem *>(*mapItem));
+					SNMapDeviceItem *device = static_cast<SNMapDeviceItem *>(*mapItem);
+					uint32_t deviceId = device->deviceId();
+					std::map<uint32_t, SNMapDeviceItem *>::iterator deviceIterator = m_devices.find(deviceId);
+					if (deviceIterator != m_devices.end())
+					{
+						m_devices.erase(deviceIterator);
+					}
+					m_scene->removeDevice(device);
 				}
 				m_mapItems.erase(mapItem);
 				delete (*mapItem);
@@ -389,4 +400,36 @@ void SNMap::setScene(SNAbstractDevicesScene *scene)
 SNAbstractDevicesScene *SNMap::scene() const
 {
 	return m_scene;
+}
+
+/*!
+  Pridanie noveho portu zariadeniu \a devId.
+*/
+void SNMap::insertPort(uint32_t devId, port_num hwPort)
+{
+	if (m_scene != NULL)
+	{
+		std::map<uint32_t, SNMapDeviceItem *>::iterator device;
+		device = m_devices.find(devId);
+		if (device != m_devices.end())
+		{
+			m_scene->addHwPort(device->second, hwPort);
+		}
+	}
+}
+
+/*!
+  Odstranenie portu zo zariadenia \a devId.
+*/
+void SNMap::removePort(uint32_t devId, port_num hwPort)
+{
+	if (m_scene != NULL)
+	{
+		std::map<uint32_t, SNMapDeviceItem *>::iterator device;
+		device = m_devices.find(devId);
+		if (device != m_devices.end())
+		{
+			m_scene->removeHwPort(device->second, hwPort);
+		}
+	}
 }
