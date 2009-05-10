@@ -115,13 +115,19 @@ void SNDiagramDevice::paint(QPainter *painter, const QStyleOptionGraphicsItem *o
 {
 	Q_UNUSED(option);
 	Q_UNUSED(widget);
-	painter->drawRect(0, 0, 10, 10);
+	painter->drawPath(shape());
+	QFontMetrics fm(m_font);
+	QRect textRect(0, 0, fm.width(m_name), fm.height());
+	painter->drawText(textRect, Qt::AlignVCenter, m_name);
 }
 
 QPainterPath SNDiagramDevice::shape() const
 {
 	QPainterPath path;
-	path.addRect(0, 0, 10, 10);
+	QFontMetrics fm(m_font);
+	int width = fm.width(m_name);
+	int height = fm.height();
+	path.addRect(-1, -1, width + 2, height + 2);
 	return path;
 }
 
@@ -191,7 +197,9 @@ void SNDiagramDevice::setDevice(SNMapDeviceItem *device)
 
 void SNDiagramDevice::updateConnectorDiffs()
 {
-	const int width = 10;
+	const QRectF bRect = boundingRect();
+	const int width = bRect.width();
+	const int height = bRect.height();
 	const int pointSize = 10;
 
 	QPointF diff;
@@ -199,7 +207,7 @@ void SNDiagramDevice::updateConnectorDiffs()
 	SNDiagramConnector *p;
 
 	diff.setX(width + pointSize + 5);
-	diff.setY(width / 2 - (numberPoints - 1) * pointSize / 2);
+	diff.setY(height / 2 - (numberPoints - 1) * pointSize / 2);
 	foreach(p, m_connectors)
 	{
 		p->setItemDiff(diff);
@@ -207,3 +215,14 @@ void SNDiagramDevice::updateConnectorDiffs()
 	}
 }
 
+void SNDiagramDevice::setName(QString name)
+{
+	m_name = name;
+	update();
+	updateConnectorDiffs();
+}
+
+QString SNDiagramDevice::name() const
+{
+	return m_name;
+}

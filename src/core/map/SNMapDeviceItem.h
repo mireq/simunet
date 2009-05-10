@@ -25,6 +25,7 @@
 
 #include "SNMapItem.h"
 #include "sntypes.h"
+#include <string>
 
 class SNDevice;
 
@@ -41,6 +42,8 @@ class SNMapDeviceItem: public SNMapItem
 		void setDeviceId(uint32_t deviceId);
 
 		SNDevice *device();
+		std::string name() const;
+		void setName(std::string name);
 
 	private:
 /*!
@@ -52,6 +55,7 @@ class SNMapDeviceItem: public SNMapItem
   Cachovane zariadenie.
 */
 		SNDevice *m_device;
+		std::string m_name;
 
 };
 

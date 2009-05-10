@@ -200,6 +200,22 @@ SNDevTreeItem *SNMap::item(uint32_t internalId) const
 }
 
 /*!
+  Vrati zariadenie na mape podla ID zariadenia
+*/
+SNMapDeviceItem *SNMap::mapDeviceItem(uint32_t devId)
+{
+	std::map<uint32_t, SNMapDeviceItem *>::iterator device = m_devices.find(devId);
+	if (device == m_devices.end())
+	{
+		return NULL;
+	}
+	else
+	{
+		return device->second;
+	}
+}
+
+/*!
   Vrati riadok polozky s internym cislom \a internalId v adresari \a parent.
 */
 int SNMap::itemIndex(uint32_t internalId, uint32_t parent) const
@@ -431,5 +447,13 @@ void SNMap::removePort(uint32_t devId, port_num hwPort)
 		{
 			m_scene->removeHwPort(device->second, hwPort);
 		}
+	}
+}
+
+void SNMap::updateDevice(SNMapDeviceItem *device)
+{
+	if (m_scene != NULL)
+	{
+		m_scene->updateDevice(device);
 	}
 }

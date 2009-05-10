@@ -81,4 +81,14 @@ SNDevice *SNMapDeviceItem::device()
 	return m_device;
 }
 
+std::string SNMapDeviceItem::name() const
+{
+	return m_name;
+}
+
+void SNMapDeviceItem::setName(std::string name)
+{
+	m_name = name;
+}
+
 

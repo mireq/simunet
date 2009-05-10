@@ -100,6 +100,7 @@ class SNDevTreeDeviceItem: public SNDevTreeItem
 		~SNDevTreeDeviceItem();
 		uint32_t devId() const;
 		void setDevId(uint32_t devId);
+		SNMapDeviceItem *mapDevice() const;
 };
 
 #endif

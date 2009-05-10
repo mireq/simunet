@@ -133,6 +133,18 @@ void SNDevTreeItem::setId(uint32_t id)
 	m_id = id;
 }
 
+void SNDevTreeItem::setMapItem(SNMapItem *mapItem)
+{
+	m_mapItem = mapItem;
+}
+
+SNMapItem *SNDevTreeItem::mapItem() const
+{
+	return m_mapItem;
+}
+
+
+
 /* ----------------------------------------------------------------------- */
 
 /*!
@@ -223,13 +235,8 @@ void SNDevTreeDeviceItem::setDevId(uint32_t devId)
 	}
 }
 
-void SNDevTreeItem::setMapItem(SNMapItem *mapItem)
+SNMapDeviceItem *SNDevTreeDeviceItem::mapDevice() const
 {
-	m_mapItem = mapItem;
-}
-
-SNMapItem *SNDevTreeItem::mapItem() const
-{
-	return m_mapItem;
+	return static_cast<SNMapDeviceItem *>(mapItem());
 }
 

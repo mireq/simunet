@@ -25,6 +25,7 @@
 
 #include <QGraphicsItem>
 #include <QMap>
+#include <QFont>
 
 #include "SNDiagramLine.h"
 #include "SNDiagramItem.h"
@@ -77,11 +78,16 @@ class SNDiagramDevice : public SNDiagramItem
 		SNMapDeviceItem *device() const;
 		void setDevice(SNMapDeviceItem *device);
 
+		void setName(QString name);
+		QString name() const;
+
 	private:
 		void updateConnectorDiffs();
 		//QList<SNDiagramConnector *> m_controlPoints;
 		SNMapDeviceItem *m_device;
 		QMap<port_num, SNDiagramConnector *> m_connectors;
+		QString m_name;
+		QFont m_font;
 
 };
 

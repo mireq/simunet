@@ -94,8 +94,8 @@ void SNTelnetWidget::write(const QString &text)
 {
 	m_document->textCursor().clearSelection();
 	m_document->moveCursor(QTextCursor::End);
-	m_document->ensureCursorVisible();
 	m_document->textCursor().insertText(text);
+	m_document->ensureCursorVisible();
 }
 
 /*!
@@ -196,7 +196,7 @@ bool SNTelnetWidget::eventFilter(QObject *obj, QEvent *event)
 			{
 				sendLineEvent('\n');
 				m_currentLine.clear();
-				return false;
+				return true;
 			}
 
 			// prejdeme kontrolne znaky, ak najdeme zhodu odosleme text

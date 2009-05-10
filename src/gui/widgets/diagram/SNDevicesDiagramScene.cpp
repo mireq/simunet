@@ -42,8 +42,8 @@ using namespace std;
 const int SNDevicesDiagramScene::m_gridSize = 10;
 
 SNDevicesDiagramScene::SNDevicesDiagramScene(QObject* parent)
-	:QGraphicsScene(parent), m_endControlPointClicked(NULL), m_mode(Norm),
-	m_newPoint(NULL)
+	:QGraphicsScene(parent), m_mode(Norm),
+	m_newPoint(NULL), m_endControlPointClicked(NULL)
 {
 	QPalette palette;
 	QColor hgColor = palette.color(QPalette::Highlight);
@@ -94,7 +94,10 @@ void SNDevicesDiagramScene::updateDevice(SNMapDeviceItem *item)
 	if (dev != m_devices.end())
 	{
 		SNPoint3f pos = dev.key()->pos();
-		dev.value()->setPos(pos.x(), pos.y());
+		SNMapDeviceItem *mapItem = dev.key();
+		SNDiagramDevice *diagramItem = dev.value();
+		diagramItem->setName(QString::fromUtf8(mapItem->name().c_str()));
+		diagramItem->setPos(pos.x(), pos.y());
 	}
 
 	SNDevice *device = dev.key()->device();

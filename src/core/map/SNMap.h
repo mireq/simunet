@@ -58,6 +58,7 @@ class SNMap
 
 		SNDevTreeItem *itemAt(int pos, uint32_t parent = 0) const;
 		SNDevTreeItem *item(uint32_t internalId) const;
+		SNMapDeviceItem *mapDeviceItem(uint32_t devId);
 
 		int itemIndex(uint32_t internalId, uint32_t parent = 0) const;
 
@@ -76,6 +77,8 @@ class SNMap
 		// porty
 		void insertPort(uint32_t devId, port_num hwPort);
 		void removePort(uint32_t devId, port_num hwPort);
+
+		void updateDevice(SNMapDeviceItem *device);
 	private:
 /*!
   Odkaz na simulator.

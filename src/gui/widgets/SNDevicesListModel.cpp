@@ -26,6 +26,7 @@
 #include "core/SNConfig.h"
 #include "core/map/SNMap.h"
 #include "core/map/SNDevTreeItem.h"
+#include "core/map/SNMapDeviceItem.h"
 #include "core/SNAccessors.h"
 
 #include <QMimeData>
@@ -167,7 +168,8 @@ QVariant SNDevicesListModel::data(const QModelIndex &index, int role) const
 			}
 			else if (dev != NULL)
 			{
-				return QVariant(QString("Zariadenie %1").arg(dev->devId()));
+				SNMapDeviceItem *deviceItem = dev->mapDevice();
+				return QVariant(QString::fromUtf8(deviceItem->name().c_str()));
 			}
 			else
 			{
@@ -256,6 +258,12 @@ uint32_t SNDevicesListModel::startDevice(const std::string &filename, const QMod
 	beginInsertRows(parentIndex, row, row);
 	uint32_t devId = m_map->startDevice(filename);
 	m_map->insertDevice(devId, parent, row);
+	SNMapDeviceItem *dev = m_map->mapDeviceItem(devId);
+	if (dev != NULL)
+	{
+		dev->setName(QString("Zariadenie %1").arg(devId).toUtf8().data());
+	}
+	m_map->updateDevice(dev);
 	endInsertRows();
 	return 0;
 }
