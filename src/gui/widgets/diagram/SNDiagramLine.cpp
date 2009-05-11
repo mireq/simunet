@@ -400,7 +400,7 @@ void SNDiagramLine::addControlPoint(SNDiagramControlPoint *point, int pos)
 	addControlPoint(0, 0, pos, point);
 }
 
-void SNDiagramLine::breakLineSegment(SNDiagramLineSegment *segment, QPointF newPointPosition)
+void SNDiagramLine::breakLineSegment(SNDiagramLineSegment *segment, const QPointF &newPointPosition)
 {
 	int i = m_lines.indexOf(segment);
 	if (i != -1)
@@ -411,22 +411,23 @@ void SNDiagramLine::breakLineSegment(SNDiagramLineSegment *segment, QPointF newP
 	}
 }
 
-void SNDiagramLine::removeControlPoint(int pos)
+
+void SNDiagramLine::removeControlPoint(QVector<SNDiagramControlPoint *>::iterator point, int pos, bool removePersistent)
 {
 	if (pos >= m_controlPoints.size())
 	{
 		return;
 	}
 
-	SNDiagramControlPoint *p = m_controlPoints[pos];
-	m_controlPoints.removeAt(pos);
+	SNDiagramControlPoint *p = *point;
+	m_controlPoints.erase(point);
 
 	if (dynamic_cast<SNDiagramConnector *>(p) != NULL)
 	{
 		m_persistentPoints--;
 	}
 
-	if (p->type() != SNDiagramControlPoint::Connector)
+	if (p->type() != SNDiagramControlPoint::Connector || removePersistent)
 	{
 		m_scene->removeItem(p);
 		delete p;
@@ -442,20 +443,21 @@ void SNDiagramLine::removeControlPoint(int pos)
 	{
 		if (m_lines.size() > 0)
 		{
-			SNDiagramLineSegment *l = m_lines[0];
+			SNDiagramLineSegment *l = *(m_lines.begin());
 			m_scene->removeItem(l);
-			m_lines.removeFirst();
+			m_lines.pop_front();
 			delete l;
 
-			m_controlPoints[0]->setLeftLineSegment(NULL);
+			(*m_controlPoints.begin())->setLeftLineSegment(NULL);
 		}
 		return;
 	}
 
 	SNDiagramLineSegment *l = m_lines[pos - 1];
 	m_scene->removeItem(l);
-	m_lines.removeAt(pos - 1);
+	m_lines.remove(pos - 1);
 	delete l;
+
 
 	if (m_lines.size() <= pos - 1)
 	{
@@ -469,15 +471,15 @@ void SNDiagramLine::removeControlPoint(int pos)
 	return;
 }
 
-void SNDiagramLine::removeControlPoint(SNDiagramControlPoint *controlPoint)
+void SNDiagramLine::removeControlPoint(SNDiagramControlPoint *controlPoint, bool removePersistent)
 {
-	int poradie = 0;
-	SNDiagramControlPoint *point;
-	foreach(point, m_controlPoints)
+	QVector<SNDiagramControlPoint *>::size_type poradie = 0;
+	QVector<SNDiagramControlPoint *>::iterator point;
+	for (point = m_controlPoints.begin(); point != m_controlPoints.end(); ++point)
 	{
-		if (controlPoint == point)
+		if (controlPoint == *point)
 		{
-			removeControlPoint(poradie);
+			removeControlPoint(point, poradie, removePersistent);
 			break;
 		}
 		poradie++;
@@ -502,7 +504,7 @@ bool SNDiagramLine::empty() const
 	return true;
 }
 
-QList< SNDiagramControlPoint *> SNDiagramLine::controlPoints() const
+QVector<SNDiagramControlPoint *> SNDiagramLine::controlPoints() const
 {
 	return m_controlPoints;
 }
@@ -517,4 +519,14 @@ SNDiagramControlPoint *SNDiagramLine::pointAt(int pos) const
 	{
 		return NULL;
 	}
+}
+
+void SNDiagramLine::setPointPos(SNDiagramControlPoint *point, const QPointF &pos)
+{
+	point->setPos(pos);
+}
+
+void SNDiagramLine::movePoint(SNDiagramControlPoint *point, const QPointF &diff)
+{
+	setPointPos(point, point->pos() + diff);
 }

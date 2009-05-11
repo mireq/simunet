@@ -25,7 +25,7 @@
 
 #include <QPen>
 #include <QBrush>
-#include <QList>
+#include <QVector>
 #include <QColor>
 #include <QLineF>
 #include <QPointF>
@@ -124,13 +124,16 @@ class SNDiagramLine
 		void setLinePen(const QPen &pen);
 		SNDiagramControlPoint *addControlPoint(qreal x, qreal y, int pos = -1, SNDiagramControlPoint *point = 0);
 		void addControlPoint(SNDiagramControlPoint *point, int pos = -1);
-		void breakLineSegment(SNDiagramLineSegment *segment, QPointF newPointPosition = QPointF());
-		void removeControlPoint(int pos);
-		void removeControlPoint(SNDiagramControlPoint *controlPoint);
+		void breakLineSegment(SNDiagramLineSegment *segment, const QPointF &newPointPosition = QPointF());
+//		void removeControlPoint(int pos);
+		void removeControlPoint(QVector<SNDiagramControlPoint *>::iterator point, int pos, bool removePersistent);
+		void removeControlPoint(SNDiagramControlPoint *controlPoint, bool removePersistent = false);
 		int size() const;
 		bool empty() const;
-		QList<SNDiagramControlPoint *> controlPoints() const;
+		QVector<SNDiagramControlPoint *> controlPoints() const;
 		SNDiagramControlPoint *pointAt(int pos) const;
+		void setPointPos(SNDiagramControlPoint *point, const QPointF &pos);
+		void movePoint(SNDiagramControlPoint *point, const QPointF &diff);
 	private:
 		// okraj kontrolnych bodov
 		QPen m_controlPointsPen;
@@ -140,8 +143,8 @@ class SNDiagramLine
 		QPen m_linePen;
 
 		// zoznamy bodov
-		QList<SNDiagramControlPoint *> m_controlPoints;
-		QList<SNDiagramLineSegment *> m_lines;
+		QVector<SNDiagramControlPoint *> m_controlPoints;
+		QVector<SNDiagramLineSegment *> m_lines;
 
 		// scane a v ktorej je ciara
 		SNDevicesDiagramScene *m_scene;

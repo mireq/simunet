@@ -490,5 +490,6 @@ PyObject *SNDevice::removeHwPortWrapper(PyObject *self, PyObject *args)
 
 PyObject *SNDevice::setHwPortHandlerWrapper(PyObject *self, PyObject *args)
 {
+	Py_RETURN_NONE;
 }
 

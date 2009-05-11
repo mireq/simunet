@@ -220,6 +220,7 @@ uint32_t SNDevTreeDeviceItem::devId() const
 	{
 		return static_cast<SNMapDeviceItem *>(m_mapItem)->deviceId();
 	}
+	return 0;
 }
 
 /*!

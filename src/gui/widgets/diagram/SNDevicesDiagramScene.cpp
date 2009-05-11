@@ -81,7 +81,7 @@ void SNDevicesDiagramScene::removeDevice(SNMapDeviceItem *item)
 	{
 		dev.value()->setDevice(NULL);
 		removeItem(dev.value());
-		delete(dev.value());
+		delete dev.value();
 		m_devices.erase(dev);
 	}
 	SNAbstractDevicesScene::removeDevice(item);
@@ -327,9 +327,9 @@ void SNDevicesDiagramScene::mouseMoveEventNorm(QGraphicsSceneMouseEvent *event)
 			if ((point = dynamic_cast<SNDiagramControlPoint *>(item)) != NULL)
 			{
 				SNDiagramConnector *connector = dynamic_cast<SNDiagramConnector *>(point);
-				if (connector == NULL)
+				if (connector == NULL && point->line() != NULL)
 				{
-					point->setPos(point->pos() + diff);
+					point->line()->movePoint(point, diff);
 				}
 				else
 				{
@@ -357,9 +357,9 @@ void SNDevicesDiagramScene::mouseMoveEventNorm(QGraphicsSceneMouseEvent *event)
 void SNDevicesDiagramScene::mouseMoveEventLine(QGraphicsSceneMouseEvent *event)
 {
 	QPointF diff = (event->scenePos() - event->lastScenePos());
-	if (m_newPoint != NULL)
+	if (m_newPoint != NULL && m_newPoint->line() != NULL)
 	{
-		m_newPoint->setPos(m_newPoint->pos() + diff);
+		m_newPoint->line()->movePoint(m_newPoint, diff);
 	}
 	event->accept();
 }
@@ -380,69 +380,7 @@ void SNDevicesDiagramScene::newPoint(const QPointF &point)
 		{
 			if (!point->isFull() && point->line() != m_endControlPointClicked->line())
 			{
-				SNDiagramLine *newLine = m_endControlPointClicked->line();
-				SNDiagramLine *oldLine = point->line();
-
-				int pos = -1;
-				if (newLine->pointAt(0) == m_endControlPointClicked)
-				{
-					pos = 0;
-				}
-
-
-				if (oldLine == NULL)
-				{
-					newLine->removeControlPoint(m_endControlPointClicked);
-					newLine->addControlPoint(point, pos);
-				}
-				else
-				{
-					QList<SNDiagramControlPoint *> oldPoints = oldLine->controlPoints();
-					if (oldPoints.size() == 0)
-					{
-						return;
-					}
-
-					if ((*oldPoints.begin()) == point)
-					{
-						QList<SNDiagramControlPoint *>::iterator it;
-						for (it = oldPoints.begin() + 1; it != oldPoints.end(); ++it)
-						{
-							SNDiagramControlPoint *p = *it;
-							if (!p->persistent())
-							{
-								newLine->addControlPoint(p->x(), p->y(), pos);
-							}
-							else
-							{
-								newLine->addControlPoint(p, pos);
-							}
-						}
-					}
-					else if ((*(--oldPoints.end())) == point)
-					{
-						QListIterator<SNDiagramControlPoint *> it(oldPoints);
-						it.toBack();
-						it.previous();
-						while (it.hasPrevious())
-						{
-							SNDiagramControlPoint *p = it.previous();
-							if (!p->persistent())
-							{
-								newLine->addControlPoint(p->x(), p->y(), pos);
-							}
-							else
-							{
-								newLine->addControlPoint(p, pos);
-							}
-						}
-					}
-					m_lines.remove(oldLine);
-					delete oldLine;
-				}
-
-				m_newPoint = NULL;
-				m_endControlPointClicked = NULL;
+				mergeLine(point);
 				return;
 			}
 		}
@@ -487,5 +425,73 @@ void SNDevicesDiagramScene::removeControlPoint(SNDiagramControlPoint * point)
 		m_lines.remove(line);
 		delete line;
 	}
+}
+
+void SNDevicesDiagramScene::mergeLine(SNDiagramControlPoint *point)
+{
+	SNDiagramLine *newLine = m_endControlPointClicked->line();
+	SNDiagramLine *oldLine = point->line();
+
+	int pos = -1;
+	if (newLine->pointAt(0) == m_endControlPointClicked)
+	{
+		pos = 0;
+	}
+
+
+	if (oldLine == NULL)
+	{
+		newLine->removeControlPoint(m_endControlPointClicked);
+		newLine->addControlPoint(point, pos);
+	}
+	else
+	{
+		QVector<SNDiagramControlPoint *> oldPoints = oldLine->controlPoints();
+		if (oldPoints.size() == 0)
+		{
+			return;
+		}
+
+		if ((*oldPoints.begin()) == point)
+		{
+			QVector<SNDiagramControlPoint *>::iterator it;
+			for (it = oldPoints.begin() + 1; it != oldPoints.end(); ++it)
+			{
+				SNDiagramControlPoint *p = *it;
+				if (!p->persistent())
+				{
+					newLine->addControlPoint(p->x(), p->y(), pos);
+				}
+				else
+				{
+					newLine->addControlPoint(p, pos);
+				}
+			}
+		}
+		else if ((*(oldPoints.end() - 1)) == point)
+		{
+			QVectorIterator<SNDiagramControlPoint *> it(oldPoints);
+			it.toBack();
+			it.previous();
+			while (it.hasPrevious())
+			{
+				SNDiagramControlPoint *p = it.previous();
+				if (!p->persistent())
+				{
+					newLine->addControlPoint(p->x(), p->y(), pos);
+				}
+				else
+				{
+					newLine->addControlPoint(p, pos);
+				}
+			}
+		}
+		m_lines.remove(oldLine);
+		delete oldLine;
+	}
+
+	m_newPoint = NULL;
+	m_endControlPointClicked = NULL;
+	return;
 }
 

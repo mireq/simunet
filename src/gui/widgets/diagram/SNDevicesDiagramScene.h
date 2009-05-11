@@ -70,6 +70,7 @@ class SNDevicesDiagramScene : public QGraphicsScene, public SNAbstractDevicesSce
 		void newPoint(const QPointF &point);
 		void removeControlPoint(SNDiagramControlPoint *point);
 	private:
+		void mergeLine(SNDiagramControlPoint *point);
 		QColor m_controlPointLineColor;
 		QColor m_controlPointBgColor;
 		static const int m_gridSize;

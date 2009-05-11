@@ -41,7 +41,7 @@ SNDiagramConnector::SNDiagramConnector(SNDiagramDevice *device, qreal x, qreal y
 	setPersistent(true);
 }
 
-SNDiagramConnector::~ SNDiagramConnector()
+SNDiagramConnector::~SNDiagramConnector()
 {
 }
 
@@ -104,6 +104,19 @@ SNDiagramDevice::SNDiagramDevice(SNMapDeviceItem *device)
 
 SNDiagramDevice::~SNDiagramDevice()
 {
+	SNDiagramConnector *conn;
+	foreach(conn, m_connectors)
+	{
+		SNDiagramLine *l = conn->line();
+		if (l != NULL)
+		{
+			l->removeControlPoint(conn, true);
+			if (l->empty())
+			{
+				delete l;
+			}
+		}
+	}
 }
 
 QRectF SNDiagramDevice::boundingRect() const
