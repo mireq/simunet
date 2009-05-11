@@ -25,18 +25,21 @@
 #include <QPainter>
 #include <QGraphicsSceneMouseEvent>
 
+#include "SNDevicesDiagramScene.h"
+
 #include "core/map/SNMapDeviceItem.h"
 #include "core/map/SNPoint3f.h"
 
 #include <QDebug>
 
 
-SNDiagramConnector::SNDiagramConnector(SNDiagramDevice *device, qreal x, qreal y, const QPen &pen, const QBrush &brush)
+SNDiagramConnector::SNDiagramConnector(SNDiagramDevice *device, qreal x, qreal y, port_num portNum, const QPen &pen, const QBrush &brush)
 	: SNDiagramControlPoint(x, y, pen, brush)
 {
 	m_device = device;
 	m_pos = QPointF(x, y);
 	m_diff = QPointF(0, 0);
+	m_hwPort = portNum;
 	setFlag(ItemIsMovable, false);
 	setPersistent(true);
 }
@@ -92,10 +95,16 @@ bool SNDiagramConnector::isFull() const
 	}
 }
 
+port_num SNDiagramConnector::hwPowrt() const
+{
+	return m_hwPort;
+}
+
 
 /* ------------------------------------------------------------------ */
 
-SNDiagramDevice::SNDiagramDevice(SNMapDeviceItem *device)
+SNDiagramDevice::SNDiagramDevice(SNMapDeviceItem *device, SNDevicesDiagramScene *scene)
+	:SNDiagramItem(), m_scene(scene)
 {
 	setFlag(ItemIsSelectable);
 	m_device = device;
@@ -108,6 +117,7 @@ SNDiagramDevice::~SNDiagramDevice()
 	foreach(conn, m_connectors)
 	{
 		SNDiagramLine *l = conn->line();
+
 		if (l != NULL)
 		{
 			l->removeControlPoint(conn, true);
@@ -115,6 +125,11 @@ SNDiagramDevice::~SNDiagramDevice()
 			{
 				delete l;
 			}
+		}
+		else
+		{
+			m_scene->removeItem(conn);
+			delete conn;
 		}
 	}
 }
@@ -146,7 +161,7 @@ QPainterPath SNDiagramDevice::shape() const
 
 SNDiagramConnector *SNDiagramDevice::addConnector(port_num port)
 {
-	SNDiagramConnector *point = new SNDiagramConnector(this, 0, 0);
+	SNDiagramConnector *point = new SNDiagramConnector(this, 0, 0, port);
 	m_connectors[port] = point;
 
 	updateConnectorDiffs();
@@ -239,3 +254,4 @@ QString SNDiagramDevice::name() const
 {
 	return m_name;
 }
+

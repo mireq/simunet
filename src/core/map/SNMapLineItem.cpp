@@ -21,6 +21,13 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 #include "SNMapLineItem.h"
+#include "SNMapControlPointItem.h"
+#include "core/SNExceptions.h"
+#include "SNMapDeviceItem.h"
+
+#include <QDebug>
+
+using namespace std;
 
 SNMapLineItem::SNMapLineItem()
 {
@@ -29,6 +36,48 @@ SNMapLineItem::SNMapLineItem()
 
 SNMapLineItem::~SNMapLineItem()
 {
+	vector<SNMapControlPointItem *>::iterator controlPoint;
+	for (controlPoint = m_controlPoints.begin(); controlPoint != m_controlPoints.end(); ++controlPoint)
+	{
+		delete (*controlPoint);
+	}
 }
+
+void SNMapLineItem::addConnector(float x, float y, float z, SNMapDeviceItem *device, port_num port, std::vector< SNMapControlPointItem * >::size_type pos)
+{
+	qDebug()<<device->deviceId()<<port;
+	addControlPoint(new SNMapControlPointItem(SNPoint3f(x, y, z)), pos);
+}
+
+void SNMapLineItem::addControlPoint(float x, float y, float z, std::vector<SNMapControlPointItem *>::size_type pos)
+{
+	addControlPoint(new SNMapControlPointItem(SNPoint3f(x, y, z)), pos);
+}
+
+void SNMapLineItem::addControlPoint(SNMapControlPointItem *point, std::vector< SNMapControlPointItem * >::size_type pos)
+{
+	if (pos > m_controlPoints.size())
+	{
+		throw SNoutOfRangeException();
+	}
+
+	m_controlPoints.insert(m_controlPoints.begin() + pos, point);
+}
+
+void SNMapLineItem::removeControlPoint(std::vector<SNMapControlPointItem *>::size_type pos)
+{
+	if (pos >= m_controlPoints.size())
+	{
+		throw SNoutOfRangeException();
+	}
+
+	std::vector<SNMapControlPointItem *>::iterator iter = m_controlPoints.begin() + pos;
+	SNMapControlPointItem *point = *iter;
+	m_controlPoints.erase(iter);
+	delete point;
+}
+
+
+
 
 

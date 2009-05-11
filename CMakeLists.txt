@@ -169,6 +169,7 @@ set(core_SRCS
 	src/core/map/SNDevTreeItem.cpp
 	src/core/map/SNDevTreeNode.cpp
 	src/core/map/SNMap.cpp
+	src/core/map/SNMapControlPointItem.cpp
 	src/core/map/SNMapDeviceItem.cpp
 	src/core/map/SNMapItem.cpp
 	src/core/map/SNMapLineItem.cpp
@@ -188,6 +189,7 @@ set(core_HDRS
 	src/core/map/SNDevTreeItem.h
 	src/core/map/SNDevTreeNode.h
 	src/core/map/SNMap.h
+	src/core/map/SNMapControlPointItem.h
 	src/core/map/SNMapDeviceItem.h
 	src/core/map/SNMapItem.h
 	src/core/map/SNMapLineItem.h

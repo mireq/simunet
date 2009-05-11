@@ -25,6 +25,7 @@
 #include "SNDiagramDevice.h"
 
 #include "core/SNDevice.h"
+#include "core/map/SNMap.h"
 #include "core/map/SNPoint3f.h"
 #include "core/map/SNMapDeviceItem.h"
 
@@ -67,7 +68,7 @@ SNDevicesDiagramScene::~SNDevicesDiagramScene()
 void SNDevicesDiagramScene::addDevice(SNMapDeviceItem *item)
 {
 	SNAbstractDevicesScene::addDevice(item);
-	SNDiagramDevice *dev = new SNDiagramDevice(item);
+	SNDiagramDevice *dev = new SNDiagramDevice(item, this);
 	addItem(dev);
 	m_devices[item] = dev;
 	updateDevice(item);
@@ -134,7 +135,7 @@ void SNDevicesDiagramScene::updateDevice(SNMapDeviceItem *item)
 		{
 			if (!portSet.contains(portIter.key()))
 			{
-				qDebug()<<"odstranovanie";
+				removeHwPort(item, portIter.key());
 			}
 		}
 	}
@@ -388,7 +389,9 @@ void SNDevicesDiagramScene::newPoint(const QPointF &point)
 
 	if (m_endControlPointClicked->line() == NULL)
 	{
-		SNDiagramLine *l = new SNDiagramLine(this);
+		SNMapLineItem *mapLine = m_map->addLine();
+		SNDiagramLine *l = new SNDiagramLine(this, mapLine);
+
 		l->setControlPointsPen(m_controlPointLineColor);
 		l->setControlPointsBrush(m_controlPointBgColor);
 		l->setLinePen(m_controlPointLineColor);
@@ -423,6 +426,8 @@ void SNDevicesDiagramScene::removeControlPoint(SNDiagramControlPoint * point)
 	if (line->empty())
 	{
 		m_lines.remove(line);
+		SNMapLineItem *mapLine = line->mapLine();
+		m_map->removeLine(mapLine);
 		delete line;
 	}
 }
@@ -487,6 +492,8 @@ void SNDevicesDiagramScene::mergeLine(SNDiagramControlPoint *point)
 			}
 		}
 		m_lines.remove(oldLine);
+		SNMapLineItem *mapLine = oldLine->mapLine();
+		m_map->removeLine(mapLine);
 		delete oldLine;
 	}
 

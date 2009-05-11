@@ -37,6 +37,7 @@ class SNDevice;
 class SNAbstractDevicesScene;
 class SNMapItem;
 class SNMapDeviceItem;
+class SNMapLineItem;
 
 
 /**
@@ -79,6 +80,10 @@ class SNMap
 		void removePort(uint32_t devId, port_num hwPort);
 
 		void updateDevice(SNMapDeviceItem *device);
+
+		// praca s ciarami
+		SNMapLineItem *addLine();
+		void removeLine(SNMapLineItem *line);
 	private:
 /*!
   Odkaz na simulator.
@@ -110,6 +115,11 @@ class SNMap
   Zoznam zariadeni podla cisla zaraidenia.
 */
 		std::map<uint32_t, SNMapDeviceItem *> m_devices;
+
+/*!
+  Zoznam ciar.
+*/
+		std::set<SNMapLineItem *> m_lines;
 
 };
 

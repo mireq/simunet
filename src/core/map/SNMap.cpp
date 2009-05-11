@@ -26,6 +26,7 @@
 #include "SNDevTreeItem.h"
 #include "SNDevTreeNode.h"
 #include "SNMapDeviceItem.h"
+#include "SNMapLineItem.h"
 
 
 #include "core/SNAccessors.h"
@@ -455,5 +456,23 @@ void SNMap::updateDevice(SNMapDeviceItem *device)
 	if (m_scene != NULL)
 	{
 		m_scene->updateDevice(device);
+	}
+}
+
+SNMapLineItem *SNMap::addLine()
+{
+	SNMapLineItem *line = new SNMapLineItem;
+	m_lines.insert(line);
+	return line;
+}
+
+void SNMap::removeLine(SNMapLineItem *line)
+{
+	set<SNMapLineItem *>::iterator lineIter;
+	lineIter = m_lines.find(line);
+	if (lineIter != m_lines.end())
+	{
+		m_lines.erase(lineIter);
+		delete line;
 	}
 }

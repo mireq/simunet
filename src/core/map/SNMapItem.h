@@ -32,6 +32,7 @@ class SNMapItem
 {
 	public:
 		SNMapItem();
+		SNMapItem(const SNPoint3f &pos);
 		virtual ~SNMapItem();
 
 		void setPos(const SNPoint3f &pos);

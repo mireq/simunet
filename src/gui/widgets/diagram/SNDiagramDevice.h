@@ -40,7 +40,7 @@ class SNMapDeviceItem;
 class SNDiagramConnector : public SNDiagramControlPoint
 {
 	public:
-		SNDiagramConnector(SNDiagramDevice *device, qreal x, qreal y, const QPen &pen = QPen(), const QBrush &brush = QBrush());
+		SNDiagramConnector(SNDiagramDevice *device, qreal x, qreal y, port_num portNum, const QPen &pen = QPen(), const QBrush &brush = QBrush());
 		~SNDiagramConnector();
 
 		void setPos(const QPointF &point);
@@ -50,11 +50,13 @@ class SNDiagramConnector : public SNDiagramControlPoint
 		SNDiagramDevice *device() const;
 		int type() const;
 		bool isFull() const;
+		port_num hwPowrt() const;
 
 	private:
 		SNDiagramDevice *m_device;
 		QPointF m_diff;
 		QPointF m_pos;
+		port_num m_hwPort;
 };
 
 
@@ -64,7 +66,7 @@ class SNDiagramConnector : public SNDiagramControlPoint
 class SNDiagramDevice : public SNDiagramItem
 {
 	public:
-		SNDiagramDevice(SNMapDeviceItem *device);
+		SNDiagramDevice(SNMapDeviceItem *device, SNDevicesDiagramScene *scene);
 		~SNDiagramDevice();
 		QRectF boundingRect() const;
 		void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
@@ -88,6 +90,7 @@ class SNDiagramDevice : public SNDiagramItem
 		QMap<port_num, SNDiagramConnector *> m_connectors;
 		QString m_name;
 		QFont m_font;
+		SNDevicesDiagramScene *m_scene;
 
 };
 

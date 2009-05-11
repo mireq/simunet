@@ -23,6 +23,12 @@
 #ifndef SNMAPLINEITEM_H
 #define SNMAPLINEITEM_H
 
+#include <vector>
+#include "sntypes.h"
+
+class SNMapControlPointItem;
+class SNMapDeviceItem;
+
 /**
  @author Miroslav Bendik
 */
@@ -30,8 +36,13 @@ class SNMapLineItem
 {
 	public:
 		SNMapLineItem();
-
 		~SNMapLineItem();
+		void addConnector(float x, float y, float z, SNMapDeviceItem *device, port_num port, std::vector<SNMapControlPointItem *>::size_type pos);
+		void addControlPoint(float x, float y, float z, std::vector<SNMapControlPointItem *>::size_type pos);
+		void addControlPoint(SNMapControlPointItem *point, std::vector<SNMapControlPointItem *>::size_type pos);
+		void removeControlPoint(std::vector<SNMapControlPointItem *>::size_type pos);
+	private:
+		std::vector<SNMapControlPointItem *>m_controlPoints;
 
 };
 

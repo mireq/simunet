@@ -38,6 +38,7 @@
 class SNDevicesDiagramScene;
 class SNDiagramLineSegment;
 class SNDiagramLine;
+class SNMapLineItem;
 
 /**
  @author Miroslav Bendik
@@ -114,7 +115,7 @@ class SNDiagramLineSegment : public QGraphicsLineItem
 class SNDiagramLine
 {
 	public:
-		SNDiagramLine(SNDevicesDiagramScene *scene);
+		SNDiagramLine(SNDevicesDiagramScene *scene, SNMapLineItem *mapLine);
 		~SNDiagramLine();
 		QPen controlPointsPen() const;
 		QBrush controlPointsBrush() const;
@@ -134,6 +135,7 @@ class SNDiagramLine
 		SNDiagramControlPoint *pointAt(int pos) const;
 		void setPointPos(SNDiagramControlPoint *point, const QPointF &pos);
 		void movePoint(SNDiagramControlPoint *point, const QPointF &diff);
+		SNMapLineItem *mapLine() const;
 	private:
 		// okraj kontrolnych bodov
 		QPen m_controlPointsPen;
@@ -151,6 +153,8 @@ class SNDiagramLine
 
 		// pocet bodov ktore priamo nepatria ciare (napr. konektory zariadeni)
 		int m_persistentPoints;
+
+		SNMapLineItem *m_mapLine;
 
 };
 

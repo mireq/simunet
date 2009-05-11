@@ -28,6 +28,8 @@
 #include <QPainter>
 #include <QPalette>
 
+#include "core/map/SNMapLineItem.h"
+
 #include <QDebug>
 
 SNDiagramControlPoint::SNDiagramControlPoint(qreal x, qreal y, const QPen &pen, const QBrush &brush)
@@ -239,10 +241,9 @@ SNDiagramLine *SNDiagramLineSegment::parentLine() const
 
 /* ------------------------------------------------------------------ */
 
-SNDiagramLine::SNDiagramLine(SNDevicesDiagramScene *scene)
-	: m_persistentPoints(0)
+SNDiagramLine::SNDiagramLine(SNDevicesDiagramScene *scene, SNMapLineItem *mapLine)
+	: m_scene(scene), m_persistentPoints(0), m_mapLine(mapLine)
 {
-	m_scene = scene;
 }
 
 
@@ -350,13 +351,19 @@ SNDiagramControlPoint *SNDiagramLine::addControlPoint(qreal x, qreal y, int pos,
 	{
 		p = point;
 	}
+	p->setLine(this);
 
-	if (dynamic_cast<SNDiagramConnector *>(p) != NULL)
+	SNDiagramConnector *conn = dynamic_cast<SNDiagramConnector *>(p);
+	if (conn != NULL)
 	{
 		m_persistentPoints++;
+		m_mapLine->addConnector(x, y, 0.0, conn->device()->device(), conn->hwPowrt(), pos);
+	}
+	else
+	{
+		m_mapLine->addControlPoint(x, y, 0.0, pos);
 	}
 
-	p->setLine(this);
 	m_controlPoints.insert(pos, p);
 	if (point == NULL)
 	{
@@ -418,6 +425,7 @@ void SNDiagramLine::removeControlPoint(QVector<SNDiagramControlPoint *>::iterato
 	{
 		return;
 	}
+	m_mapLine->removeControlPoint(pos);
 
 	SNDiagramControlPoint *p = *point;
 	m_controlPoints.erase(point);
@@ -529,4 +537,9 @@ void SNDiagramLine::setPointPos(SNDiagramControlPoint *point, const QPointF &pos
 void SNDiagramLine::movePoint(SNDiagramControlPoint *point, const QPointF &diff)
 {
 	setPointPos(point, point->pos() + diff);
+}
+
+SNMapLineItem *SNDiagramLine::mapLine() const
+{
+	return m_mapLine;
 }
