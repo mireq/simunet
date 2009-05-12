@@ -116,21 +116,7 @@ SNDiagramDevice::~SNDiagramDevice()
 	SNDiagramConnector *conn;
 	foreach(conn, m_connectors)
 	{
-		SNDiagramLine *l = conn->line();
-
-		if (l != NULL)
-		{
-			l->removeControlPoint(conn, true);
-			if (l->empty())
-			{
-				delete l;
-			}
-		}
-		else
-		{
-			m_scene->removeItem(conn);
-			delete conn;
-		}
+		m_scene->removeControlPoint(conn, true);
 	}
 }
 

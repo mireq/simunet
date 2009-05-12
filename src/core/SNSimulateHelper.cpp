@@ -98,7 +98,7 @@ void SNSimulateHelper::run()
  */
 void SNSimulateHelper::stop()
 {
-	sendFrame(0, Py_None);
+	sendFrame(0, 0, Py_None);
 	m_stop = true;
 }
 
@@ -110,18 +110,20 @@ void SNSimulateHelper::addDevice(SNDevice *device)
 	m_devices.push_back(device);
 }
 
-void SNSimulateHelper::sendFrame(uint32_t targetDevId, PyObject *frame)
+void SNSimulateHelper::sendFrame(uint32_t targetDevId, port_num hwPort, PyObject *frame)
 {
 	PyEval_AcquireLock();
 	PyThreadState_Swap(m_mainThreadState);
 
 	PyCPPObject pPutJob(PyObject_GetAttrString(m_simulateHelper, "put"));
-	PyCPPObject putArgs(PyTuple_New(2), true);
+	PyCPPObject putArgs(PyTuple_New(3), true);
 
 	PyCPPObject pTargetDevId(PyLong_FromUnsignedLong(targetDevId));
+	PyCPPObject pPort(PyLong_FromUnsignedLong(hwPort));
 
 	PyTuple_SetItem(putArgs, 0, pTargetDevId);
-	PyTuple_SetItem(putArgs, 1, frame);
+	PyTuple_SetItem(putArgs, 1, pPort);
+	PyTuple_SetItem(putArgs, 2, frame);
 
 	PyCPPObject ret(PyObject_Call(pPutJob, putArgs, NULL));
 

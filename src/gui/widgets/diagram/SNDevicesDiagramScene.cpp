@@ -414,7 +414,7 @@ void SNDevicesDiagramScene::newPoint(const QPointF &point)
 	m_endControlPointClicked = m_newPoint;
 }
 
-void SNDevicesDiagramScene::removeControlPoint(SNDiagramControlPoint * point)
+void SNDevicesDiagramScene::removeControlPoint(SNDiagramControlPoint *point, bool forceRemovePersistent)
 {
 	SNDiagramLine *line = point->line();
 	if (line == NULL)
@@ -422,7 +422,7 @@ void SNDevicesDiagramScene::removeControlPoint(SNDiagramControlPoint * point)
 		return;
 	}
 
-	line->removeControlPoint(point);
+	line->removeControlPoint(point, forceRemovePersistent);
 	if (line->empty())
 	{
 		m_lines.remove(line);

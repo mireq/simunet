@@ -280,13 +280,13 @@ void SNMap::deleteItem(uint32_t internalId, uint32_t parent)
 				if (it->type() == SNDevTreeItem::Device)
 				{
 					SNMapDeviceItem *device = static_cast<SNMapDeviceItem *>(*mapItem);
+					m_scene->removeDevice(device);
 					uint32_t deviceId = device->deviceId();
 					std::map<uint32_t, SNMapDeviceItem *>::iterator deviceIterator = m_devices.find(deviceId);
 					if (deviceIterator != m_devices.end())
 					{
 						m_devices.erase(deviceIterator);
 					}
-					m_scene->removeDevice(device);
 				}
 				m_mapItems.erase(mapItem);
 				delete (*mapItem);
@@ -461,7 +461,7 @@ void SNMap::updateDevice(SNMapDeviceItem *device)
 
 SNMapLineItem *SNMap::addLine()
 {
-	SNMapLineItem *line = new SNMapLineItem;
+	SNMapLineItem *line = new SNMapLineItem(this);
 	m_lines.insert(line);
 	return line;
 }
@@ -475,4 +475,14 @@ void SNMap::removeLine(SNMapLineItem *line)
 		m_lines.erase(lineIter);
 		delete line;
 	}
+}
+
+void SNMap::addConnection(const SNMapConnection &conn)
+{
+	m_simulate->addConnection(conn.dev1()->deviceId(), conn.port1(), conn.dev2()->deviceId(), conn.port2());
+}
+
+void SNMap::removeConnection(const SNMapConnection &conn)
+{
+	m_simulate->removeConnection(conn.dev1()->deviceId(), conn.port1(), conn.dev2()->deviceId(), conn.port2());
 }

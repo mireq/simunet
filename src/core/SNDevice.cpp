@@ -157,8 +157,9 @@ bool SNDevice::processFrame(PyObject *data, port_num hwPort)
 	}
 	PyCPPObject port(PyLong_FromUnsignedLong(hwPort));
 	PyCPPObject args(PyTuple_New(2), true);
-	PyTuple_SetItem(args, 0, data);
-	PyTuple_SetItem(args, 1, port);
+	Py_INCREF(data);
+	PyTuple_SetItem(args, 0, port);
+	PyTuple_SetItem(args, 1, data);
 	PyCPPObject ret(PyObject_Call(pProcessFrameFunc, args, NULL));
 	if (!PyBool_Check(ret))
 	{
@@ -373,20 +374,22 @@ const std::vector<port_num> &SNDevice::portNumbers() const
 
 PyObject *SNDevice::frameResponseWrapper(PyObject *, PyObject *args)
 {
-	if (PyTuple_Size(args) != 3)
+	if (PyTuple_Size(args) != 4)
 	{
 		return NULL;
 	}
 
 	PyCPPObject pSNDeviceInstance(PyTuple_GetItem(args, 0));
 	PyCPPObject pDeviceId(PyTuple_GetItem(args, 1));
-	PyCPPObject pData(PyTuple_GetItem(args, 2));
+	PyCPPObject pPortId(PyTuple_GetItem(args, 2));
+	PyCPPObject pData(PyTuple_GetItem(args, 3));
 
 	uint32_t deviceId = PyLong_AsUnsignedLong(pDeviceId);
+	port_num hwPort = PyLong_AsUnsignedLong(pPortId);
 	SNDevice *dev = (SNDevice *)PyCObject_AsVoidPtr(pSNDeviceInstance);
 	if (dev->m_simulate != NULL)
 	{
-		dev->m_simulate->frameResponse(deviceId, pData);
+		dev->m_simulate->frameResponse(deviceId, hwPort, pData);
 	}
 
 	Py_RETURN_NONE;

@@ -24,21 +24,31 @@ class router(SimuNet.SNDevice):
 		m = p.match(line)
 		if m:
 			self.insertHwPort()
+
 		p = re.compile('rem (\d*)')
 		m = p.match(line)
 		if m:
 			self.removeHwPort(int(m.group(1)))
+
+		p = re.compile('send (\d*) (.*)')
+		m = p.match(line)
+		if m:
+			self.sendFrame(int(m.group(1)), m.group(2))
+
 		if symbol == '?':
 			self.timer = Timer(random(), self.__sendMsg)
 			self.timer.start()
 			self.timerStarted = True
 		else:
 			self.timerStarted = False
-			return "\nkoncim\ncmd > "
+		self.sendTelnet('\n', 'cmd > ');
 	def stop(self):
 		SimuNet.SNDevice.stop(self)
 		self.timerStarted = False
 		if not self.timer is None:
 			self.timer.cancel()
 			self.timer = None
+	def processFrame(self, hwPort, data):
+		print(data.__class__)
+		self.sendTelnet("prijate " + data, "\n");
 

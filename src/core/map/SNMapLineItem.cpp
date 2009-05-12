@@ -20,17 +20,21 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
+
+#include "SNMap.h"
 #include "SNMapLineItem.h"
 #include "SNMapControlPointItem.h"
-#include "core/SNExceptions.h"
 #include "SNMapDeviceItem.h"
+
+#include "core/SNExceptions.h"
 
 #include <QDebug>
 
 using namespace std;
 
-SNMapLineItem::SNMapLineItem()
+SNMapLineItem::SNMapLineItem(SNMap *map)
 {
+	m_map = map;
 }
 
 
@@ -45,8 +49,7 @@ SNMapLineItem::~SNMapLineItem()
 
 void SNMapLineItem::addConnector(float x, float y, float z, SNMapDeviceItem *device, port_num port, std::vector< SNMapControlPointItem * >::size_type pos)
 {
-	qDebug()<<device->deviceId()<<port;
-	addControlPoint(new SNMapControlPointItem(SNPoint3f(x, y, z)), pos);
+	addControlPoint(new SNMapConnectorItem(SNPoint3f(x, y, z), device, port), pos);
 }
 
 void SNMapLineItem::addControlPoint(float x, float y, float z, std::vector<SNMapControlPointItem *>::size_type pos)
@@ -62,6 +65,21 @@ void SNMapLineItem::addControlPoint(SNMapControlPointItem *point, std::vector< S
 	}
 
 	m_controlPoints.insert(m_controlPoints.begin() + pos, point);
+
+	if (point->type() == SNMapControlPointItem::Connector)
+	{
+		// pridanie spojenia
+		if (m_connectors.size() == 1)
+		{
+			SNMapConnectorItem *conn1 = *(m_connectors.begin());
+			SNMapConnectorItem *conn2 = static_cast<SNMapConnectorItem *>(point);
+			SNMapConnection conn;
+			conn.setConn1(conn1->device(), conn1->port());
+			conn.setConn2(conn2->device(), conn2->port());
+			m_map->addConnection(conn);
+		}
+		m_connectors.insert(static_cast<SNMapConnectorItem *>(point));
+	}
 }
 
 void SNMapLineItem::removeControlPoint(std::vector<SNMapControlPointItem *>::size_type pos)
@@ -71,13 +89,101 @@ void SNMapLineItem::removeControlPoint(std::vector<SNMapControlPointItem *>::siz
 		throw SNoutOfRangeException();
 	}
 
-	std::vector<SNMapControlPointItem *>::iterator iter = m_controlPoints.begin() + pos;
-	SNMapControlPointItem *point = *iter;
-	m_controlPoints.erase(iter);
+	std::vector<SNMapControlPointItem *>::iterator pointIter = m_controlPoints.begin() + pos;
+	SNMapControlPointItem *point = *pointIter;
+
+	if (point->type() == SNMapControlPointItem::Connector)
+	{
+		std::set<SNMapConnectorItem *>::iterator connIter;
+		connIter = m_connectors.find(static_cast<SNMapConnectorItem *>(point));
+		if (connIter != m_connectors.end())
+		{
+			m_connectors.erase(connIter);
+			// odstranenie spojenia
+			if (m_connectors.size() == 1)
+			{
+				SNMapConnectorItem *conn1 = *(m_connectors.begin());
+				SNMapConnectorItem *conn2 = static_cast<SNMapConnectorItem *>(point);
+				SNMapConnection conn;
+				conn.setConn1(conn1->device(), conn1->port());
+				conn.setConn2(conn2->device(), conn2->port());
+				m_map->removeConnection(conn);
+			}
+		}
+	}
+
+	m_controlPoints.erase(pointIter);
 	delete point;
 }
 
+/* ------------------------------------------------------------------ */
 
+SNMapConnection::SNMapConnection()
+	: m_dev1(NULL), m_dev2(NULL), m_port1(0), m_port2(0)
+{
+}
 
+SNMapConnection::~ SNMapConnection()
+{
+}
 
+void SNMapConnection::setPort1(port_num port1)
+{
+	m_port1 = port1;
+}
 
+void SNMapConnection::setPort2(port_num port2)
+{
+	m_port2 = port2;
+}
+
+void SNMapConnection::setDev1(SNMapDeviceItem *dev1)
+{
+	m_dev1 = dev1;
+}
+
+void SNMapConnection::setDev2(SNMapDeviceItem *dev2)
+{
+	m_dev2 = dev2;
+}
+
+void SNMapConnection::setConn1(SNMapDeviceItem *dev1, port_num port1)
+{
+	m_dev1 = dev1;
+	m_port1 = port1;
+}
+
+void SNMapConnection::setConn2(SNMapDeviceItem * dev2, port_num port2)
+{
+	m_dev2 = dev2;
+	m_port2 = port2;
+}
+
+port_num SNMapConnection::port1() const
+{
+	return m_port1;
+}
+
+port_num SNMapConnection::port2() const
+{
+	return m_port2;
+}
+
+SNMapDeviceItem *SNMapConnection::dev1() const
+{
+	return m_dev1;
+}
+
+SNMapDeviceItem *SNMapConnection::dev2() const
+{
+	return m_dev2;
+}
+
+bool SNMapConnection::isValid() const
+{
+	if (m_dev1 == NULL || m_dev2 == NULL || m_port1 == 0 || m_port2 == 0)
+	{
+		return false;
+	}
+	return true;
+}

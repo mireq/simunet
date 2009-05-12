@@ -24,10 +24,13 @@
 #define SNMAPLINEITEM_H
 
 #include <vector>
+#include <set>
 #include "sntypes.h"
 
+class SNMap;
 class SNMapControlPointItem;
 class SNMapDeviceItem;
+class SNMapConnectorItem;
 
 /**
  @author Miroslav Bendik
@@ -35,7 +38,7 @@ class SNMapDeviceItem;
 class SNMapLineItem
 {
 	public:
-		SNMapLineItem();
+		SNMapLineItem(SNMap *map);
 		~SNMapLineItem();
 		void addConnector(float x, float y, float z, SNMapDeviceItem *device, port_num port, std::vector<SNMapControlPointItem *>::size_type pos);
 		void addControlPoint(float x, float y, float z, std::vector<SNMapControlPointItem *>::size_type pos);
@@ -43,7 +46,35 @@ class SNMapLineItem
 		void removeControlPoint(std::vector<SNMapControlPointItem *>::size_type pos);
 	private:
 		std::vector<SNMapControlPointItem *>m_controlPoints;
+		std::set<SNMapConnectorItem *>m_connectors;
+		SNMap *m_map;
 
+};
+
+/**
+ @author Miroslav Bendik
+ */
+class SNMapConnection
+{
+	public:
+		SNMapConnection();
+		~SNMapConnection();
+		void setPort1(port_num port1);
+		void setPort2(port_num port2);
+		void setDev1(SNMapDeviceItem *dev1);
+		void setDev2(SNMapDeviceItem *dev2);
+		void setConn1(SNMapDeviceItem *dev1, port_num port1);
+		void setConn2(SNMapDeviceItem *dev2, port_num port2);
+		port_num port1() const;
+		port_num port2() const;
+		SNMapDeviceItem *dev1() const;
+		SNMapDeviceItem *dev2() const;
+		bool isValid() const;
+	private:
+		SNMapDeviceItem *m_dev1;
+		SNMapDeviceItem *m_dev2;
+		port_num m_port1;
+		port_num m_port2;
 };
 
 #endif

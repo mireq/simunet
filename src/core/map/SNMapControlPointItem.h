@@ -46,10 +46,20 @@ class SNMapControlPointItem: public SNMapItem
 		int m_type;
 };
 
+/**
+ @author Miroslav Bendik
+ */
 class SNMapConnectorItem: public SNMapControlPointItem
 {
 	public:
 		SNMapConnectorItem(const SNPoint3f &pos, SNMapDeviceItem *device, port_num port);
+		~SNMapConnectorItem();
+		SNMapDeviceItem *device() const;
+		port_num port() const;
+
+	private:
+		SNMapDeviceItem *m_device;
+		port_num m_port;
 };
 
 #endif

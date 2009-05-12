@@ -68,7 +68,7 @@ class SNDevicesDiagramScene : public QGraphicsScene, public SNAbstractDevicesSce
 		void mouseMoveEventNorm(QGraphicsSceneMouseEvent *event);
 		void mouseMoveEventLine(QGraphicsSceneMouseEvent *event);
 		void newPoint(const QPointF &point);
-		void removeControlPoint(SNDiagramControlPoint *point);
+		void removeControlPoint(SNDiagramControlPoint *point, bool forceRemovePersistent = false);
 	private:
 		void mergeLine(SNDiagramControlPoint *point);
 		QColor m_controlPointLineColor;
@@ -87,6 +87,8 @@ class SNDevicesDiagramScene : public QGraphicsScene, public SNAbstractDevicesSce
 
 		QMap<SNMapDeviceItem *, SNDiagramDevice *> m_devices;
 		QMap<uint32_t, QMap<port_num, SNDiagramConnector *> >m_ports;
+
+		friend class SNDiagramDevice;
 };
 
 #endif

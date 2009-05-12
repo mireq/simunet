@@ -38,6 +38,7 @@ class SNAbstractDevicesScene;
 class SNMapItem;
 class SNMapDeviceItem;
 class SNMapLineItem;
+class SNMapConnection;
 
 
 /**
@@ -84,6 +85,11 @@ class SNMap
 		// praca s ciarami
 		SNMapLineItem *addLine();
 		void removeLine(SNMapLineItem *line);
+
+		// metody ktore moze vyvolat len ciara
+	private:
+		void addConnection(const SNMapConnection &conn);
+		void removeConnection(const SNMapConnection &conn);
 	private:
 /*!
   Odkaz na simulator.
@@ -120,6 +126,8 @@ class SNMap
   Zoznam ciar.
 */
 		std::set<SNMapLineItem *> m_lines;
+
+		friend class SNMapLineItem;
 
 };
 

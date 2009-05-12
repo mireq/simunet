@@ -2,7 +2,7 @@
  *   Simunet - Computer Network Simulator                                  *
  *   http://simunet.eu/                                                    *
  *                                                                         *
- *   Copyright (C) 2008 by Miroslav Bendik                                 *
+ *   Copyright (C) 2009 by Miroslav Bendik                                 *
  *   miroslav.bendik@gmail.com                                             *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -20,37 +20,32 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef SNSIMULATEHELPER_H
-#define SNSIMULATEHELPER_H
+#ifndef SNHWPORT_H
+#define SNHWPORT_H
 
-#include <QThread>
-#include <list>
-#include <Python.h>
 #include "sntypes.h"
 
-class SNDevice;
-
 /**
- @author Miroslav Bendik
+ @author Miroslav Bendik <miroslav.bendik@gmail.com>
 */
-class SNSimulateHelper: public QThread
+class SNHwPort
 {
-	Q_OBJECT
 	public:
-		SNSimulateHelper(PyThreadState *mainThreadState);
-		~SNSimulateHelper();
-		void run();
-		void stop();
-		void addDevice(SNDevice *device);
-		void sendFrame(uint32_t targetDevId, port_num hwPort, PyObject *frame);
+		SNHwPort(uint32_t devId, port_num hwPort);
+		SNHwPort(const SNHwPort &other);
+		~SNHwPort();
+		void setBuddy(const SNHwPort &buddy);
+		void unsetBuddy();
+		SNHwPort *buddy() const;
+		uint32_t devId() const;
+		port_num hwPort() const;
+		bool operator <(const SNHwPort &other) const;
+		bool operator >(const SNHwPort &other) const;
+		bool operator ==(const SNHwPort &other) const;
 	private:
-		bool m_stop;
-		std::list<SNDevice *> m_devices;
-		PyObject *m_pDevicesDict;
-		PyObject *m_simulateHelper;
-		static PyThreadState *m_mainThreadState;
-		PyThreadState *m_threadState;
-
+		uint32_t m_devId;
+		uint32_t m_hwPort;
+		SNHwPort *m_buddy;
 };
 
 #endif

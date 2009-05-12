@@ -43,6 +43,22 @@ int SNMapControlPointItem::type() const
 SNMapConnectorItem::SNMapConnectorItem(const SNPoint3f &pos, SNMapDeviceItem *device, port_num port)
 	: SNMapControlPointItem(pos, Connector)
 {
+	m_device = device;
+	m_port = port;
+}
+
+SNMapConnectorItem::~ SNMapConnectorItem()
+{
+}
+
+SNMapDeviceItem *SNMapConnectorItem::device() const
+{
+	return m_device;
+}
+
+port_num SNMapConnectorItem::port() const
+{
+	return m_port;
 }
 
 

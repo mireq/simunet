@@ -121,8 +121,6 @@ void SNTelnetWidget::sendLineEvent(char controlChar)
 		qDebug()<<m_currentLine<<controlChar;
 	}
 	char *out = SNSingleton::getSimulate()->telnetRequest(m_devId, m_currentLine.toLatin1().data(), controlChar);
-	PyObject *test = PyString_FromString("test");
-	SNSingleton::getSimulate()->sendFrame(m_devId, test);
 	write(out);
 }
 

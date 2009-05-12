@@ -2,7 +2,7 @@
  *   Simunet - Computer Network Simulator                                  *
  *   http://simunet.eu/                                                    *
  *                                                                         *
- *   Copyright (C) 2008 by Miroslav Bendik                                 *
+ *   Copyright (C) 2009 by Miroslav Bendik                                 *
  *   miroslav.bendik@gmail.com                                             *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -20,37 +20,83 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef SNSIMULATEHELPER_H
-#define SNSIMULATEHELPER_H
+#include "SNHwPort.h"
 
-#include <QThread>
-#include <list>
-#include <Python.h>
-#include "sntypes.h"
-
-class SNDevice;
-
-/**
- @author Miroslav Bendik
-*/
-class SNSimulateHelper: public QThread
+SNHwPort::SNHwPort(uint32_t devId, port_num hwPort)
+	: m_devId(devId), m_hwPort(hwPort), m_buddy(0)
 {
-	Q_OBJECT
-	public:
-		SNSimulateHelper(PyThreadState *mainThreadState);
-		~SNSimulateHelper();
-		void run();
-		void stop();
-		void addDevice(SNDevice *device);
-		void sendFrame(uint32_t targetDevId, port_num hwPort, PyObject *frame);
-	private:
-		bool m_stop;
-		std::list<SNDevice *> m_devices;
-		PyObject *m_pDevicesDict;
-		PyObject *m_simulateHelper;
-		static PyThreadState *m_mainThreadState;
-		PyThreadState *m_threadState;
+}
 
-};
+SNHwPort::SNHwPort(const SNHwPort &other)
+{
+	m_devId = other.m_devId;
+	m_hwPort = other.m_hwPort;
+	setBuddy(*(other.m_buddy));
+}
 
-#endif
+SNHwPort::~SNHwPort()
+{
+	if (m_buddy != 0)
+	{
+		delete m_buddy;
+	}
+}
+
+void SNHwPort::setBuddy(const SNHwPort &buddy)
+{
+	m_buddy = new SNHwPort(buddy.devId(), buddy.hwPort());
+}
+
+void SNHwPort::unsetBuddy()
+{
+	delete m_buddy;
+	m_buddy = 0;
+}
+
+SNHwPort *SNHwPort::buddy() const
+{
+	return m_buddy;
+}
+
+uint32_t SNHwPort::devId() const
+{
+	return m_devId;
+}
+
+port_num SNHwPort::hwPort() const
+{
+	return m_hwPort;
+}
+
+bool SNHwPort::operator <(const SNHwPort &other) const
+{
+	if (this->m_devId == other.m_devId)
+	{
+		return this->m_hwPort < other.m_hwPort;
+	}
+	else
+	{
+		return this->m_devId < other.m_devId;
+	}
+}
+
+bool SNHwPort::operator >(const SNHwPort &other) const
+{
+	if (this->m_devId == other.m_devId)
+	{
+		return this->m_hwPort > other.m_hwPort;
+	}
+	else
+	{
+		return this->m_devId > other.m_devId;
+	}
+}
+
+bool SNHwPort::operator ==(const SNHwPort &other) const
+{
+	return (this->m_devId == other.m_devId && this->m_hwPort == other.m_hwPort);
+}
+
+
+
+

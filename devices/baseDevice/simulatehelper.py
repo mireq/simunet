@@ -7,11 +7,11 @@ class SimulateHelper:
 		thread.start_new_thread(self.run, ())
 		print "Starting thread."
 
-	def put(self, targetDevice, job):
+	def put(self, targetDevice, port, job):
 		if job is None:
 			self.__jobs.put(None)
 		else:
-			self.__jobs.put([targetDevice, job])
+			self.__jobs.put([targetDevice, port, job])
 
 	def run(self):
 		while True:
@@ -22,6 +22,6 @@ class SimulateHelper:
 			else:
 				print "Job for device " + str(job[0])
 				try:
-					snsimulate.devices[job[0]].processFrame(job[1])
+					snsimulate.devices[job[0]].processFrame(job[1], job[2])
 				except KeyError:
 					print "Device " + str(job[0]) + " not found."

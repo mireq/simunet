@@ -161,6 +161,7 @@ set(core_SRCS
 	src/core/SNDevice.cpp
 	src/core/SNDynamicSettings.cpp
 	src/core/SNExceptions.cpp
+	src/core/SNHwPort.cpp
 	src/core/SNSimulate.cpp
 	src/core/SNSimulateHelper.cpp
 	src/core/SNBloat.cpp
@@ -181,6 +182,7 @@ set(core_HDRS
 	src/core/SNConfig.h
 	src/core/SNDevice.h
 	src/core/SNExceptions.h
+	src/core/SNHwPort.h
 	src/core/SNSimulate.h
 	src/core/SNSimulateHelper.h
 	src/core/SNBloat.h

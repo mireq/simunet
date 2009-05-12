@@ -184,9 +184,30 @@ uint32_t SNSimulate::startDevice(const std::string &filename)
   Tato metoda zachytava spravy od zariadeni a spracuje ich / preposiela
   ostatnym zariadeniam.
  */
-void SNSimulate::frameResponse(uint32_t id, PyObject *data)
+void SNSimulate::frameResponse(uint32_t id, port_num hwPort, PyObject *data)
 {
-    /// @todo implement me
+	SNHwPort p(id, hwPort);
+	set<SNHwPort>::iterator port;
+	port = m_connections.find(p);
+	if (port == m_connections.end())
+	{
+		return;
+	}
+	SNHwPort *buddy = port->buddy();
+	if (buddy == NULL)
+	{
+		return;
+	}
+
+	map<uint32_t, SNDevice*>::iterator devIter;
+	devIter = m_devices.find(buddy->devId());
+	if (devIter == m_devices.end())
+	{
+		return;
+	}
+
+	SNDevice *device = devIter->second;
+	device->processFrame(data, buddy->hwPort());
 }
 
 /*!
@@ -263,9 +284,9 @@ char *SNSimulate::telnetRequest(uint32_t devId, const std::string &line, char sy
 /*!
   Odosllanie ramca zariadeni urcenemu argumentom \a targetDevId.
 */
-void SNSimulate::sendFrame(uint32_t targetDevId, PyObject *frame)
+void SNSimulate::sendFrame(uint32_t targetDevId, port_num hwPort, PyObject *frame)
 {
-	m_simulateHelpers[targetDevId % m_threadCount]->sendFrame(targetDevId, frame);
+	m_simulateHelpers[targetDevId % m_threadCount]->sendFrame(targetDevId, hwPort, frame);
 }
 
 /*!
@@ -301,6 +322,47 @@ void SNSimulate::setMap(SNMap *map)
 {
 	m_map = map;
 }
+
+void SNSimulate::removeConnection(uint32_t dev1, port_num port1, uint32_t dev2, port_num port2)
+{
+	SNHwPort a(dev1, port1);
+	SNHwPort b(dev2, port2);
+
+	set<SNHwPort>::iterator aIt;
+	aIt = m_connections.find(a);
+	if (aIt != m_connections.end())
+	{
+		SNHwPort *p = aIt->buddy();
+		if (p != NULL)
+		{
+			p->unsetBuddy();
+		}
+	}
+	m_connections.erase(aIt);
+
+	set<SNHwPort>::iterator bIt;
+	bIt = m_connections.find(b);
+	if (bIt != m_connections.end())
+	{
+		SNHwPort *p = bIt->buddy();
+		if (p != NULL)
+		{
+			p->unsetBuddy();
+		}
+	}
+	m_connections.erase(bIt);
+}
+
+void SNSimulate::addConnection(uint32_t dev1, port_num port1, uint32_t dev2, port_num port2)
+{
+	SNHwPort a(dev1, port1);
+	SNHwPort b(dev2, port2);
+	a.setBuddy(b);
+	b.setBuddy(a);
+	m_connections.insert(a);
+	m_connections.insert(b);
+}
+
 
 /*!
   \brief Nastavime cesty v ktorych su hladane moduly.
@@ -450,3 +512,4 @@ SNDevice *SNSimulate::device(uint32_t id) const
 
   Tento signal sa emituje po prijati telnet dat od zariadenia.
 */
+
