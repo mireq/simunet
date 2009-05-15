@@ -25,20 +25,24 @@
 
 #include "sntypes.h"
 
+class SNDevice;
+
 /**
  @author Miroslav Bendik <miroslav.bendik@gmail.com>
 */
 class SNHwPort
 {
 	public:
-		SNHwPort(uint32_t devId, port_num hwPort);
+		SNHwPort(uint32_t devId, port_num hwPort, SNDevice *device = 0);
 		SNHwPort(const SNHwPort &other);
 		~SNHwPort();
 		void setBuddy(const SNHwPort &buddy);
 		void unsetBuddy();
+		void setDevice(SNDevice *device);
 		SNHwPort *buddy() const;
 		uint32_t devId() const;
 		port_num hwPort() const;
+		SNDevice *device() const;
 		bool operator <(const SNHwPort &other) const;
 		bool operator >(const SNHwPort &other) const;
 		bool operator ==(const SNHwPort &other) const;
@@ -46,6 +50,7 @@ class SNHwPort
 		uint32_t m_devId;
 		uint32_t m_hwPort;
 		SNHwPort *m_buddy;
+		SNDevice *m_device;
 };
 
 #endif

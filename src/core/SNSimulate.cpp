@@ -199,14 +199,15 @@ void SNSimulate::frameResponse(uint32_t id, port_num hwPort, PyObject *data)
 		return;
 	}
 
-	map<uint32_t, SNDevice*>::iterator devIter;
+/*	map<uint32_t, SNDevice*>::iterator devIter;
 	devIter = m_devices.find(buddy->devId());
 	if (devIter == m_devices.end())
 	{
 		return;
 	}
 
-	SNDevice *device = devIter->second;
+	SNDevice *device = devIter->second;*/
+	SNDevice *device = buddy->device();
 	device->processFrame(data, buddy->hwPort());
 }
 
@@ -337,6 +338,7 @@ void SNSimulate::removeConnection(uint32_t dev1, port_num port1, uint32_t dev2, 
 		{
 			p->unsetBuddy();
 		}
+		p->setDevice(0);
 	}
 	m_connections.erase(aIt);
 
@@ -349,14 +351,15 @@ void SNSimulate::removeConnection(uint32_t dev1, port_num port1, uint32_t dev2, 
 		{
 			p->unsetBuddy();
 		}
+		p->setDevice(0);
 	}
 	m_connections.erase(bIt);
 }
 
 void SNSimulate::addConnection(uint32_t dev1, port_num port1, uint32_t dev2, port_num port2)
 {
-	SNHwPort a(dev1, port1);
-	SNHwPort b(dev2, port2);
+	SNHwPort a(dev1, port1, device(dev1));
+	SNHwPort b(dev2, port2, device(dev2));
 	a.setBuddy(b);
 	b.setBuddy(a);
 	m_connections.insert(a);

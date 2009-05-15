@@ -22,8 +22,8 @@
  ***************************************************************************/
 #include "SNHwPort.h"
 
-SNHwPort::SNHwPort(uint32_t devId, port_num hwPort)
-	: m_devId(devId), m_hwPort(hwPort), m_buddy(0)
+SNHwPort::SNHwPort(uint32_t devId, port_num hwPort, SNDevice *device)
+	: m_devId(devId), m_hwPort(hwPort), m_buddy(0), m_device(device)
 {
 }
 
@@ -32,6 +32,7 @@ SNHwPort::SNHwPort(const SNHwPort &other)
 	m_devId = other.m_devId;
 	m_hwPort = other.m_hwPort;
 	setBuddy(*(other.m_buddy));
+	m_device = other.m_device;
 }
 
 SNHwPort::~SNHwPort()
@@ -44,13 +45,18 @@ SNHwPort::~SNHwPort()
 
 void SNHwPort::setBuddy(const SNHwPort &buddy)
 {
-	m_buddy = new SNHwPort(buddy.devId(), buddy.hwPort());
+	m_buddy = new SNHwPort(buddy.m_devId, buddy.m_hwPort, buddy.m_device);
 }
 
 void SNHwPort::unsetBuddy()
 {
 	delete m_buddy;
 	m_buddy = 0;
+}
+
+void SNHwPort::setDevice(SNDevice *device)
+{
+	m_device = device;
 }
 
 SNHwPort *SNHwPort::buddy() const
@@ -67,6 +73,12 @@ port_num SNHwPort::hwPort() const
 {
 	return m_hwPort;
 }
+
+SNDevice *SNHwPort::device() const
+{
+	return m_device;
+}
+
 
 bool SNHwPort::operator <(const SNHwPort &other) const
 {
@@ -96,6 +108,7 @@ bool SNHwPort::operator ==(const SNHwPort &other) const
 {
 	return (this->m_devId == other.m_devId && this->m_hwPort == other.m_hwPort);
 }
+
 
 
 
