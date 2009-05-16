@@ -61,6 +61,7 @@ using namespace std;
 SNMap::SNMap()
 	: m_scene(NULL)
 {
+	m_rootDir = new SNDevTreeNode(NULL);
 	SNConfig config;
 	m_simulate = SNSingleton::getSimulate();
 	m_simulate->setMap(this);
@@ -101,10 +102,10 @@ uint32_t SNMap::startDevice(const std::string &filename)
 
 /*!
   Vlozenie zariadenia s identifikacnym cislom \a devId do adresara urceneho
-  argumentom \a parent. Argument \a pos urcuje riadok do ktoreho sa vlozi
+  argumentom \a parent. Argument \a pos urcuje poradie, v ktorom sa vlozi
   zariadenie.
 */
-void SNMap::insertDevice(uint32_t devId, uint32_t parent, int pos)
+/*void SNMap::insertDevice(uint32_t devId, uint32_t parent, int pos)
 {
 	SNMapDeviceItem *device = new SNMapDeviceItem(devId);
 	m_mapItems.insert(device);
@@ -123,6 +124,30 @@ void SNMap::insertDevice(uint32_t devId, uint32_t parent, int pos)
 
 	// vlozenie zariadenia do sceny
 	m_scene->addDevice(device);
+}*/
+void SNMap::insertDevice(uint32_t devId, SNDevTreeItem *parent, int pos)
+{
+	SNMapDeviceItem *device = new SNMapDeviceItem(devId);
+	m_mapItems.insert(device);
+	m_devices[devId] = device;
+
+	SNDevTreeNode *node = NULL;
+	SNDevTreeDeviceItem *item = new SNDevTreeDeviceItem(device);
+	if (parent == NULL)
+	{
+		node = m_rootDir;
+	}
+	else
+	{
+		if (parent->node() == NULL)
+		{
+			parent->setNode(new SNDevTreeNode(parent));
+		}
+		node = parent->node();
+	}
+	node->insert(item, pos);
+
+	m_scene->addDevice(device);
 }
 
 /*!
@@ -130,7 +155,7 @@ void SNMap::insertDevice(uint32_t devId, uint32_t parent, int pos)
   nadradeny adresar \a parent rovny 0 prida sa adresar do korenoveho adresara.
   Poradie v ktorom sa vlozi adresar je urceny argumentom \a pos.
 */
-void SNMap::addDirectory(std::string name, uint32_t parent, int pos)
+/*void SNMap::addDirectory(std::string name, uint32_t parent, int pos)
 {
 	SNDevTreeDirectoryItem *item = new SNDevTreeDirectoryItem(name);
 	map<uint32_t, SNDevTreeNode*>::iterator it;
@@ -149,12 +174,47 @@ void SNMap::addDirectory(std::string name, uint32_t parent, int pos)
 	node->insert(item, pos);
 	m_items[item->internalId()] = item;
 	item->setNode(node);
+}*/
+void SNMap::addDirectory(std::string name, SNDevTreeItem *parent, int pos)
+{
+	SNDevTreeDirectoryItem *item = new SNDevTreeDirectoryItem(name);
+	SNDevTreeNode *node = NULL;
+	if (parent == NULL)
+	{
+		node = m_rootDir;
+	}
+	else
+	{
+		if (parent->node() == NULL)
+		{
+			parent->setNode(new SNDevTreeNode(parent));
+		}
+		node = parent->node();
+	}
+	node->insert(item, pos);
 }
 
 /*!
   Vrati pocet poloziek v adresari urcenom paremetrom \a parent.
 */
-int SNMap::numItems(uint32_t parent) const
+int SNMap::numItems(SNDevTreeItem *parent) const
+{
+	if (parent == NULL)
+	{
+		return m_rootDir->childCount();
+	}
+
+	SNDevTreeNode *node = parent->node();
+	if (node == 0)
+	{
+		return 0;
+	}
+	else
+	{
+		return node->childCount();
+	}
+}
+/*int SNMap::numItems(uint32_t parent) const
 {
 	map<uint32_t, SNDevTreeNode*>::const_iterator it;
 	it = m_itemsTree.find(parent);
@@ -166,13 +226,13 @@ int SNMap::numItems(uint32_t parent) const
 	{
 		return it->second->childCount();
 	}
-}
+}*/
 
 /*!
   Vrati polozku stromu zaraideni, ktora sa nachadza v riadku urcenom argumentom
   \a pos nachadzajucu sa v adresari urcenom argumentom \a parent.
 */
-SNDevTreeItem *SNMap::itemAt(int pos, uint32_t parent) const
+/*SNDevTreeItem *SNMap::itemAt(int pos, uint32_t parent) const
 {
 	map<uint32_t, SNDevTreeNode*>::const_iterator it;
 	it = m_itemsTree.find(parent);
@@ -185,12 +245,29 @@ SNDevTreeItem *SNMap::itemAt(int pos, uint32_t parent) const
 		return it->second->itemAt(pos);
 	}
 
+}*/
+SNDevTreeItem *SNMap::itemAt(int pos, SNDevTreeItem *parent) const
+{
+	SNDevTreeNode *node = NULL;
+	if (parent == NULL)
+	{
+		node = m_rootDir;
+	}
+	else
+	{
+		node = parent->node();
+	}
+	if (node == NULL)
+	{
+		return NULL;
+	}
+	return node->itemAt(pos);
 }
 
 /*!
   Vrati polozku stromu zariadeni s internym ID \a intenralId.
 */
-SNDevTreeItem *SNMap::item(uint32_t internalId) const
+/*SNDevTreeItem *SNMap::item(uint32_t internalId) const
 {
 	map<uint32_t, SNDevTreeItem *>::const_iterator it;
 	it = m_items.find(internalId);
@@ -202,7 +279,7 @@ SNDevTreeItem *SNMap::item(uint32_t internalId) const
 	{
 		return it->second;
 	}
-}
+}*/
 
 /*!
   Vrati zariadenie na mape podla ID zariadenia
@@ -223,7 +300,7 @@ SNMapDeviceItem *SNMap::mapDeviceItem(uint32_t devId)
 /*!
   Vrati riadok polozky s internym cislom \a internalId v adresari \a parent.
 */
-int SNMap::itemIndex(uint32_t internalId, uint32_t parent) const
+/*int SNMap::itemIndex(uint32_t internalId, uint32_t parent) const
 {
 	
 	map<uint32_t, SNDevTreeNode *>::const_iterator it;
@@ -233,13 +310,31 @@ int SNMap::itemIndex(uint32_t internalId, uint32_t parent) const
 		return -1;
 	}
 	return it->second->index(internalId);
+}*/
+int SNMap::itemIndex(SNDevTreeItem *item, SNDevTreeItem *parent) const
+{
+	SNDevTreeNode *node = NULL;
+	if (parent == NULL)
+	{
+		node = m_rootDir;
+	}
+	else
+	{
+		node = parent->node();
+	}
+
+	if (node == NULL)
+	{
+		return -1;
+	}
+	return node->index(item->internalId());
 }
 
 /*!
   Odstranenie polozky alebo celeho adresara s internym ID \a internalId
   nachadzajucej sa v adresari \a parent.
 */
-void SNMap::deleteItem(uint32_t internalId, uint32_t parent)
+/*void SNMap::deleteItem(uint32_t internalId, uint32_t parent)
 {
 	// najdenie stromu
 	map<uint32_t, SNDevTreeNode *>::iterator tree;
@@ -307,6 +402,70 @@ void SNMap::deleteItem(uint32_t internalId, uint32_t parent)
 		delete node;
 		m_itemsTree.erase(tree);
 	}
+}*/
+void SNMap::deleteItem(SNDevTreeItem *item, SNDevTreeItem *parent)
+{
+	SNDevTreeNode *tree = NULL;
+	if (parent == NULL)
+	{
+		tree = m_rootDir;
+	}
+	else
+	{
+		tree = parent->node();
+	}
+
+	SNDevTreeNode *subtree = item->node();
+	if (subtree != NULL)
+	{
+		vector<SNDevTreeItem *> *childs = subtree->childs();
+		vector<SNDevTreeItem *>::iterator childIt;
+		list<SNDevTreeItem *> itemsToDelete;
+		for (childIt = childs->begin(); childIt != childs->end(); ++childIt)
+		{
+			itemsToDelete.push_back(*childIt);
+		}
+		list<SNDevTreeItem *>::iterator iter;
+		for (iter = itemsToDelete.begin(); iter != itemsToDelete.end(); ++iter)
+		{
+			deleteItem((*iter), item);
+		}
+	}
+
+	if (item->type() == SNDevTreeItem::Device)
+	{
+		stopDevice(static_cast<SNDevTreeDeviceItem *>(item)->devId());
+
+		set<SNMapItem *>::iterator mapItem = m_mapItems.find(item->mapItem());
+		if (mapItem != m_mapItems.end())
+		{
+			if (item->type() == SNDevTreeItem::Device)
+			{
+				SNMapDeviceItem *device = static_cast<SNMapDeviceItem *>(*mapItem);
+				m_scene->removeDevice(device);
+				uint32_t deviceId = device->deviceId();
+				std::map<uint32_t, SNMapDeviceItem *>::iterator deviceIterator = m_devices.find(deviceId);
+				if (deviceIterator != m_devices.end())
+				{
+					m_devices.erase(deviceIterator);
+				}
+			}
+			m_mapItems.erase(mapItem);
+			delete (*mapItem);
+		}
+	}
+
+	tree->removeItem(item->internalId());
+	if (tree == m_rootDir)
+	{
+		return;
+	}
+
+	if (tree->childCount() == 0)
+	{
+		tree->parent()->setNode(NULL);
+		delete tree;
+	}
 }
 
 /*!
@@ -318,7 +477,7 @@ void SNMap::deleteItem(uint32_t internalId, uint32_t parent)
 
   \sa insertItem
 */
-void SNMap::removeItem(uint32_t internalId, uint32_t parent)
+/*void SNMap::removeItem(uint32_t internalId, uint32_t parent)
 {
 	// najdenie stromu
 	map<uint32_t, SNDevTreeNode *>::iterator tree;
@@ -335,6 +494,25 @@ void SNMap::removeItem(uint32_t internalId, uint32_t parent)
 		delete node;
 		m_itemsTree.erase(tree);
 	}
+}*/
+void SNMap::removeItem(SNDevTreeItem *item, SNDevTreeItem *parent)
+{
+	SNDevTreeNode *node = NULL;
+	if (parent == NULL)
+	{
+		node = m_rootDir;
+	}
+	else
+	{
+		node = parent->node();
+	}
+
+	node->removeItem(item->internalId(), false);
+	if (node->childCount() == 0)
+	{
+		node->parent()->setNode(NULL);
+		delete node;
+	}
 }
 
 /*!
@@ -343,7 +521,7 @@ void SNMap::removeItem(uint32_t internalId, uint32_t parent)
 
   \sa removeItem
 */
-void SNMap::insertItem(uint32_t internalId, uint32_t parent, int pos)
+/*void SNMap::insertItem(uint32_t internalId, uint32_t parent, int pos)
 {
 	map<uint32_t, SNDevTreeItem *>::iterator itemIter;
 	itemIter = m_items.find(internalId);
@@ -366,12 +544,29 @@ void SNMap::insertItem(uint32_t internalId, uint32_t parent, int pos)
 		}
 	}
 	m_itemsTree[parent]->insert(item, pos);
+}*/
+void SNMap::insertItem(SNDevTreeItem *item, SNDevTreeItem *parent, int pos)
+{
+	SNDevTreeNode *node = NULL;
+	if (parent == NULL)
+	{
+		node = m_rootDir;
+	}
+	else
+	{
+		if (parent->node() == NULL)
+		{
+			parent->setNode(new SNDevTreeNode(parent));
+		}
+		node = parent->node();
+	}
+	node->insert(item, pos);
 }
 
 /*!
   Vrati zoznam poloziek v podstrome urcenom internym ID \a parent.
 */
-std::list<SNDevTreeItem *> SNMap::itemsInTree(uint32_t parent) const
+/*std::list<SNDevTreeItem *> SNMap::itemsInTree(uint32_t parent) const
 {
 	list<SNDevTreeItem *> ret;
 
@@ -394,6 +589,31 @@ std::list<SNDevTreeItem *> SNMap::itemsInTree(uint32_t parent) const
 			list<SNDevTreeItem *> items = itemsInTree((*child)->internalId());
 			ret.merge(items);
 		}
+	}
+
+	return ret;
+}*/
+std::list<SNDevTreeItem *> SNMap::itemsInTree(SNDevTreeItem *parent) const
+{
+	list<SNDevTreeItem *> ret;
+	if (parent == NULL)
+	{
+		return ret;
+	}
+	ret.push_back(parent);
+
+	SNDevTreeNode *node = parent->node();
+	if (node == NULL)
+	{
+		return ret;
+	}
+
+	vector<SNDevTreeItem *> *childs = node->childs();
+	vector<SNDevTreeItem *>::iterator child;
+	for (child = childs->begin(); child != childs->end(); ++child)
+	{
+		list<SNDevTreeItem *> items = itemsInTree(*child);
+		ret.merge(items);
 	}
 
 	return ret;
@@ -433,6 +653,7 @@ void SNMap::insertPort(uint32_t devId, port_num hwPort)
 	{
 		std::map<uint32_t, SNMapDeviceItem *>::iterator device;
 		device = m_devices.find(devId);
+		qDebug()<<device->second;
 		if (device != m_devices.end())
 		{
 			m_scene->addHwPort(device->second, hwPort);

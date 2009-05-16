@@ -72,7 +72,7 @@ class SNDiagramDevice : public SNDiagramItem
 		void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
 		QPainterPath shape() const;
 		SNDiagramConnector *addConnector(port_num port);
-		SNDiagramConnector *removeConnector(port_num port);
+		void removeConnector(port_num port);
 		void setPos(const QPointF &pos);
 		void setPos(qreal x, qreal y);
 		void setItemDiff(QPointF diff);
@@ -82,6 +82,7 @@ class SNDiagramDevice : public SNDiagramItem
 
 		void setName(QString name);
 		QString name() const;
+		const QMap<port_num, SNDiagramConnector *> *connectors() const;
 
 	private:
 		void updateConnectorDiffs();

@@ -29,6 +29,8 @@
 
 class SNDevice;
 class SNMap;
+class SNDevTreeItem;
+
 class QItemSelectionModel;
 
 /**
@@ -64,7 +66,7 @@ class SNDevicesListModel : public QAbstractItemModel
 		QItemSelectionModel *selectionModel() const;
 		SNDevice *device(const QModelIndex &index) const;
 	private:
-		void insertCompute(const QModelIndex &index, uint32_t &parent, int &row, QModelIndex &parentIndex);
+		void insertCompute(const QModelIndex &index, SNDevTreeItem **parent, int &row, QModelIndex &parentIndex);
 		SNMap *m_map;
 		QItemSelectionModel *m_selection;
 

@@ -82,6 +82,11 @@ void SNDevicesDiagramScene::removeDevice(SNMapDeviceItem *item)
 	{
 		dev.value()->setDevice(NULL);
 		removeItem(dev.value());
+		const QMap<port_num, SNDiagramConnector *> *con = dev.value()->connectors();
+		foreach(SNDiagramConnector *connector, *con)
+		{
+			removeControlPoint(connector, true);
+		}
 		delete dev.value();
 		m_devices.erase(dev);
 	}
@@ -168,13 +173,7 @@ void SNDevicesDiagramScene::removeHwPort(SNMapDeviceItem *item, port_num hwPort)
 	}
 
 	SNDiagramDevice *dev = device.value();
-	SNDiagramConnector *conn = dev->removeConnector(hwPort);
-	if (conn != NULL)
-	{
-		removeControlPoint(conn);
-		removeItem(conn);
-		delete conn;
-	}
+	dev->removeConnector(hwPort);
 }
 
 void SNDevicesDiagramScene::drawBackground(QPainter *painter, const QRectF &rect)
@@ -419,6 +418,8 @@ void SNDevicesDiagramScene::removeControlPoint(SNDiagramControlPoint *point, boo
 	SNDiagramLine *line = point->line();
 	if (line == NULL)
 	{
+		removeItem(point);
+		delete point;
 		return;
 	}
 

@@ -29,6 +29,8 @@
 #include "PyCPPObject.h"
 #include "config.h"
 
+#include <QDebug>
+
 PyThreadState *SNSimulateHelper::m_mainThreadState = NULL;
 
 /*!

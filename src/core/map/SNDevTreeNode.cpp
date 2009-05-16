@@ -90,6 +90,10 @@ SNDevTreeItem *SNDevTreeNode::itemAt(int pos) const
 */
 int SNDevTreeNode::childCount() const
 {
+	if (m_childs == NULL)
+	{
+		return 0;
+	}
 	return m_childs->size();
 }
 

@@ -208,13 +208,13 @@ void SNSimulate::frameResponse(uint32_t id, port_num hwPort, PyObject *data)
 
 	SNDevice *device = devIter->second;*/
 	SNDevice *device = buddy->device();
-	uint32_t targetDevId = buddy->devId();
+	/*uint32_t targetDevId = buddy->devId();
 	if (device == NULL || targetDevId == 0)
 	{
 		qWarning()<<"Device not found";
-	}
-	//device->processFrame(data, buddy->hwPort());
-	m_simulateHelpers[targetDevId % m_threadCount]->sendFrame(targetDevId, hwPort, data);
+	}*/
+	device->processFrame(data, buddy->hwPort());
+	//m_simulateHelpers[targetDevId % m_threadCount]->sendFrame(targetDevId, hwPort, data);
 }
 
 /*!
@@ -364,8 +364,8 @@ void SNSimulate::removeConnection(uint32_t dev1, port_num port1, uint32_t dev2, 
 
 void SNSimulate::addConnection(uint32_t dev1, port_num port1, uint32_t dev2, port_num port2)
 {
-	SNHwPort a(dev1, port1, device(dev1));
-	SNHwPort b(dev2, port2, device(dev2));
+	SNHwPort a(dev1, port1, device(dev2));
+	SNHwPort b(dev2, port2, device(dev1));
 	a.setBuddy(b);
 	b.setBuddy(a);
 	m_connections.insert(a);

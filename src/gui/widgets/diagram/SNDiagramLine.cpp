@@ -257,12 +257,13 @@ SNDiagramLine::~SNDiagramLine()
 		if (point->line() == this)
 		{
 			point->setLine(NULL);
-			point->setLeftLineSegment(NULL);
-			point->setRightLineSegment(NULL);
 			if (!point->persistent())
 			{
+				/*point->setLine(NULL);
+				point->setLeftLineSegment(NULL);
+				point->setRightLineSegment(NULL);*/
 				m_scene->removeItem(point);
-				delete point;
+				//delete point;
 			}
 		}
 		else if (point->persistent())
@@ -438,7 +439,7 @@ void SNDiagramLine::removeControlPoint(QVector<SNDiagramControlPoint *>::iterato
 	if (p->type() != SNDiagramControlPoint::Connector || removePersistent)
 	{
 		m_scene->removeItem(p);
-		delete p;
+		//delete p;
 	}
 	else
 	{

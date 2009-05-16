@@ -123,7 +123,7 @@ SNMapConnection::SNMapConnection()
 {
 }
 
-SNMapConnection::~ SNMapConnection()
+SNMapConnection::~SNMapConnection()
 {
 }
 

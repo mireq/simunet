@@ -113,11 +113,11 @@ SNDiagramDevice::SNDiagramDevice(SNMapDeviceItem *device, SNDevicesDiagramScene 
 
 SNDiagramDevice::~SNDiagramDevice()
 {
-	SNDiagramConnector *conn;
+	/*SNDiagramConnector *conn;
 	foreach(conn, m_connectors)
 	{
 		m_scene->removeControlPoint(conn, true);
-	}
+	}*/
 }
 
 QRectF SNDiagramDevice::boundingRect() const
@@ -156,13 +156,13 @@ SNDiagramConnector *SNDiagramDevice::addConnector(port_num port)
 	return point;
 }
 
-SNDiagramConnector *SNDiagramDevice::removeConnector(port_num port)
+void SNDiagramDevice::removeConnector(port_num port)
 {
 	QMap<port_num, SNDiagramConnector *>::iterator connector;
 	connector = m_connectors.find(port);
 	if (connector == m_connectors.end())
 	{
-		return NULL;
+		return;
 	}
 	else
 	{
@@ -170,7 +170,9 @@ SNDiagramConnector *SNDiagramDevice::removeConnector(port_num port)
 		m_connectors.erase(connector);
 		updateConnectorDiffs();
 
-		return oldConnector;
+		/*m_scene->removeItem(oldConnector);
+		delete oldConnector;*/
+		m_scene->removeControlPoint(connector.value(), true);
 	}
 }
 
@@ -239,5 +241,10 @@ void SNDiagramDevice::setName(QString name)
 QString SNDiagramDevice::name() const
 {
 	return m_name;
+}
+
+const QMap< port_num, SNDiagramConnector *> *SNDiagramDevice::connectors() const
+{
+	return &m_connectors;
 }
 

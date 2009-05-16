@@ -37,6 +37,8 @@
 
 #include <QDebug>
 
+class SNDevTreeItem;
+
 using namespace std;
 
 /*!
@@ -76,7 +78,7 @@ int SNDevicesListModel::rowCount(const QModelIndex &parent) const
 {
 	if (parent.isValid())
 	{
-		return m_map->numItems(parent.internalId());
+		return m_map->numItems(static_cast<SNDevTreeItem *>(parent.internalPointer()));
 	}
 	else
 	{
@@ -138,7 +140,7 @@ QVariant SNDevicesListModel::data(const QModelIndex &index, int role) const
 	}*/
 	if (index.isValid())
 	{
-		SNDevTreeItem *item = m_map->item(index.internalId());
+		SNDevTreeItem *item = static_cast<SNDevTreeItem *>(index.internalPointer());
 		SNDevTreeDirectoryItem *dir = NULL;
 		SNDevTreeDeviceItem *dev = NULL;
 
@@ -233,7 +235,7 @@ bool SNDevicesListModel::setData(const QModelIndex &index, const QVariant &value
 		return false;
 	}
 
-	SNDevTreeItem *item = m_map->item(index.internalId());
+	SNDevTreeItem *item = static_cast<SNDevTreeItem *>(index.internalPointer());
 	if (item == NULL || item->type() != SNDevTreeItem::Directory)
 	{
 		return false;
@@ -250,10 +252,10 @@ bool SNDevicesListModel::setData(const QModelIndex &index, const QVariant &value
 */
 uint32_t SNDevicesListModel::startDevice(const std::string &filename, const QModelIndex &index)
 {
-	uint32_t parent = 0;
+	SNDevTreeItem *parent = NULL;
 	int row = 0;
 	QModelIndex parentIndex;
-	insertCompute(index, parent, row, parentIndex);
+	insertCompute(index, &parent, row, parentIndex);
 	
 	beginInsertRows(parentIndex, row, row);
 	uint32_t devId = m_map->startDevice(filename);
@@ -273,10 +275,10 @@ uint32_t SNDevicesListModel::startDevice(const std::string &filename, const QMod
 */
 void SNDevicesListModel::addDirectory(const QString &name, const QModelIndex &index)
 {
-	uint32_t parent = 0;
+	SNDevTreeItem *parent = NULL;
 	int row = 0;
 	QModelIndex parentIndex;
-	insertCompute(index, parent, row, parentIndex);
+	insertCompute(index, &parent, row, parentIndex);
 
 	beginInsertRows(parentIndex, row, row);
 	m_map->addDirectory(name.toUtf8().data(), parent, row);
@@ -293,17 +295,17 @@ bool SNDevicesListModel::removeDevice(const QModelIndex &index)
 		return true;
 	}
 
-	uint32_t parentId = 0;
+	SNDevTreeItem *parentPtr = 0;
 	QModelIndex parent = index.parent();
 	if (parent.isValid())
 	{
-		parentId = parent.internalId();
+		parentPtr = static_cast<SNDevTreeItem *>(parent.internalPointer());
 	}
 
-	int row = m_map->itemIndex(index.internalId(), parentId);
+	int row = m_map->itemIndex(static_cast<SNDevTreeItem *>(index.internalPointer()), parentPtr);
 
 	beginRemoveRows(parent, row, row);
-	list<SNDevTreeItem *> itemsInTree = m_map->itemsInTree(index.internalId());
+	list<SNDevTreeItem *> itemsInTree = m_map->itemsInTree(static_cast<SNDevTreeItem *>(index.internalPointer()));
 	list<SNDevTreeItem *>::iterator item;
 	for (item = itemsInTree.begin(); item != itemsInTree.end(); ++item)
 	{
@@ -313,7 +315,7 @@ bool SNDevicesListModel::removeDevice(const QModelIndex &index)
 			emit itemRemoved(dev->devId());
 		}
 	}
-	m_map->deleteItem(index.internalId(), parentId);
+	m_map->deleteItem(static_cast<SNDevTreeItem *>(index.internalPointer()), parentPtr);
 	//emit itemRemoved(index.internalId());
 	endRemoveRows();
 
@@ -336,7 +338,7 @@ Qt::ItemFlags SNDevicesListModel::flags(const QModelIndex &index) const
 	Qt::ItemFlags defaultFlags = QAbstractItemModel::flags(index);
 	if (index.isValid())
 	{
-		SNDevTreeItem *item = m_map->item(index.internalId());
+		SNDevTreeItem *item = static_cast<SNDevTreeItem *>(index.internalPointer());
 		if (item == NULL)
 		{
 			return Qt::ItemIsDropEnabled | defaultFlags;
@@ -382,7 +384,8 @@ QMimeData *SNDevicesListModel::mimeData(const QModelIndexList &indexes) const
 	{
 		if (index.isValid())
 		{
-			stream << (int)index.internalId();
+			SNDevTreeItem *item = static_cast<SNDevTreeItem *>(index.internalPointer());
+			stream.writeRawData((char *)(&item), sizeof(SNDevTreeItem *));
 		}
 	}
 
@@ -419,53 +422,48 @@ bool SNDevicesListModel::dropMimeData(const QMimeData *data,
 
 	QByteArray encodedData = data->data("application/x-simunet-device");
 	QDataStream stream(&encodedData, QIODevice::ReadOnly);
-	QList<uint32_t> selectedItems;
+	QList<SNDevTreeItem *> selectedItems;
 	while (!stream.atEnd())
 	{
-		uint32_t internalId;
-		stream >> internalId;
-		selectedItems.push_front(internalId);
+		SNDevTreeItem *sel = NULL;
+		char *data = (char *)(&sel);
+		stream.readRawData(data, sizeof(SNDevTreeItem *));
+		selectedItems.push_front(sel);
 	}
 
-	uint32_t insParentId = 0;
-	uint32_t insPParentId = 0;
+	SNDevTreeItem *insParent = 0;
+	SNDevTreeItem *insPParent = 0;
 	if (parent.isValid())
 	{
-		insParentId = parent.internalId();
-		SNDevTreeItem *insParent = m_map->item(insParentId);
+		insParent = static_cast<SNDevTreeItem *>(parent.internalPointer());
 		if (insParent != NULL)
 		{
-			insPParentId = insParent->parentId();
+			insPParent = insParent->parent();
 		}
 	}
 
 
-	foreach (uint32_t internalId, selectedItems)
+	foreach (SNDevTreeItem *remItem, selectedItems)
 	{
-		SNDevTreeItem *remItem = m_map->item(internalId);
 		if (remItem == NULL)
 		{
 			return false;
 		}
 
-		uint32_t remParent = 0;
-		if (remItem->parent() != NULL)
-		{
-			remParent = remItem->parent()->internalId();
-		}
+		SNDevTreeItem *remParent = remItem->parent();
 
-		int remRow = m_map->itemIndex(internalId, remParent);
-		QModelIndex remIndex = createIndex(remRow, 0, remItem->internalId());
+		int remRow = m_map->itemIndex(remItem, remParent);
+		QModelIndex remIndex = createIndex(remRow, 0, remItem);
 		QModelIndex remParentIndex = this->parent(remIndex);
 
 		beginRemoveRows(remParentIndex, remRow, remRow);
-		m_map->removeItem(internalId, remParent);
+		m_map->removeItem(remItem, remParent);
 		endRemoveRows();
 
-		uint32_t insParent = 0;
+		SNDevTreeItem *insParent = 0;
 		if (parent.isValid())
 		{
-			insParent = parent.internalId();
+			insParent = static_cast<SNDevTreeItem *>(parent.internalPointer());
 		}
 
 		if (insParent == remParent && remRow < riadok)
@@ -475,12 +473,12 @@ bool SNDevicesListModel::dropMimeData(const QMimeData *data,
 
 
 		QModelIndex insParentIndex;
-		if (insParent != 0)
+		if (insParent != NULL)
 		{
-			insParentIndex = createIndex(m_map->itemIndex(insParentId, insPParentId), 0, insParentId);
+			insParentIndex = createIndex(m_map->itemIndex(insParent, insPParent), 0, insParent);
 		}
 		beginInsertRows(insParentIndex, riadok, riadok);
-		m_map->insertItem(internalId, insParent, riadok);
+		m_map->insertItem(remItem, insParent, riadok);
 		endInsertRows();
 	}
 
@@ -553,17 +551,17 @@ QItemSelectionModel *SNDevicesListModel::selectionModel() const
 */
 QModelIndex SNDevicesListModel::index(int row, int column, const QModelIndex &parent) const
 {
-	uint32_t par = 0;
+	SNDevTreeItem *par = NULL;
 	if (parent.isValid())
 	{
-		par = parent.internalId();
+		par = static_cast<SNDevTreeItem *>(parent.internalPointer());
 	}
 	SNDevTreeItem *item = m_map->itemAt(row, par);
 	if (item == NULL)
 	{
 		return QModelIndex();
 	}
-	return createIndex(row, column, item->internalId());
+	return createIndex(row, column, item);
 }
 
 /*!
@@ -576,7 +574,7 @@ QModelIndex SNDevicesListModel::parent(const QModelIndex &index) const
 		return QModelIndex();
 	}
 
-	SNDevTreeItem *item = m_map->item(index.internalId());
+	SNDevTreeItem *item = static_cast<SNDevTreeItem *>(index.internalPointer());
 	if (item == NULL)
 	{
 		return QModelIndex();
@@ -594,14 +592,14 @@ QModelIndex SNDevicesListModel::parent(const QModelIndex &index) const
 		return QModelIndex();
 	}
 
-	uint32_t pparent = 0;
+	SNDevTreeItem *pparent = 0;
 	if (parent->parent() != NULL)
 	{
-		pparent = parent->parent()->internalId();
+		pparent = parent->parent();
 	}
 
-	int row = m_map->itemIndex(parentId, pparent);
-	return createIndex(row, 0, parentId);
+	int row = m_map->itemIndex(parent, pparent);
+	return createIndex(row, 0, parent);
 }
 
 /*!
@@ -633,7 +631,7 @@ SNDevice *SNDevicesListModel::device(const QModelIndex &index) const
 		return NULL;
 	}
 
-	SNDevTreeItem *item = m_map->item(index.internalId());
+	SNDevTreeItem *item = static_cast<SNDevTreeItem *>(index.internalPointer());
 	if (item == NULL)
 	{
 		return NULL;
@@ -649,15 +647,14 @@ SNDevice *SNDevicesListModel::device(const QModelIndex &index) const
 	return m_map->device(dev->devId());
 }
 
-void SNDevicesListModel::insertCompute(const QModelIndex &index, uint32_t &parent, int &row, QModelIndex &parentIndex)
+void SNDevicesListModel::insertCompute(const QModelIndex &index, SNDevTreeItem **parent, int &row, QModelIndex &parentIndex)
 {
 	if (index.isValid())
 	{
-		SNDevTreeItem *item = m_map->item(index.internalId());
+		SNDevTreeItem *item = static_cast<SNDevTreeItem *>(index.internalPointer());
 		if (item == NULL)
 		{
-			parent = 0;
-			row = m_map->numItems(parent);
+			row = m_map->numItems(item);
 			return;
 		}
 
@@ -666,11 +663,11 @@ void SNDevicesListModel::insertCompute(const QModelIndex &index, uint32_t &paren
 			parentIndex = index.parent();
 			if (parentIndex.isValid())
 			{
-				parent = parentIndex.internalId();
+				*parent = static_cast<SNDevTreeItem *>(parentIndex.internalPointer());
 			}
 			else
 			{
-				parent = 0;
+				*parent = NULL;
 			}
 			row = index.row() + 1;
 		}
@@ -678,14 +675,14 @@ void SNDevicesListModel::insertCompute(const QModelIndex &index, uint32_t &paren
 		else
 		{
 			parentIndex = index;
-			parent = index.internalId();
-			row = m_map->numItems(parent);
+			*parent = static_cast<SNDevTreeItem *>(index.internalPointer());
+			row = m_map->numItems(*parent);
 		}
 	}
 	else
 	{
-		parent = 0;
-		row = m_map->numItems(parent);
+		*parent = NULL;
+		row = m_map->numItems(*parent);
 	}
 }
 
