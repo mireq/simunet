@@ -208,7 +208,13 @@ void SNSimulate::frameResponse(uint32_t id, port_num hwPort, PyObject *data)
 
 	SNDevice *device = devIter->second;*/
 	SNDevice *device = buddy->device();
-	device->processFrame(data, buddy->hwPort());
+	uint32_t targetDevId = buddy->devId();
+	if (device == NULL || targetDevId == 0)
+	{
+		qWarning()<<"Device not found";
+	}
+	//device->processFrame(data, buddy->hwPort());
+	m_simulateHelpers[targetDevId % m_threadCount]->sendFrame(targetDevId, hwPort, data);
 }
 
 /*!

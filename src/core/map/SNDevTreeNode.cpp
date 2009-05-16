@@ -149,4 +149,9 @@ void SNDevTreeNode::removeItem(uint32_t id, bool del)
 	}
 }
 
+SNDevTreeItem *SNDevTreeNode::parent() const
+{
+	return m_parent;
+}
+
 

@@ -31,7 +31,7 @@ SNHwPort::SNHwPort(const SNHwPort &other)
 {
 	m_devId = other.m_devId;
 	m_hwPort = other.m_hwPort;
-	setBuddy(*(other.m_buddy));
+	m_buddy = new SNHwPort(other.m_devId, other.m_hwPort, other.m_device);
 	m_device = other.m_device;
 }
 
@@ -45,6 +45,11 @@ SNHwPort::~SNHwPort()
 
 void SNHwPort::setBuddy(const SNHwPort &buddy)
 {
+	if (m_buddy != 0)
+	{
+		delete m_buddy;
+		m_buddy = 0;
+	}
 	m_buddy = new SNHwPort(buddy.m_devId, buddy.m_hwPort, buddy.m_device);
 }
 

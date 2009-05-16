@@ -41,6 +41,7 @@ uint32_t SNDevTreeItem::m_nextId = 1;
   to, ze polozka je v korenovom adresari.
 */
 SNDevTreeItem::SNDevTreeItem(ItemType type, SNMapItem *mapItem, SNDevTreeItem *parent)
+	: m_node(0)
 {
 	m_type = type;
 	m_mapItem = mapItem;
@@ -144,6 +145,16 @@ SNMapItem *SNDevTreeItem::mapItem() const
 }
 
 
+void SNDevTreeItem::setNode(SNDevTreeNode *node)
+{
+	m_node = node;
+}
+
+SNDevTreeNode *SNDevTreeItem::node() const
+{
+	return m_node;
+}
+
 
 /* ----------------------------------------------------------------------- */
 
@@ -240,4 +251,5 @@ SNMapDeviceItem *SNDevTreeDeviceItem::mapDevice() const
 {
 	return static_cast<SNMapDeviceItem *>(mapItem());
 }
+
 

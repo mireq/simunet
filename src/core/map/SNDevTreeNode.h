@@ -43,6 +43,7 @@ class SNDevTreeNode
 		std::vector<SNDevTreeItem *> *childs() const;
 		int index(uint32_t id) const;
 		void removeItem(uint32_t id, bool del = true);
+		SNDevTreeItem *parent() const;
 
 	private:
 		SNDevTreeItem *m_parent;

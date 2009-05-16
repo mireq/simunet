@@ -116,8 +116,10 @@ void SNMap::insertDevice(uint32_t devId, uint32_t parent, int pos)
 	{
 		m_itemsTree[parent] = new SNDevTreeNode(m_items[parent]);
 	}
-	m_itemsTree[parent]->insert(item, pos);
+	SNDevTreeNode *node = m_itemsTree[parent];
+	node->insert(item, pos);
 	m_items[item->internalId()] = item;
+	item->setNode(node);
 
 	// vlozenie zariadenia do sceny
 	m_scene->addDevice(device);
@@ -143,8 +145,10 @@ void SNMap::addDirectory(std::string name, uint32_t parent, int pos)
 			m_itemsTree[parent] = new SNDevTreeNode(m_items[parent]);
 		}
 	}
-	m_itemsTree[parent]->insert(item, pos);
+	SNDevTreeNode *node = m_itemsTree[parent];
+	node->insert(item, pos);
 	m_items[item->internalId()] = item;
+	item->setNode(node);
 }
 
 /*!
@@ -299,6 +303,7 @@ void SNMap::deleteItem(uint32_t internalId, uint32_t parent)
 	node->removeItem(internalId);
 	if (node->childCount() == 0)
 	{
+		node->parent()->setNode(0);
 		delete node;
 		m_itemsTree.erase(tree);
 	}

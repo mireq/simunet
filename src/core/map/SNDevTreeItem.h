@@ -28,6 +28,7 @@
 
 class SNMapItem;
 class SNMapDeviceItem;
+class SNDevTreeNode;
 
 /**
  @author Miroslav Bendik
@@ -60,6 +61,9 @@ class SNDevTreeItem
 		void setMapItem(SNMapItem *mapItem);
 		SNMapItem *mapItem() const;
 
+		void setNode(SNDevTreeNode *node);
+		SNDevTreeNode *node() const;
+
 	protected:
 		SNMapItem *m_mapItem;
 
@@ -70,6 +74,7 @@ class SNDevTreeItem
 		uint32_t m_id;
 		SNDevTreeItem *m_parent;
 		ItemType m_type;
+		SNDevTreeNode *m_node;
 };
 
 /* ----------------------------------------------------------------------- */
