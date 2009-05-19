@@ -109,3 +109,46 @@ div#menu_hdr img {
     display : block;
     float : right;
 }
+
+
+th {
+    background : #ddd;
+    font-weight : bold;
+}
+
+
+th > td {
+    border : #aaa dotted 1px;
+}
+
+
+table {
+    border : #888 solid 1pt;
+    border-collapse : collapse;
+    width : 100%;
+    margin-top : 1em;
+    margin-bottom : 2em;
+}
+
+
+caption {
+    color : #444;
+    font-size : 90%;
+    font-weight : bold;
+    text-align : center;
+    padding-top : 1em;
+}
+
+tr {
+    border : #aaa 1px;
+    border-style : dotted none;
+}
+
+tr:nth-child(2n) {
+    background : #fff;
+}
+
+
+tr:nth-child(2n+1) {
+    background : #f2f2f2;
+}

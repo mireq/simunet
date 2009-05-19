@@ -1,3 +1,4 @@
+# -*- coding: UTF-8 -*-
 from threading import Timer
 from random import random
 import sys
@@ -51,4 +52,47 @@ class router(SimuNet.SNDevice):
 	def processFrame(self, hwPort, data):
 		print(data.__class__)
 		self.sendTelnet("prijate " + data, "\n");
+	def httpRequest(self, url, post):
+		string = """\
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+  <title>Posledné príkazy</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <script type="text/javascript">menu()</script>
+</head>
+<div>
+<h1>Zoznam posledných príkazov</h1>
+<div id="page">
+  <div id="left">
+    <ul id="menu">
+      <li><a href="">Štatistiky</a>
+        <ul>
+          <li class="selected">
+            <a href="">Posledné príkazy</a>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+  <div id="main" class="main">
+    <table>
+      <tr>
+        <th>&nbsp;</th><th>Príkaz</th>
+      </tr>
+      <tr>
+        <td>1</td><td>send 1 Test</td>
+      </tr>
+      <tr>
+        <td>2</td><td>send 1 Test2</td>
+      </tr>
+    </table>
+  </div>
+</div>
+</body>
+</html>
+"""
+		return string
 

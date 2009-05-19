@@ -66,7 +66,8 @@ class GraphicsView : public QGraphicsView
 MainWindow::MainWindow(QWidget* parent, Qt::WindowFlags flags): QMainWindow(parent, flags),
 	m_2DView(NULL), m_3DView(NULL)
 {
-	SNGuiSettings *m_settings = SNSingleton::getDynSettings<SNGuiSettings>();
+	m_settings = SNSingleton::getDynSettings<SNGuiSettings>();
+	connect(m_settings, SIGNAL(antialiasingChanged(bool)), SLOT(setAntialiasing(bool)));
 	qApp->setFont(m_settings->guiFont(SNGuiSettings::APP_FONT), "QWidget");
 
 	m_splash = new SNSplash(":/splash_styles/default/");
@@ -86,7 +87,7 @@ MainWindow::MainWindow(QWidget* parent, Qt::WindowFlags flags): QMainWindow(pare
 	setWindowsEnabled(false);
 	QTimer::singleShot(0, this, SLOT(initSimuNet()));
 
-	SNSingleton::getDynSettings<SNGuiSettings>();
+	setAntialiasing(m_settings->antialiasing());
 }
 
 /*!
@@ -248,7 +249,8 @@ void MainWindow::graphicsViewChanged(QAction *action)
 		m_2DView = new QGraphicsView;
 		m_2DView->setScene(m_diagram);
 		m_2DView->setCacheMode(QGraphicsView::CacheBackground);
-		m_2DView->setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
+		//m_2DView->setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
+		setAntialiasing(m_settings->antialiasing());
 		m_centralWidget->addWidget(m_2DView);
 
 		m_navigateToolBar->removeAction(m_navigateRotateAct);
@@ -295,6 +297,14 @@ void MainWindow::initSimuNet()
 	m_splash->setProgress(100);
 	m_splash->setMessage(tr("Ready"));
 	m_splash->closeDelayed();
+}
+
+void MainWindow::setAntialiasing(bool antialiasing)
+{
+	if (m_2DView != NULL)
+	{
+		m_2DView->setRenderHint(QPainter::Antialiasing, antialiasing);
+	}
 }
 
 void MainWindow::restoreWindowState()

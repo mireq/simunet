@@ -52,6 +52,7 @@ class CfgApperance : public SNConfigPanel
 	private slots:
 		void fontChanged(const QFont &font, SNGuiSettings::FontType type);
 		void fontReset(int type);
+		void on_antialiasing_stateChanged(int state);
 
 	private:
 		void addFontSelectRow(const QString &label, FontSelect *fontSelect);

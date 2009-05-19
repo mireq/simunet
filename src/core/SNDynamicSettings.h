@@ -68,13 +68,18 @@ class SNGuiSettings : public SNDynamicSettings
 		QFont defaultFont(FontType type) const;
 		static const int NumFonts;
 
+		bool antialiasing() const;
+		void setAntialiasing(bool antialiasing);
+
 	signals:
 		void termFontChanged(const QFont &font);
+		void antialiasingChanged(bool antialiasing);
 
 	private:
 		QFont **m_defaultFont;
 		QFont **m_font;
 		static const char *m_fontNames[];
+		bool m_antialiasing;
 
 };
 

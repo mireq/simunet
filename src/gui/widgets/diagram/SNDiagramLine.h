@@ -127,7 +127,6 @@ class SNDiagramLine
 		void addControlPoint(SNDiagramControlPoint *point, int pos = -1);
 		void breakLineSegment(SNDiagramLineSegment *segment, const QPointF &newPointPosition = QPointF());
 //		void removeControlPoint(int pos);
-		void removeControlPoint(QVector<SNDiagramControlPoint *>::iterator point, int pos, bool removePersistent);
 		void removeControlPoint(SNDiagramControlPoint *controlPoint, bool removePersistent = false);
 		int size() const;
 		bool empty() const;
@@ -137,6 +136,7 @@ class SNDiagramLine
 		void movePoint(SNDiagramControlPoint *point, const QPointF &diff);
 		SNMapLineItem *mapLine() const;
 	private:
+		void removeControlPoint(QVector<SNDiagramControlPoint *>::iterator point, int pos, bool removePersistent);
 		// okraj kontrolnych bodov
 		QPen m_controlPointsPen;
 		// vypln kontrolnyc bodov

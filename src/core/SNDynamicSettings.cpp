@@ -90,6 +90,10 @@ SNGuiSettings::SNGuiSettings(QObject *parent)
 		m_defaultFont[i] = NULL;
 		m_font[i]        = NULL;
 	}
+	QSettings settings;
+	settings.beginGroup("gui");
+	m_antialiasing =  settings.value("antialiasing", QVariant(true)).toBool();
+	settings.endGroup();
 }
 
 /*!
@@ -110,6 +114,7 @@ SNGuiSettings::~ SNGuiSettings()
 			settings.remove(m_fontNames[i]);
 		}
 	}
+	settings.setValue("antialiasing", QVariant(m_antialiasing));
 	settings.endGroup();
 	delete m_defaultFont;
 	delete m_font;
@@ -204,6 +209,20 @@ QFont SNGuiSettings::defaultFont(FontType type) const
 	return font;
 }
 
+bool SNGuiSettings::antialiasing() const
+{
+	return m_antialiasing;
+}
+
+void SNGuiSettings::setAntialiasing(bool antialiasing)
+{
+	if (antialiasing != m_antialiasing)
+	{
+		m_antialiasing = antialiasing;
+		emit antialiasingChanged(antialiasing);
+	}
+}
+
 // ----------------------------------------------------------------
 
 /*!
@@ -221,3 +240,4 @@ QFont SNGuiSettings::defaultFont(FontType type) const
 
   \sa setGuiFont, FontType
 */
+

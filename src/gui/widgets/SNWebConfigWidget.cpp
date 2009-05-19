@@ -361,7 +361,7 @@ void SNWebConfigWidget::setHtml(const QString &html)
 void SNWebConfigWidget::htmlLoadFinished()
 {
 	QFutureWatcher<char *> *w = static_cast<QFutureWatcher<char *> *>(sender());
-	setHtml(w->result());
+	setHtml(QString::fromUtf8(w->result()));
 }
 
 
@@ -370,7 +370,7 @@ char *SNWebConfigWidget::startLoadHtml(SNWebConfigWidget *self, uint32_t devId, 
 {
 	/// @todo Dopisat post data
 	std::map<std::string, std::string> a;
-	return SNSingleton::getSimulate()->httpRequest(devId, url.toLatin1().constData(), a);
+	return SNSingleton::getSimulate()->httpRequest(devId, url.toUtf8().constData(), a);
 }
 
 

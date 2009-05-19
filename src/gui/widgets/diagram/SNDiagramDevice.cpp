@@ -172,7 +172,7 @@ void SNDiagramDevice::removeConnector(port_num port)
 
 		/*m_scene->removeItem(oldConnector);
 		delete oldConnector;*/
-		m_scene->removeControlPoint(connector.value(), true);
+		m_scene->removeControlPoint(oldConnector, true);
 	}
 }
 

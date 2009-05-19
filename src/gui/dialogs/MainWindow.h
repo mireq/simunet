@@ -35,6 +35,7 @@ class AboutDlg;
 class ConfigureDlg;
 class GraphicsView;
 class SNDevicesListModel;
+class SNGuiSettings;
 class SNScene;
 class SNSplash;
 class SecondaryWindow;
@@ -69,6 +70,7 @@ class MainWindow : public QMainWindow
 		void graphicsViewChanged(QAction *);
 		void sceneNavigationModeChanged(QAction *);
 		void initSimuNet();
+		void setAntialiasing(bool antialiasing);
 
 	private:
 		SNDevicesListModel *m_devicesModel;
@@ -104,6 +106,7 @@ class MainWindow : public QMainWindow
 		QStackedWidget *m_centralWidget;
 		QGraphicsView *m_2DView;
 		GraphicsView *m_3DView;
+		SNGuiSettings *m_settings;
 };
 
 #endif

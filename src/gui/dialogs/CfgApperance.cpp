@@ -33,6 +33,8 @@
 #include <QGridLayout>
 #include <QLabel>
 #include <QSignalMapper>
+#include <QGroupBox>
+#include <QCheckBox>
 
 #include <QDebug>
 #include <QApplication>
@@ -72,6 +74,7 @@ void FontSelect::emitFontChanged(const QFont &font)
 */
 CfgApperance::CfgApperance(QWidget* parent): SNConfigPanel(parent)
 {
+	// fonty
 	m_mapper = new QSignalMapper(this);
 	connect(m_mapper, SIGNAL(mapped(int)), SLOT(fontReset(int)));
 	m_resetButtons = new QPushButton *[SNGuiSettings::NumFonts];
@@ -100,8 +103,46 @@ CfgApperance::CfgApperance(QWidget* parent): SNConfigPanel(parent)
 
 	m_fontsSelectLayout->setRowStretch(2, 1);
 
+	// zobrazenie zariadeni
+	// device visualization
+	QWidget *visSettings = new QWidget;
+	QGroupBox *performance = new QGroupBox(tr("Performance"));
+	QGroupBox *apperance = new QGroupBox(tr("Apperance"));
+
+	QCheckBox *antialiasing = new QCheckBox(tr("Antialiasing"));
+
+	QVBoxLayout *performanceLayout = new QVBoxLayout;
+	QVBoxLayout *apperanceLayout   = new QVBoxLayout;
+	QVBoxLayout *visSettingsLayout = new QVBoxLayout;
+
+	antialiasing->setObjectName("antialiasing");
+
+	performanceLayout->addWidget(antialiasing);
+
+	visSettingsLayout->addWidget(performance);
+	visSettingsLayout->addWidget(apperance);
+	visSettingsLayout->addStretch(1);
+
+	performance->setLayout(performanceLayout);
+	apperance->setLayout(apperanceLayout);
+	visSettings->setLayout(visSettingsLayout);
+
 	tabs->addTab(fontsSelect, SNIcon("preferences-desktop-font"), tr("&Fonts"));
+	tabs->addTab(visSettings, tr("&Device visualisation"));
 	tabs->setMovable(true);
+
+	Qt::CheckState checkState;
+	if (m_settings->antialiasing())
+	{
+		checkState = Qt::Checked;
+	}
+	else
+	{
+		checkState = Qt::Unchecked;
+	}
+	antialiasing->setCheckState(checkState);
+
+	QMetaObject::connectSlotsByName(this);
 }
 
 /*!
@@ -223,6 +264,18 @@ bool CfgApperance::settingsChanged()
 		}
 	}
 	return false;
+}
+
+void CfgApperance::on_antialiasing_stateChanged(int state)
+{
+	if (state == Qt::Checked)
+	{
+		m_settings->setAntialiasing(true);
+	}
+	else
+	{
+		m_settings->setAntialiasing(false);
+	}
 }
 
 
