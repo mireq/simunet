@@ -7,6 +7,7 @@ import SimuNet
 import re
 
 class router(SimuNet.SNDevice):
+	prikazy = []
 	timerStarted = False
 	timer = None
 	def __init__(self):
@@ -21,6 +22,8 @@ class router(SimuNet.SNDevice):
 			self.timer = Timer(random(), self.__sendMsg)
 			self.timer.start()
 	def telnetRequest(self, line, symbol):
+		self.prikazy.append(line)
+
 		p = re.compile('add')
 		m = p.match(line)
 		if m:
@@ -52,7 +55,10 @@ class router(SimuNet.SNDevice):
 	def processFrame(self, hwPort, data):
 		print(data.__class__)
 		self.sendTelnet("prijate " + data, "\n");
-	def httpRequest(self, url, post):
+	def httpRequest(self, url, get, post):
+		print("url:" + url);
+		print(get);
+		print(post);
 		string = """\
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
@@ -61,17 +67,16 @@ class router(SimuNet.SNDevice):
 <head>
   <title>Posledné príkazy</title>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <script type="text/javascript">menu()</script>
 </head>
 <div>
 <h1>Zoznam posledných príkazov</h1>
 <div id="page">
   <div id="left">
     <ul id="menu">
-      <li><a href="">Štatistiky</a>
+      <li><a href="simunet:/aaa?aaa=3">Štatistiky</a>
         <ul>
           <li class="selected">
-            <a href="">Posledné príkazy</a>
+            <a href="simunet:/bbb">Posledné príkazy</a>
           </li>
         </ul>
       </li>
@@ -82,12 +87,10 @@ class router(SimuNet.SNDevice):
       <tr>
         <th>&nbsp;</th><th>Príkaz</th>
       </tr>
-      <tr>
-        <td>1</td><td>send 1 Test</td>
-      </tr>
-      <tr>
-        <td>2</td><td>send 1 Test2</td>
-      </tr>
+"""
+		for i in range(len(self.prikazy)):
+			string = string + "<tr><td>"+str(i)+"</td><td>"+self.prikazy[i]+"</td></tr>"
+		string = string + """
     </table>
   </div>
 </div>

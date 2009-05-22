@@ -27,6 +27,7 @@
 #include <QMetaType>
 
 #include <QFont>
+#include <QColor>
 
 /**
  @author Miroslav Bendik <miroslav.bendik@gmail.com>
@@ -60,6 +61,12 @@ class SNGuiSettings : public SNDynamicSettings
 			TERM_FONT     /*!< Font pouzivany v integrovanom emulatore terminalu */
 		};
 
+		enum ColorGroup
+		{
+			GridColor = 0,
+			BgColor = 1
+		};
+
 		SNGuiSettings(QObject *parent = 0);
 		~SNGuiSettings();
 
@@ -71,14 +78,23 @@ class SNGuiSettings : public SNDynamicSettings
 		bool antialiasing() const;
 		void setAntialiasing(bool antialiasing);
 
+		QColor color(ColorGroup group) const;
+		void setColor(const QColor &color, ColorGroup group);
+		void resetColor(ColorGroup group);
+		bool colorIsDefault(ColorGroup group);
+		static const int NumColors;
+
 	signals:
 		void termFontChanged(const QFont &font);
 		void antialiasingChanged(bool antialiasing);
+		void colorChanged(const QColor &color, SNGuiSettings::ColorGroup group);
 
 	private:
 		QFont **m_defaultFont;
 		QFont **m_font;
+		QColor **m_colors;
 		static const char *m_fontNames[];
+		static const char *m_colorNames[];
 		bool m_antialiasing;
 
 };

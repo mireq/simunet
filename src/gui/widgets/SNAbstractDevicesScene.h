@@ -33,11 +33,10 @@ class SNMapDeviceItem;
 /**
  @author Miroslav Bendik
 */
-class SNAbstractDevicesScene : public QObject
+class SNAbstractDevicesScene
 {
-		Q_OBJECT
 	public:
-		SNAbstractDevicesScene(QObject *parent = 0);
+		SNAbstractDevicesScene();
 		~SNAbstractDevicesScene();
 		virtual void setMap(SNMap *map);
 		SNMap *map() const;

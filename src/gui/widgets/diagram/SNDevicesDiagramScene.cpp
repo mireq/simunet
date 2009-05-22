@@ -33,6 +33,10 @@
 #include <QPainter>
 #include <QPalette>
 #include <QGraphicsSceneMouseEvent>
+#include <QGraphicsView>
+
+#include "core/SNAccessors.h"
+#include "core/SNDynamicSettings.h"
 
 #include <vector>
 
@@ -46,9 +50,14 @@ SNDevicesDiagramScene::SNDevicesDiagramScene(QObject* parent)
 	:QGraphicsScene(parent), m_mode(Norm),
 	m_newPoint(NULL), m_endControlPointClicked(NULL)
 {
+	SNGuiSettings *settings = SNSingleton::getDynSettings<SNGuiSettings>();
 	QPalette palette;
 	QColor hgColor = palette.color(QPalette::Highlight);
 	QColor bgColor = palette.color(QPalette::Base);
+
+	connect(settings, SIGNAL(colorChanged(const QColor &, SNGuiSettings::ColorGroup)), SLOT(colorChanged(const QColor &, SNGuiSettings::ColorGroup)));
+	m_sceneBgColor = settings->color(SNGuiSettings::BgColor);
+	m_sceneGridColor = settings->color(SNGuiSettings::GridColor);
 
 	m_controlPointLineColor = hgColor;
 	m_controlPointBgColor = QColor((bgColor.red() * 5 + hgColor.red()) / 6, (bgColor.green() * 5 + hgColor.green()) / 6, (bgColor.blue() * 5 + hgColor.blue()) / 6);
@@ -188,16 +197,13 @@ void SNDevicesDiagramScene::drawBackground(QPainter *painter, const QRectF &rect
 	int endh = rect.height() + m_gridSize;
 
 	QPalette palette;
-	QColor bgColor = palette.color(QPalette::Base);
 	QColor winColor = palette.color(QPalette::Window);
 	painter->setBrush(winColor);
 	painter->drawRect(rect);
-	painter->setBrush(bgColor);
+	painter->setBrush(m_sceneBgColor);
 	painter->drawRect(sr);
 
-	QColor hgColor = palette.color(QPalette::Highlight);
-	QColor gridColor((bgColor.red() * 3 + hgColor.red()) / 4, (bgColor.green() * 3 + hgColor.green()) / 4, (bgColor.blue() * 3 + hgColor.blue()) / 4);
-	painter->setPen(gridColor);
+	painter->setPen(m_sceneGridColor);
 	painter->setBrush(Qt::NoBrush);
 
 	for (int i = 0; i < endw; i += m_gridSize)
@@ -501,5 +507,20 @@ void SNDevicesDiagramScene::mergeLine(SNDiagramControlPoint *point)
 	m_newPoint = NULL;
 	m_endControlPointClicked = NULL;
 	return;
+}
+
+void SNDevicesDiagramScene::colorChanged(const QColor & color, SNGuiSettings::ColorGroup group)
+{
+	switch (group)
+	{
+		case SNGuiSettings::BgColor:
+			m_sceneBgColor = color;
+			break;
+		case SNGuiSettings::GridColor:
+			m_sceneGridColor = color;
+			break;
+	}
+	sceneRectChanged(sceneRect());
+	update(sceneRect());
 }
 

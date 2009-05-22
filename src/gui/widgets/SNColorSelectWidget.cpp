@@ -20,70 +20,97 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#include "SNWebConfigPage.h"
+#include "SNColorSelectWidget.h"
+#include "SNColorSelectWidget_p.h"
 
-#include <QWebSettings>
-#include <QUrl>
-#include <QWebFrame>
+#include <QHBoxLayout>
+#include <QPushButton>
 
-#include <QNetworkRequest>
+#include <QColorDialog>
+
 #include <QDebug>
 
-/*!
-  \class SNWebConfigPage
-  \brief Vylepsenie QWebPage o filtrovanie a pridany vlastny css styl.
-  \ingroup widgets
-*/
-
-/*!
-  Vytvorenie web stranky.
-*/
-SNWebConfigPage::SNWebConfigPage(QWidget *parent)
-		: QWebPage(parent)
+SNColorSelectWidget::SNColorSelectWidget(QWidget *parent)
+	: QWidget(parent)
 {
-	settings()->setUserStyleSheetUrl(QUrl("qrc:/web/webstyle.css"));
-	//setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
+	QHBoxLayout *layout = new QHBoxLayout(this);
+	setLayout(layout);
+
+	m_colorPreview = new SNColorPreviewWidget();
+	m_selectButton = new QPushButton(tr("Select"));
+
+	layout->addWidget(m_colorPreview);
+	layout->addWidget(m_selectButton);
+
+	connect(m_selectButton, SIGNAL(clicked()), SLOT(selectColor()));
 }
 
-/*!
-  Zrusenie web stranky.
-*/
-SNWebConfigPage::~SNWebConfigPage()
+SNColorSelectWidget::~SNColorSelectWidget()
 {
 }
 
-/*!
-  \reimp
-
-  \par Tato metoda emituje signal javaScriptError() v pripade, ze nastane chyba.
-*/
-void SNWebConfigPage::javaScriptConsoleMessage(const QString &message, int lineNumber, const QString &sourceID)
+void SNColorSelectWidget::selectColor()
 {
-	emit javaScriptError(message, lineNumber);
-}
-
-/*!
-  \reimp
-
-  \par Filter pre navigacne prikazy.
-*/
-bool SNWebConfigPage::acceptNavigationRequest(QWebFrame *frame, const QNetworkRequest &request, NavigationType type)
-{
-	qDebug()<<request.url();
-	QUrl url = request.url();
-	if (url.scheme() == "simunet")
+	QColor color = QColorDialog::getColor(m_colorPreview->color(), this);
+	if (color.isValid())
 	{
-		/// TODO dopisat nastavenie html
-		//mainFrame()->setHtml();
-		qDebug()<<url.path();
-		return false;
+		if (m_colorPreview->color() != color)
+		{
+			m_colorPreview->setColor(color);
+			emit colorChanged(color);
+		}
 	}
-	return QWebPage::acceptNavigationRequest(frame, request, type);
 }
 
-/*!
-  \fn SNWebConfigPage::javaScriptError(QString, int)
-  Tento signal sa emituje pri najdeni chyby v javascripte.
+SNColorPreviewWidget::SNColorPreviewWidget(QWidget *parent)
+	: QWidget(parent), m_color(Qt::white)
+{
+	setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+	setAutoFillBackground(true);
+	updateColor();
+}
 
-  Emituje sa chybova hlaska a cislo riadku na ktorom doslo k chybe.
-*/
+SNColorPreviewWidget::~SNColorPreviewWidget()
+{
+}
+
+
+QColor SNColorSelectWidget::color() const
+{
+	return m_colorPreview->color();
+}
+
+void SNColorSelectWidget::setColor(const QColor &color)
+{
+	if (color != m_colorPreview->color())
+	{
+		m_colorPreview->setColor(color);
+		emit colorChanged(color);
+	}
+}
+
+QSize SNColorPreviewWidget::sizeHint() const
+{
+	QFontMetrics fm(font());
+	return QSize(fm.height(), fm.height());
+}
+
+void SNColorPreviewWidget::setColor(const QColor &color)
+{
+	m_color = color;
+	updateColor();
+}
+
+const QColor &SNColorPreviewWidget::color() const
+{
+	return m_color;
+}
+
+void SNColorPreviewWidget::updateColor()
+{
+	QPalette p = palette();
+	p.setBrush(QPalette::Background, m_color);
+	setPalette(p);
+}
+
+

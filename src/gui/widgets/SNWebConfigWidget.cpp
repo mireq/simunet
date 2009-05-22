@@ -116,7 +116,7 @@ SNWebConfigWidget::SNWebConfigWidget(uint32_t devId, QWidget* parent): QWidget(p
 
 	m_htmlLoadWatcher = new QFutureWatcher<char *>;
 	connect(m_htmlLoadWatcher, SIGNAL(finished()), SLOT(htmlLoadFinished()));
-	setUrl("url");
+	setUrl(QUrl("simunet:/"));
 }
 
 /*!
@@ -183,7 +183,7 @@ void SNWebConfigWidget::setPageTitle(const QString &title)
 /*!
   Nastavenie adresy ktoru ma integrovany browser zobrazit.
 */
-void SNWebConfigWidget::setUrl(const QString &url)
+void SNWebConfigWidget::setUrl(const QUrl &url)
 {
 	QFuture<char *> future = QtConcurrent::run(SNWebConfigWidget::startLoadHtml, this, m_devId, url);
 	m_htmlLoadWatcher->setFuture(future);
@@ -349,7 +349,7 @@ void SNWebConfigWidget::menuActivated(const QModelIndex &index)
 {
 	if (index.isValid())
 	{
-		setUrl(index.data(Qt::UserRole).toString());
+		setUrl(QUrl(index.data(Qt::UserRole).toString()));
 	}
 }
 
@@ -366,11 +366,20 @@ void SNWebConfigWidget::htmlLoadFinished()
 
 
 
-char *SNWebConfigWidget::startLoadHtml(SNWebConfigWidget *self, uint32_t devId, const QString &url)
+char *SNWebConfigWidget::startLoadHtml(SNWebConfigWidget *self, uint32_t devId, const QUrl &url)
 {
 	/// @todo Dopisat post data
-	std::map<std::string, std::string> a;
-	return SNSingleton::getSimulate()->httpRequest(devId, url.toUtf8().constData(), a);
+	std::map<std::string, std::string> get;
+	std::map<std::string, std::string> post;
+	const QList<QPair<QString, QString> > query = url.queryItems();
+	QList<QPair<QString, QString> >::const_iterator it;
+	for (it = query.constBegin(); it != query.constEnd(); ++it)
+	{
+		QString key = it->first;
+		QString val = it->second;
+		get[key.toUtf8().data()] = val.toUtf8().data();
+	}
+	return SNSingleton::getSimulate()->httpRequest(devId, url.path().toUtf8().constData(), get, post);
 }
 
 

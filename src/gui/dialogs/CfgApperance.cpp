@@ -25,6 +25,7 @@
 
 #include "core/SNAccessors.h"
 
+#include "SNColorSelectWidget.h"
 #include "SNIcon.h"
 
 #include <QTabWidget>
@@ -77,7 +78,7 @@ CfgApperance::CfgApperance(QWidget* parent): SNConfigPanel(parent)
 	// fonty
 	m_mapper = new QSignalMapper(this);
 	connect(m_mapper, SIGNAL(mapped(int)), SLOT(fontReset(int)));
-	m_resetButtons = new QPushButton *[SNGuiSettings::NumFonts];
+	m_fontResetButtons = new QPushButton *[SNGuiSettings::NumFonts];
 	m_changed = new bool[SNGuiSettings::NumFonts];
 	m_settings = SNSingleton::getDynSettings<SNGuiSettings>();
 
@@ -105,6 +106,7 @@ CfgApperance::CfgApperance(QWidget* parent): SNConfigPanel(parent)
 
 	// zobrazenie zariadeni
 	// device visualization
+	m_colorSelectWidgets = new SNColorSelectWidget *[SNGuiSettings::NumColors];
 	QWidget *visSettings = new QWidget;
 	QGroupBox *performance = new QGroupBox(tr("Performance"));
 	QGroupBox *apperance = new QGroupBox(tr("Apperance"));
@@ -112,19 +114,23 @@ CfgApperance::CfgApperance(QWidget* parent): SNConfigPanel(parent)
 	QCheckBox *antialiasing = new QCheckBox(tr("Antialiasing"));
 
 	QVBoxLayout *performanceLayout = new QVBoxLayout;
-	QVBoxLayout *apperanceLayout   = new QVBoxLayout;
+	m_apperanceLayout = new QGridLayout;
 	QVBoxLayout *visSettingsLayout = new QVBoxLayout;
 
 	antialiasing->setObjectName("antialiasing");
 
 	performanceLayout->addWidget(antialiasing);
 
+	m_apperanceLayout->setColumnStretch(0, 1);
+	m_apperanceLayout->setColumnStretch(1, 0);
+	m_apperanceLayout->setColumnStretch(2, 0);
+
 	visSettingsLayout->addWidget(performance);
 	visSettingsLayout->addWidget(apperance);
 	visSettingsLayout->addStretch(1);
 
 	performance->setLayout(performanceLayout);
-	apperance->setLayout(apperanceLayout);
+	apperance->setLayout(m_apperanceLayout);
 	visSettings->setLayout(visSettingsLayout);
 
 	tabs->addTab(fontsSelect, SNIcon("preferences-desktop-font"), tr("&Fonts"));
@@ -142,6 +148,15 @@ CfgApperance::CfgApperance(QWidget* parent): SNConfigPanel(parent)
 	}
 	antialiasing->setCheckState(checkState);
 
+	//QLabel *gridColorLabel = new QLabel(tr("Grid color"));
+	//SNColorSelectWidget *gridColorSelect = new SNColorSelectWidget;
+	//gridColorLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
+
+	//m_apperanceLayout->addWidget(gridColorLabel, 0, 0);
+	//m_apperanceLayout->addWidget(gridColorSelect, 0, 1);
+	addColorSelectRow(tr("Background color"), new SNColorSelectWidget, SNGuiSettings::BgColor);
+	addColorSelectRow(tr("Grid color"), new SNColorSelectWidget, SNGuiSettings::GridColor);
+
 	QMetaObject::connectSlotsByName(this);
 }
 
@@ -151,7 +166,7 @@ CfgApperance::CfgApperance(QWidget* parent): SNConfigPanel(parent)
 CfgApperance::~CfgApperance()
 {
 	delete m_changed;
-	delete m_resetButtons;
+	delete m_fontResetButtons;
 }
 
 /*!
@@ -190,11 +205,11 @@ void CfgApperance::fontChanged(const QFont &font, SNGuiSettings::FontType type)
 {
 	if (m_settings->defaultFont(type) == font)
 	{
-		m_resetButtons[type]->hide();
+		m_fontResetButtons[type]->hide();
 	}
 	else
 	{
-		m_resetButtons[type]->show();
+		m_fontResetButtons[type]->show();
 	}
 
 	if (m_settings->guiFont(type) == font)
@@ -234,7 +249,7 @@ void CfgApperance::addFontSelectRow(const QString &label, FontSelect *fontSelect
 	QPushButton *button = new QPushButton(tr("Reset"));
 	QLabel *l = new QLabel(label);
 
-	m_resetButtons[fontSelect->type()] = button;
+	m_fontResetButtons[fontSelect->type()] = button;
 	m_changed[fontSelect->type()] = false;
 
 	if (m_settings->defaultFont(fontSelect->type()) == fontSelect->selectedFont())
@@ -278,4 +293,63 @@ void CfgApperance::on_antialiasing_stateChanged(int state)
 	}
 }
 
+void CfgApperance::addColorSelectRow(const QString &label, SNColorSelectWidget *colorSelect, SNGuiSettings::ColorGroup group)
+{
+	m_colorSelectWidgets[group] = colorSelect;
+	QLabel *l = new QLabel(label);
+	QPushButton *reset = new QPushButton(tr("Reset"));
+	colorSelect->setColor(m_settings->color(group));
+	ColorSelectHandler *h = new ColorSelectHandler(colorSelect, reset, group, this);
 
+	connect(h, SIGNAL(colorChanged(const QColor &, SNGuiSettings::ColorGroup)), SLOT(colorChanged(const QColor &, SNGuiSettings::ColorGroup)));
+	connect(h, SIGNAL(reset(SNGuiSettings::ColorGroup)), SLOT(reset(SNGuiSettings::ColorGroup)));
+
+	if (m_settings->colorIsDefault(group))
+	{
+		reset->setHidden(true);
+	}
+
+	m_apperanceLayout->addWidget(l);
+	m_apperanceLayout->addWidget(colorSelect);
+	m_apperanceLayout->addWidget(reset);
+}
+
+void CfgApperance::colorChanged(const QColor &color, SNGuiSettings::ColorGroup group)
+{
+	m_settings->setColor(color, group);
+}
+
+
+void CfgApperance::reset(SNGuiSettings::ColorGroup group)
+{
+	m_settings->resetColor(group);
+	m_colorSelectWidgets[group]->setColor(m_settings->color(group));
+	m_settings->resetColor(group);
+}
+
+ColorSelectHandler::ColorSelectHandler(SNColorSelectWidget *widget, QPushButton *resetBtn, SNGuiSettings::ColorGroup group, QObject *parent)
+	: QObject(parent)
+{
+	m_colorSelect = widget;
+	m_group = group;
+	m_resetBtn = resetBtn;
+
+	connect(widget, SIGNAL(colorChanged(const QColor &)), SLOT(newColor(const QColor &)));
+	connect(resetBtn, SIGNAL(clicked()), this, SLOT(resetTriggered()));
+}
+
+ColorSelectHandler::~ColorSelectHandler()
+{
+}
+
+void ColorSelectHandler::newColor(const QColor &color)
+{
+	m_resetBtn->setHidden(false);
+	emit colorChanged(color, m_group);
+}
+
+void ColorSelectHandler::resetTriggered()
+{
+	emit reset(m_group);
+	m_resetBtn->setHidden(true);
+}

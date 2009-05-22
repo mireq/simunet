@@ -28,6 +28,8 @@
 #include <QSet>
 #include <QMap>
 
+#include "core/SNDynamicSettings.h"
+
 #include "SNAbstractDevicesScene.h"
 
 class SNDiagramConnector;
@@ -69,10 +71,16 @@ class SNDevicesDiagramScene : public QGraphicsScene, public SNAbstractDevicesSce
 		void mouseMoveEventLine(QGraphicsSceneMouseEvent *event);
 		void newPoint(const QPointF &point);
 		void removeControlPoint(SNDiagramControlPoint *point, bool forceRemovePersistent = false);
-	private:
 		void mergeLine(SNDiagramControlPoint *point);
+
+	private slots:
+		void colorChanged(const QColor &color, SNGuiSettings::ColorGroup group);
+
+	private:
 		QColor m_controlPointLineColor;
 		QColor m_controlPointBgColor;
+		QColor m_sceneBgColor;
+		QColor m_sceneGridColor;
 		static const int m_gridSize;
 
 		SceneMode m_mode;

@@ -32,9 +32,10 @@ class QSignalMapper;
 
 class FontSelect;
 class SNGUiSettings;
+class SNColorSelectWidget;
 
 /**
- @author Miroslav Bendik <miroslav.bendik@gmail.com>
+ @author Miroslav Bendik <miroslav.bendik@gmail.com>SNColorSelectWidget
 */
 class CfgApperance : public SNConfigPanel
 {
@@ -53,13 +54,19 @@ class CfgApperance : public SNConfigPanel
 		void fontChanged(const QFont &font, SNGuiSettings::FontType type);
 		void fontReset(int type);
 		void on_antialiasing_stateChanged(int state);
+		void colorChanged(const QColor &color, SNGuiSettings::ColorGroup group);
+		void reset(SNGuiSettings::ColorGroup group);
 
 	private:
 		void addFontSelectRow(const QString &label, FontSelect *fontSelect);
+		void addColorSelectRow(const QString &label, SNColorSelectWidget *colorSelect, SNGuiSettings::ColorGroup group);
+
 		QGridLayout *m_fontsSelectLayout;
+		QGridLayout *m_apperanceLayout;
 		FontSelect *m_appFontSelect;
 		FontSelect *m_termFontSelect;
-		QPushButton **m_resetButtons;
+		QPushButton **m_fontResetButtons;
+		SNColorSelectWidget **m_colorSelectWidgets;
 		bool *m_changed;
 		SNGuiSettings *m_settings;
 		QSignalMapper *m_mapper;

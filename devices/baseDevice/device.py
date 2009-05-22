@@ -18,7 +18,7 @@ class SNDevice:
 		print("setConfig not implemented")
 	def dumpConfig(self):
 		print("dumpConfig not implemented")
-	def httpRequest(self, url, post):
+	def httpRequest(self, url, get, post):
 		print("httpRequest not implemented")
 	def telnetRequest(self, line, symbol):
 		print("telnetRequest not implemented")

@@ -89,9 +89,10 @@ PyObject* telnetResponseWrapper(PyObject *, PyObject *args)
 
 	//PyCPPObject pPost(PyDict_New(), true);
 	//PyDict_SetItemString(pPost, "name", PyCPPObject(PyString_FromString("value"), true));
+	map<string,string> pGet;
 	map<string,string> pPost;
 	pPost["name"] = "value";
-	cout<<dev->httpRequest("url", pPost)<<endl;
+	cout<<dev->httpRequest("url", pGet, pPost)<<endl;
 	cout<<dev->telnetGetControlChars()<<endl;
 
 	

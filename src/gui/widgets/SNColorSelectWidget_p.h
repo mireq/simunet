@@ -20,45 +20,26 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
+ 
+#ifndef SNCOLORSELECTWIDGET_P_H
+#define SNCOLORSELECTWIDGET_P_H
 
-#include "SNFontSelect.h"
-#include "core/SNDynamicSettings.h"
-
+#include <QWidget>
 #include <QColor>
 
-class QPushButton;
-class SNColorSelectWidget;
-
-class FontSelect : public SNFontSelect
+class SNColorPreviewWidget: public QWidget
 {
 	Q_OBJECT
 	public:
-		FontSelect(const QFont &font, SNGuiSettings::FontType type, QWidget *parent = 0);
-		~FontSelect();
-		SNGuiSettings::FontType type() const;
-	signals:
-		void fontChanged(const QFont &font, SNGuiSettings::FontType);
-	private slots:
-		void emitFontChanged(const QFont &font);
+		SNColorPreviewWidget(QWidget *parent = 0);
+		~SNColorPreviewWidget();
+		QSize sizeHint() const;
+		void setColor(const QColor &color);
+		const QColor &color() const;
 	private:
-		SNGuiSettings::FontType m_type;
+		void updateColor();
+		QColor m_color;
+		QWidget *m_colorWidget;
 };
 
-class ColorSelectHandler: public QObject
-{
-	Q_OBJECT
-	public:
-		ColorSelectHandler(SNColorSelectWidget *widget, QPushButton *resetBtn, SNGuiSettings::ColorGroup group, QObject *parent = 0);
-		~ColorSelectHandler();
-	private slots:
-		void newColor(const QColor &color);
-		void resetTriggered();
-	signals:
-		void colorChanged(const QColor &color, SNGuiSettings::ColorGroup group);
-		void reset(SNGuiSettings::ColorGroup group);
-	private:
-		SNColorSelectWidget *m_colorSelect;
-		SNGuiSettings::ColorGroup m_group;
-		QPushButton *m_resetBtn;
-};
-
+#endif

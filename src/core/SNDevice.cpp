@@ -246,7 +246,7 @@ PyObject *SNDevice::dumpConfig(void)
  \param url Url ktore pozadujeme od http serveru zariadenia.
  \param post Post data ktore mu posielame.
  */
-char *SNDevice::httpRequest(const std::string &url, PyObject *post)
+char *SNDevice::httpRequest(const std::string &url, PyObject *get, PyObject *post)
 {
 	try
 	{
@@ -256,10 +256,11 @@ char *SNDevice::httpRequest(const std::string &url, PyObject *post)
 			return NULL;
 		}
 		PyCPPObject pUrl(PyString_FromString(url.c_str()));
-		PyCPPObject args(PyTuple_New(2), true);
+		PyCPPObject args(PyTuple_New(3), true);
 
 		PyTuple_SetItem(args, 0, pUrl);
-		PyTuple_SetItem(args, 1, post);
+		PyTuple_SetItem(args, 1, get);
+		PyTuple_SetItem(args, 2, post);
 		PyCPPObject pRet(PyObject_CallObject(httpRequestFunc, args));
 		//return PyString_AsString(pRet);
 		if (!PyString_Check(pRet))
@@ -280,17 +281,22 @@ char *SNDevice::httpRequest(const std::string &url, PyObject *post)
 /*!
   \overload
 */
-char *SNDevice::httpRequest(const std::string &url, const std::map<std::string, std::string> post)
+char *SNDevice::httpRequest(const std::string &url, const std::map<std::string, std::string> get, const std::map<std::string, std::string> post)
 {
 	try
 	{
+		PyCPPObject pGet(PyDict_New(), true);
 		PyCPPObject pPost(PyDict_New(), true);
-		map<string,string>::const_iterator postIterator;
-		for (postIterator = post.begin(); postIterator != post.end(); ++postIterator)
+		map<string,string>::const_iterator iter;
+		for (iter = get.begin(); iter != get.end(); ++iter)
 		{
-			PyDict_SetItemString(pPost, postIterator->first.c_str(), PyCPPObject(PyString_FromString(postIterator->second.c_str()), true));
+			PyDict_SetItemString(pGet, iter->first.c_str(), PyCPPObject(PyString_FromString(iter->second.c_str()), true));
 		}
-		return httpRequest(url, pPost);
+		for (iter = post.begin(); iter != post.end(); ++iter)
+		{
+			PyDict_SetItemString(pPost, iter->first.c_str(), PyCPPObject(PyString_FromString(iter->second.c_str()), true));
+		}
+		return httpRequest(url, pGet, pPost);
 	}
 	catch (PyObjectNULLException e)
 	{

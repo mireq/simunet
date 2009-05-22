@@ -95,6 +95,7 @@ MainWindow::MainWindow(QWidget* parent, Qt::WindowFlags flags): QMainWindow(pare
 */
 MainWindow::~MainWindow()
 {
+	m_scene->deleteLater();
 	m_splash->deleteLater();
 	saveWindowState();
 	SNSingleton::deleteObjects();

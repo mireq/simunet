@@ -27,8 +27,8 @@
 
 #include <QDebug>
 
-SNAbstractDevicesScene::SNAbstractDevicesScene(QObject *parent)
-		: QObject(parent), m_map(NULL)
+SNAbstractDevicesScene::SNAbstractDevicesScene()
+		: m_map(NULL)
 {
 }
 

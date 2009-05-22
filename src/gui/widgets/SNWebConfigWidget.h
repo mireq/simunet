@@ -49,7 +49,7 @@ class SNWebConfigWidget : public QWidget
 		QWebPage *page();
 	public slots:
 		void setPageTitle(const QString &title);
-		void setUrl(const QString &url);
+		void setUrl(const QUrl &url);
 		void addMenuItem(const QString &text, const QString &href, int depth, int mode = 0, const QString &title = QString());
 	private:
 		void loadJavascript();
@@ -64,7 +64,7 @@ class SNWebConfigWidget : public QWidget
 		void setHtml(const QString &html);
 		void htmlLoadFinished();
 	private:
-		static char *startLoadHtml(SNWebConfigWidget *self, uint32_t devId, const QString &url);
+		static char *startLoadHtml(SNWebConfigWidget *self, uint32_t devId, const QUrl &url);
 		uint32_t m_devId;
 
 		QSplitter *m_vSplitter;

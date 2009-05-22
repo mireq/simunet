@@ -58,8 +58,9 @@ class SNSimulate: public QObject
 		SNDevice *device(uint32_t id) const;
 
 		// komunikacia so zariadeniami
-		char *httpRequest(uint32_t devId, const std::string &url, PyObject *post);
-		char *httpRequest(uint32_t devId, const std::string &url, const std::map<std::string, std::string> post);
+		char *httpRequest(uint32_t devId, const std::string &url, PyObject *get, PyObject *post);
+		char *httpRequest(uint32_t devId, const std::string &url, const std::map<std::string, std::string> get, const std::map<std::string, std::string> post);
+
 		char *telnetRequest(uint32_t devId, const std::string &line, char symbol);
 		void sendFrame(uint32_t targetDevId, port_num hwPort, PyObject *frame);
 

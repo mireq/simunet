@@ -25,6 +25,7 @@
 #include <QApplication>
 #include <QFontInfo>
 #include <QSettings>
+#include <QPalette>
 
 /* ----------------------------------------------------------------------- */
 
@@ -59,6 +60,8 @@ SNDynamicSettings::~SNDynamicSettings()
   Pocet typov prvkov pre ktore je mozne vyberat fonty.
 */
 const int SNGuiSettings::NumFonts = 2;
+const int SNGuiSettings::NumColors = 2;
+
 
 /*!
   Mena typov prvkov (tak ako sa ukladaju do suboru).
@@ -66,6 +69,11 @@ const int SNGuiSettings::NumFonts = 2;
 const char *SNGuiSettings::m_fontNames[] = {
 	"ApplicationFont",
 	"TerminalFont"
+};
+
+const char *SNGuiSettings::m_colorNames[] = {
+	"BackgroundColor",
+	"GridColor"
 };
 
 
@@ -85,14 +93,27 @@ SNGuiSettings::SNGuiSettings(QObject *parent)
 {
 	m_defaultFont = new QFont *[NumFonts];
 	m_font        = new QFont *[NumFonts];
+	m_colors      = new QColor *[NumColors];
 	for (int i  = 0; i < NumFonts; ++i)
 	{
 		m_defaultFont[i] = NULL;
 		m_font[i]        = NULL;
 	}
+	for (int i  = 0; i < NumColors; ++i)
+	{
+		m_colors[i] = NULL;
+	}
 	QSettings settings;
 	settings.beginGroup("gui");
 	m_antialiasing =  settings.value("antialiasing", QVariant(true)).toBool();
+	for (int i  = 0; i < NumColors; ++i)
+	{
+		QVariant color = settings.value(m_colorNames[i], QVariant());
+		if (color.isValid())
+		{
+			setColor(color.value<QColor>(), ColorGroup(i));
+		}
+	}
 	settings.endGroup();
 }
 
@@ -112,6 +133,18 @@ SNGuiSettings::~ SNGuiSettings()
 		else
 		{
 			settings.remove(m_fontNames[i]);
+		}
+	}
+
+	for (int i  = 0; i < NumColors; ++i)
+	{
+		if (m_colors[i] == NULL)
+		{
+			settings.remove(m_colorNames[i]);
+		}
+		else
+		{
+			settings.setValue(m_colorNames[i], QVariant(*m_colors[i]));
 		}
 	}
 	settings.setValue("antialiasing", QVariant(m_antialiasing));
@@ -223,6 +256,80 @@ void SNGuiSettings::setAntialiasing(bool antialiasing)
 	}
 }
 
+QColor SNGuiSettings::color(ColorGroup group) const
+{
+	QPalette palette;
+	QColor hgColor = palette.color(QPalette::Highlight);
+	QColor bgColor = palette.color(QPalette::Base);
+	switch (group)
+	{
+		case GridColor:
+			if (m_colors[group] == NULL)
+			{
+				return QColor((bgColor.red() * 3 + hgColor.red()) / 4, (bgColor.green() * 3 + hgColor.green()) / 4, (bgColor.blue() * 3 + hgColor.blue()) / 4);
+			}
+			else
+			{
+				return *m_colors[group];
+			}
+		case BgColor:
+			if (m_colors[group] == NULL)
+			{
+				return palette.color(QPalette::Base);
+			}
+			else
+			{
+				return *m_colors[group];
+			}
+		default:
+			return QColor();
+	}
+}
+
+void SNGuiSettings::setColor(const QColor &color, ColorGroup group)
+{
+	if (m_colors[group] == NULL)
+	{
+		m_colors[group] = new QColor(color);
+		emit colorChanged(color, group);
+	}
+	else
+	{
+		if (*m_colors[group] == color)
+		{
+			return;
+		}
+		else
+		{
+			delete m_colors[group];
+			m_colors[group] = new QColor(color);
+			emit colorChanged(color, group);
+		}
+	}
+}
+
+void SNGuiSettings::resetColor(ColorGroup group)
+{
+	if (m_colors[group] != NULL)
+	{
+		delete m_colors[group];
+		m_colors[group] = NULL;
+		emit colorChanged(color(group), group);
+	}
+}
+
+bool SNGuiSettings::colorIsDefault(ColorGroup group)
+{
+	if (m_colors[group] == NULL)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
 // ----------------------------------------------------------------
 
 /*!
@@ -240,4 +347,5 @@ void SNGuiSettings::setAntialiasing(bool antialiasing)
 
   \sa setGuiFont, FontType
 */
+
 

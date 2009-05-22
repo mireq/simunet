@@ -48,8 +48,8 @@ class SNDevice
 		bool resetConfig(void);
 		bool setConfig(PyObject *data);
 		PyObject *dumpConfig(void);
-		char *httpRequest(const std::string &url, PyObject *post);
-		char *httpRequest(const std::string &url, const std::map<std::string, std::string> post);
+		char *httpRequest(const std::string &url, PyObject *get, PyObject *post);
+		char *httpRequest(const std::string &url, const std::map<std::string, std::string> get, const std::map<std::string, std::string> post);
 		char *telnetRequest(const std::string &line, char symbol);
 		char *telnetGetControlChars(void);
 		static const PyMethodDef SNSimulateMethods[];

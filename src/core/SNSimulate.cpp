@@ -234,7 +234,7 @@ void SNSimulate::telnetResponse(uint32_t id, const char *text, const char *cmd)
 
   \sa SNDevice::httpRequest
 */
-char *SNSimulate::httpRequest(uint32_t devId, const std::string &url, PyObject *post)
+char *SNSimulate::httpRequest(uint32_t devId, const std::string &url, PyObject *get, PyObject *post)
 {
 	SNDevice *dev = device(devId);
 	if (dev == NULL)
@@ -243,7 +243,7 @@ char *SNSimulate::httpRequest(uint32_t devId, const std::string &url, PyObject *
 	}
 	PyEval_AcquireLock();
 	PyThreadState_Swap(m_mainThreadState);
-	char *out = dev->httpRequest(url, post);
+	char *out = dev->httpRequest(url, get, post);
 	PyThreadState_Swap(NULL);
 	PyEval_ReleaseLock();
 	return out;
@@ -252,7 +252,7 @@ char *SNSimulate::httpRequest(uint32_t devId, const std::string &url, PyObject *
 /*!
   \overload
 */
-char *SNSimulate::httpRequest(uint32_t devId, const std::string &url, const std::map<std::string, std::string> post)
+char *SNSimulate::httpRequest(uint32_t devId, const std::string &url, const std::map<std::string, std::string> get, const std::map<std::string, std::string> post)
 {
 	SNDevice *dev = device(devId);
 	if (dev == NULL)
@@ -261,7 +261,7 @@ char *SNSimulate::httpRequest(uint32_t devId, const std::string &url, const std:
 	}
 	PyEval_AcquireLock();
 	PyThreadState_Swap(m_mainThreadState);
-	char *out = dev->httpRequest(url, post);
+	char *out = dev->httpRequest(url, get, post);
 	PyThreadState_Swap(NULL);
 	PyEval_ReleaseLock();
 	return out;
