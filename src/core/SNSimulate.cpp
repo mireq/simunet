@@ -486,13 +486,13 @@ void SNSimulate::createBaseClass()
 	}
 
 
-	QFile file(":/devices/baseDevice/device.py");
+	QFile file(":/python/device.py");
 	file.open(QIODevice::ReadOnly);
 	QByteArray data = file.readAll();
 	file.close();
 	PyCPPObject ret(PyRun_String(data.constData(), Py_single_input, pSimuNetDict, pSimuNetDict), true);
 
-	file.setFileName(":/devices/baseDevice/simulatehelper.py");
+	file.setFileName(":/python/simulatehelper.py");
 	file.open(QIODevice::ReadOnly);
 	data = file.readAll();
 	file.close();

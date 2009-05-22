@@ -28,7 +28,7 @@
 #include <QLocale>
 #include <QMetaType>
 
-#include "MainWindow.h"
+#include "gui/dialogs/MainWindow.h"
 
 int main(int argc, char *argv[])
 {

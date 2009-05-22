@@ -59,6 +59,7 @@ SNWebConfigPage::~SNWebConfigPage()
 */
 void SNWebConfigPage::javaScriptConsoleMessage(const QString &message, int lineNumber, const QString &sourceID)
 {
+	Q_UNUSED(sourceID);
 	emit javaScriptError(message, lineNumber);
 }
 

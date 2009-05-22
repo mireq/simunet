@@ -24,7 +24,7 @@
 
 #include "core/SNAccessors.h"
 #include "core/SNSimulate.h"
-#include "core/SNDynamicSettings.h"
+#include "core/SNGuiSettings.h"
 
 #include <QPlainTextEdit>
 #include <QVBoxLayout>

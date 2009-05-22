@@ -21,8 +21,8 @@
   <file alias="splash.png">splash/default/splash.png</file>
   <file alias="style.ini">splash/default/style.ini</file>
 </qresource>
-<qresource prefix="/devices/baseDevice/">
-  <file alias="device.py">../devices/baseDevice/device.py</file>
-  <file alias="simulatehelper.py">../devices/baseDevice/simulatehelper.py</file>
+<qresource prefix="/python/">
+  <file alias="device.py">python/device.py</file>
+  <file alias="simulatehelper.py">python/simulatehelper.py</file>
 </qresource>
 </RCC>

@@ -56,7 +56,10 @@ endif (NOT QT_QTWEBKIT_FOUND)
 set (SUBDIRS
 	src
 	src/gui
-	src/gui/dialogs
+	src/gui/diagram
+	src/gui/models
+	src/gui/noqobject
+	src/gui/noqobject/diagram
 	src/gui/widgets
 )
 
@@ -73,44 +76,20 @@ foreach(SUBDIR ${SUBDIRS})
 	)
 endforeach(SUBDIR)
 
-#add_definitions(${QT_DEFINITIONS})
-
-# zdrojove kody
-set(simunet_SRCS
-	src/simunet.cpp
-	src/gui/dialogs/AboutDlg.cpp
-	src/gui/dialogs/CfgApperance.cpp
-	src/gui/dialogs/CfgPerformance.cpp
-	src/gui/dialogs/ConfigureDlg.cpp
-	src/gui/dialogs/DeviceSettingsDlg.cpp
-	src/gui/dialogs/MainWindow.cpp
-	src/gui/dialogs/SecondaryWindow.cpp
-	src/gui/widgets/SNAbstractDevicesScene.cpp
-	src/gui/widgets/SNColorSelectWidget.cpp
-	src/gui/widgets/SNConfigPanel.cpp
-	src/gui/widgets/SNDevicesListModel.cpp
-	src/gui/widgets/SNFontSelect.cpp
-	src/gui/widgets/SNIcon.cpp
-	src/gui/widgets/SNScene.cpp
-	src/gui/widgets/SNSplash.cpp
-	src/gui/widgets/SNTelnetWidget.cpp
-	src/gui/widgets/SNTitleWidget.cpp
-	src/gui/widgets/SNWebConfigPage.cpp
-	src/gui/widgets/SNWebConfigWidget.cpp
-	src/gui/widgets/diagram/SNDevicesDiagramScene.cpp
-	src/gui/widgets/diagram/SNDiagramDevice.cpp
-	src/gui/widgets/diagram/SNDiagramItem.cpp
-	src/gui/widgets/diagram/SNDiagramLine.cpp
+set(simunet_HDRS
+	src/config.h
+	src/pch.h
+	src/simunet.h
+	src/sntypes.h
+	src/gui/noqobject/SNAbstractDevicesScene.h
+	src/gui/noqobject/SNIcon.h
+	src/gui/noqobject/diagram/SNDiagramDevice.h
+	src/gui/noqobject/diagram/SNDiagramItem.h
+	src/gui/noqobject/diagram/SNDiagramLine.h
 )
 
-set(simunet_core_MOC_HDRS
-	src/core/SNDynamicSettings.h
-	src/core/SNSimulate.h
-	src/core/SNSimulateHelper.h
-)
-
-# hlavickove subory ktore musi spracovat moc
 set(simunet_MOC_HDRS
+	src/gui/diagram/SNDevicesDiagramScene.h
 	src/gui/dialogs/AboutDlg.h
 	src/gui/dialogs/CfgApperance.h
 	src/gui/dialogs/CfgApperance_p.h
@@ -119,26 +98,45 @@ set(simunet_MOC_HDRS
 	src/gui/dialogs/DeviceSettingsDlg.h
 	src/gui/dialogs/MainWindow.h
 	src/gui/dialogs/SecondaryWindow.h
-	src/gui/widgets/SNAbstractDevicesScene.h
+	src/gui/models/SNDevicesListModel.h
 	src/gui/widgets/SNColorSelectWidget.h
 	src/gui/widgets/SNColorSelectWidget_p.h
 	src/gui/widgets/SNConfigPanel.h
-	src/gui/widgets/SNDevicesListModel.h
 	src/gui/widgets/SNFontSelect.h
 	src/gui/widgets/SNScene.h
 	src/gui/widgets/SNSplash.h
-	src/gui/widgets/SNTitleWidget.h
 	src/gui/widgets/SNTelnetWidget.h
+	src/gui/widgets/SNTitleWidget.h
 	src/gui/widgets/SNWebConfigPage.h
 	src/gui/widgets/SNWebConfigWidget.h
-	src/gui/widgets/diagram/SNDevicesDiagramScene.h
-	src/gui/widgets/diagram/SNDiagramDevice.h
-	src/gui/widgets/diagram/SNDiagramItem.h
-	src/gui/widgets/diagram/SNDiagramLine.h
 )
 
-set(simunet_HDRS
-	src/gui/widgets/SNIcon.h)
+set(simunet_SRCS
+	src/simunet.cpp
+	src/gui/diagram/SNDevicesDiagramScene.cpp
+	src/gui/dialogs/AboutDlg.cpp
+	src/gui/dialogs/CfgApperance.cpp
+	src/gui/dialogs/CfgPerformance.cpp
+	src/gui/dialogs/ConfigureDlg.cpp
+	src/gui/dialogs/DeviceSettingsDlg.cpp
+	src/gui/dialogs/MainWindow.cpp
+	src/gui/dialogs/SecondaryWindow.cpp
+	src/gui/models/SNDevicesListModel.cpp
+	src/gui/noqobject/SNAbstractDevicesScene.cpp
+	src/gui/noqobject/diagram/SNDiagramDevice.cpp
+	src/gui/noqobject/diagram/SNDiagramItem.cpp
+	src/gui/noqobject/diagram/SNDiagramLine.cpp
+	src/gui/noqobject/SNIcon.cpp
+	src/gui/widgets/SNColorSelectWidget.cpp
+	src/gui/widgets/SNConfigPanel.cpp
+	src/gui/widgets/SNFontSelect.cpp
+	src/gui/widgets/SNScene.cpp
+	src/gui/widgets/SNSplash.cpp
+	src/gui/widgets/SNTelnetWidget.cpp
+	src/gui/widgets/SNTitleWidget.cpp
+	src/gui/widgets/SNWebConfigPage.cpp
+	src/gui/widgets/SNWebConfigWidget.cpp
+)
 
 # dialogy
 set(simunet_UIS
@@ -147,7 +145,7 @@ set(simunet_UIS
 #ADD_DEPENDENCIES(${LIB} updateEOglext)
 # zdroje
 set(simunet_QRC
-	gfx/resources.qrc)
+	resources/resources.qrc)
 
 # preklady
 set(simunet_TRANS
@@ -157,71 +155,24 @@ set(simunet_TRANS
 set(simunet_PCH
 	src/pch.h)
 
-set(core_SRCS
-	src/core/PyCPPObject.cpp
-	src/core/SNAccessors.cpp
-	src/core/SNConfig.cpp
-	src/core/SNDevice.cpp
-	src/core/SNDynamicSettings.cpp
-	src/core/SNExceptions.cpp
-	src/core/SNHwPort.cpp
-	src/core/SNSimulate.cpp
-	src/core/SNSimulateHelper.cpp
-	src/core/SNBloat.cpp
-	src/core/SNBloatList.cpp
-	src/core/SNLog.cpp
-	src/core/map/SNDevTreeItem.cpp
-	src/core/map/SNDevTreeNode.cpp
-	src/core/map/SNMap.cpp
-	src/core/map/SNMapControlPointItem.cpp
-	src/core/map/SNMapDeviceItem.cpp
-	src/core/map/SNMapItem.cpp
-	src/core/map/SNMapLineItem.cpp
-	src/core/map/SNPoint3f.cpp)
-
-set(core_HDRS
-	src/core/PyCPPObject.h
-	src/core/SNAccessors.h
-	src/core/SNConfig.h
-	src/core/SNDevice.h
-	src/core/SNExceptions.h
-	src/core/SNHwPort.h
-	src/core/SNSimulate.h
-	src/core/SNSimulateHelper.h
-	src/core/SNBloat.h
-	src/core/SNBloatList.h
-	src/core/SNLog.h
-	src/core/map/SNDevTreeItem.h
-	src/core/map/SNDevTreeNode.h
-	src/core/map/SNMap.h
-	src/core/map/SNMapControlPointItem.h
-	src/core/map/SNMapDeviceItem.h
-	src/core/map/SNMapItem.h
-	src/core/map/SNMapLineItem.h
-	src/core/map/SNPoint3f.h)
-
-qt4_wrap_cpp(simunetcore_MOC_SRCS ${simunet_core_MOC_HDRS})
 qt4_wrap_cpp(simunet_MOC_SRCS ${simunet_MOC_HDRS})
 qt4_wrap_ui(simunet_UIS_SRCS ${simunet_UIS})
 qt4_add_resources(simunet_QRC_SRCS ${simunet_QRC})
 qt4_add_translation(lrelease_outputs ${simunet_TRANS})
 
-add_library(smlib STATIC
-	${core_SRCS}
-	${core_HDRS}
-	${simunetcore_MOC_SRCS}
-)
 
+add_subdirectory(src/core)
 add_executable(simunet
+	${simunet_HDRS}
+	${simunet_MOC_HDRS}
 	${simunet_SRCS}
 	${simunet_MOC_SRCS}
 	${simunet_UIS_SRCS}
 	${simunet_QRC_SRCS}
-	${simunet_MOC_HDRS}
-	${simunet_HDRS}
 	${lrelease_outputs}
-	${core_HDRS}
+	${smlib_HDRS}
 )
+
 target_link_libraries(simunet smlib ${PYTHON_LIBRARIES} ${QT_LIBRARIES} ${OPENSSL_LIBRARIES})
 
 install (TARGETS simunet DESTINATION bin)
@@ -252,9 +203,6 @@ install(TARGETS simunet
 	DESTINATION bin
 	COMPONENT app)
 
-install(FILES ${core_HDRS}
-	DESTINATION include/simunet
-	COMPONENT includes)
 
 # cpack
 SET(CMAKE_VERSION "${CMAKE_CACHE_MAJOR_VERSION}.${CMAKE_CACHE_MINOR_VERSION}.${CMAKE_CACHE_RELEASE_VERSION}")

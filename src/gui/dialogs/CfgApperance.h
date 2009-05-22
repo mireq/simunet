@@ -24,13 +24,18 @@
 #define CFGAPPERANCE_H
 
 #include "SNConfigPanel.h"
-#include "core/SNDynamicSettings.h"
+
+#include "core/SNGuiSettings.h"
 
 class QGridLayout;
 class QPushButton;
 class QSignalMapper;
 
+namespace CfgApperance_Private
+{
 class FontSelect;
+}
+
 class SNGUiSettings;
 class SNColorSelectWidget;
 
@@ -58,13 +63,13 @@ class CfgApperance : public SNConfigPanel
 		void reset(SNGuiSettings::ColorGroup group);
 
 	private:
-		void addFontSelectRow(const QString &label, FontSelect *fontSelect);
+		void addFontSelectRow(const QString &label, CfgApperance_Private::FontSelect *fontSelect);
 		void addColorSelectRow(const QString &label, SNColorSelectWidget *colorSelect, SNGuiSettings::ColorGroup group);
 
 		QGridLayout *m_fontsSelectLayout;
 		QGridLayout *m_apperanceLayout;
-		FontSelect *m_appFontSelect;
-		FontSelect *m_termFontSelect;
+		CfgApperance_Private::FontSelect *m_appFontSelect;
+		CfgApperance_Private::FontSelect *m_termFontSelect;
 		QPushButton **m_fontResetButtons;
 		SNColorSelectWidget **m_colorSelectWidgets;
 		bool *m_changed;

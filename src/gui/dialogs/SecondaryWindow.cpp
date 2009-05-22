@@ -58,10 +58,10 @@ SecondaryWindow::SecondaryWindow(QWidget* parent, Qt::WindowFlags flags): QDockW
 	m_tabWidget->setTabPosition(QTabWidget::West);
 	setWidget(m_tabWidget);
 
-	m_newAct = new QAction("New", this);
-	m_newDirectoryAct = new QAction("New Directory", this);
-	m_settingsAct = new QAction("Settings", this);
-	m_deleteAct = new QAction("Delete", this);
+	m_newAct = new QAction(tr("New generic device"), this);
+	m_newDirectoryAct = new QAction(tr("New Directory"), this);
+	m_settingsAct = new QAction(tr("Settings"), this);
+	m_deleteAct = new QAction(tr("Delete"), this);
 }
 
 /*!
@@ -123,7 +123,7 @@ void SecondaryWindow::showContextMenu(const QPoint &point)
 			QAction *triggered = QMenu::exec(actions, m_list->mapToGlobal(point));
 			if (triggered == m_newAct)
 			{
-				m_model->startDevice("router", index);
+				m_model->startDevice("generic", index);
 			}
 			else if (triggered == m_newDirectoryAct)
 			{

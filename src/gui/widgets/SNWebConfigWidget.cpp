@@ -185,7 +185,7 @@ void SNWebConfigWidget::setPageTitle(const QString &title)
 */
 void SNWebConfigWidget::setUrl(const QUrl &url)
 {
-	QFuture<char *> future = QtConcurrent::run(SNWebConfigWidget::startLoadHtml, this, m_devId, url);
+	QFuture<char *> future = QtConcurrent::run(SNWebConfigWidget::startLoadHtml, m_devId, url);
 	m_htmlLoadWatcher->setFuture(future);
 	/*
 	QFile exampleFile(":web/examplesettings.html");
@@ -366,7 +366,7 @@ void SNWebConfigWidget::htmlLoadFinished()
 
 
 
-char *SNWebConfigWidget::startLoadHtml(SNWebConfigWidget *self, uint32_t devId, const QUrl &url)
+char *SNWebConfigWidget::startLoadHtml(uint32_t devId, const QUrl &url)
 {
 	/// @todo Dopisat post data
 	std::map<std::string, std::string> get;

@@ -24,6 +24,7 @@
 #define CONFIGUREDLG_H
 
 #include <QDialog>
+
 #include "SNTitleWidget.h"
 
 class SNConfigPanel;

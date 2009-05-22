@@ -27,7 +27,11 @@
 
 class QPushButton;
 class QFrame;
+
+namespace SNColorPreviewWidget_Private
+{
 class SNColorPreviewWidget;
+}
 
 /**
  @author Miroslav Bendik
@@ -50,7 +54,7 @@ class SNColorSelectWidget: public QWidget
 
 	private:
 		QPushButton *m_selectButton;
-		SNColorPreviewWidget *m_colorPreview;
+		SNColorPreviewWidget_Private::SNColorPreviewWidget *m_colorPreview;
 };
 
 #endif

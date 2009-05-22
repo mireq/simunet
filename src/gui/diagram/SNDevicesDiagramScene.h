@@ -28,7 +28,7 @@
 #include <QSet>
 #include <QMap>
 
-#include "core/SNDynamicSettings.h"
+#include "core/SNGuiSettings.h"
 
 #include "SNAbstractDevicesScene.h"
 

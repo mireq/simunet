@@ -6,7 +6,7 @@ import types
 import SimuNet
 import re
 
-class router(SimuNet.SNDevice):
+class generic(SimuNet.SNDevice):
 	prikazy = []
 	timerStarted = False
 	timer = None

@@ -22,12 +22,12 @@
  ***************************************************************************/
 #include "SNMap.h"
 
-#include "SNAbstractDevicesScene.h"
+#include "gui/noqobject/SNAbstractDevicesScene.h"
+
 #include "SNDevTreeItem.h"
 #include "SNDevTreeNode.h"
 #include "SNMapDeviceItem.h"
 #include "SNMapLineItem.h"
-
 
 #include "core/SNAccessors.h"
 #include "core/SNConfig.h"
@@ -653,7 +653,6 @@ void SNMap::insertPort(uint32_t devId, port_num hwPort)
 	{
 		std::map<uint32_t, SNMapDeviceItem *>::iterator device;
 		device = m_devices.find(devId);
-		qDebug()<<device->second;
 		if (device != m_devices.end())
 		{
 			m_scene->addHwPort(device->second, hwPort);

@@ -430,8 +430,9 @@ PyObject* SNDevice::telnetResponseWrapper(PyObject *, PyObject *args)
 	Py_RETURN_NONE;
 }
 
-PyObject *SNDevice::insertHwPortWrapper(PyObject *self, PyObject *args)
+PyObject *SNDevice::insertHwPortWrapper(PyObject *, PyObject *args)
 {
+
 	if (PyTuple_Size(args) != 1)
 	{
 		return NULL;
@@ -463,7 +464,7 @@ PyObject *SNDevice::insertHwPortWrapper(PyObject *self, PyObject *args)
 	Py_RETURN_TRUE;
 }
 
-PyObject *SNDevice::removeHwPortWrapper(PyObject *self, PyObject *args)
+PyObject *SNDevice::removeHwPortWrapper(PyObject *, PyObject *args)
 {
 	if (PyTuple_Size(args) != 2)
 	{
@@ -497,7 +498,7 @@ PyObject *SNDevice::removeHwPortWrapper(PyObject *self, PyObject *args)
 	
 }
 
-PyObject *SNDevice::setHwPortHandlerWrapper(PyObject *self, PyObject *args)
+PyObject *SNDevice::setHwPortHandlerWrapper(PyObject *, PyObject *)
 {
 	Py_RETURN_NONE;
 }

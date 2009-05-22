@@ -27,6 +27,9 @@
 #include <QWidget>
 #include <QColor>
 
+namespace SNColorPreviewWidget_Private
+{
+
 class SNColorPreviewWidget: public QWidget
 {
 	Q_OBJECT
@@ -41,5 +44,7 @@ class SNColorPreviewWidget: public QWidget
 		QColor m_color;
 		QWidget *m_colorWidget;
 };
+
+}
 
 #endif

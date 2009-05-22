@@ -34,27 +34,54 @@
 <context>
     <name>CfgApperance</name>
     <message>
-        <location filename="../src/gui/dialogs/CfgApperance.cpp" line="98"/>
+        <location filename="../src/gui/dialogs/CfgApperance.cpp" line="134"/>
         <source>Application font</source>
         <translation>Font aplikácie</translation>
     </message>
     <message>
-        <location filename="../src/gui/dialogs/CfgApperance.cpp" line="99"/>
+        <location filename="../src/gui/dialogs/CfgApperance.cpp" line="135"/>
         <source>Terminal font</source>
         <translation>Font emulátora terminálu</translation>
     </message>
     <message>
-        <location filename="../src/gui/dialogs/CfgApperance.cpp" line="103"/>
+        <location filename="../src/gui/dialogs/CfgApperance.cpp" line="143"/>
+        <source>Performance</source>
+        <translation>Výkon</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/dialogs/CfgApperance.cpp" line="146"/>
+        <source>Antialiasing</source>
+        <translation>Antialiasing</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/dialogs/CfgApperance.cpp" line="168"/>
         <source>&amp;Fonts</source>
         <translation>&amp;Fonty</translation>
     </message>
     <message>
-        <location filename="../src/gui/dialogs/CfgApperance.cpp" line="121"/>
+        <location filename="../src/gui/dialogs/CfgApperance.cpp" line="144"/>
+        <location filename="../src/gui/dialogs/CfgApperance.cpp" line="209"/>
         <source>Apperance</source>
         <translation>Vzhľad</translation>
     </message>
     <message>
-        <location filename="../src/gui/dialogs/CfgApperance.cpp" line="193"/>
+        <location filename="../src/gui/dialogs/CfgApperance.cpp" line="169"/>
+        <source>&amp;Device visualisation</source>
+        <translation>&amp;Vizualizácia zariadení</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/dialogs/CfgApperance.cpp" line="189"/>
+        <source>Background color</source>
+        <translation>Farba pozadia</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/dialogs/CfgApperance.cpp" line="190"/>
+        <source>Grid color</source>
+        <translation>Farba mriežky</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/dialogs/CfgApperance.cpp" line="281"/>
+        <location filename="../src/gui/dialogs/CfgApperance.cpp" line="332"/>
         <source>Reset</source>
         <translation>Obnoviť pôvodné</translation>
     </message>
@@ -70,16 +97,6 @@
         <location filename="../src/gui/dialogs/CfgPerformance.cpp" line="46"/>
         <source>&amp;Number of threads</source>
         <translation>&amp;Počet vlákien</translation>
-    </message>
-    <message>
-        <source>Unsaved Changes</source>
-        <translation type="obsolete">Neuložené zmeny</translation>
-    </message>
-    <message>
-        <source>The settings have been changed.
-Do you want to save your changes?</source>
-        <translation type="obsolete">Nastavenia boli zmenené.
-Chcete uložiť vaše zmeny?</translation>
     </message>
     <message>
         <location filename="../src/gui/dialogs/CfgPerformance.cpp" line="114"/>
@@ -116,75 +133,83 @@ Chcete uložiť vaše zmeny?</translation>
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../src/gui/dialogs/MainWindow.cpp" line="79"/>
+        <location filename="../src/gui/dialogs/MainWindow.cpp" line="80"/>
         <source>SimuNet</source>
         <translation>SimuNet</translation>
     </message>
     <message>
-        <location filename="../src/gui/dialogs/MainWindow.cpp" line="285"/>
+        <location filename="../src/gui/dialogs/MainWindow.cpp" line="288"/>
         <source>Starting devices</source>
         <translation>Štartujem zariadenia</translation>
     </message>
     <message>
-        <location filename="../src/gui/dialogs/MainWindow.cpp" line="294"/>
-        <location filename="../src/gui/dialogs/MainWindow.cpp" line="296"/>
+        <location filename="../src/gui/dialogs/MainWindow.cpp" line="297"/>
+        <location filename="../src/gui/dialogs/MainWindow.cpp" line="299"/>
         <source>Ready</source>
         <translation>Pripravený</translation>
     </message>
     <message>
-        <location filename="../src/gui/dialogs/MainWindow.cpp" line="196"/>
+        <location filename="../src/gui/dialogs/MainWindow.cpp" line="198"/>
         <source>&amp;Quit</source>
         <translation>&amp;Koniec</translation>
     </message>
     <message>
-        <location filename="../src/gui/dialogs/MainWindow.cpp" line="138"/>
+        <location filename="../src/gui/dialogs/MainWindow.cpp" line="140"/>
         <source>2D</source>
         <translation>2D</translation>
     </message>
     <message>
-        <location filename="../src/gui/dialogs/MainWindow.cpp" line="139"/>
+        <location filename="../src/gui/dialogs/MainWindow.cpp" line="141"/>
         <source>3D</source>
         <translation>3D</translation>
     </message>
     <message>
-        <location filename="../src/gui/dialogs/MainWindow.cpp" line="197"/>
+        <location filename="../src/gui/dialogs/MainWindow.cpp" line="199"/>
         <source>Ctrl+Q</source>
         <translation>Ctrl+Q</translation>
     </message>
     <message>
-        <location filename="../src/gui/dialogs/MainWindow.cpp" line="201"/>
+        <location filename="../src/gui/dialogs/MainWindow.cpp" line="203"/>
         <source>&amp;About</source>
         <translation>&amp;O aplikácii</translation>
     </message>
     <message>
-        <location filename="../src/gui/dialogs/MainWindow.cpp" line="210"/>
+        <location filename="../src/gui/dialogs/MainWindow.cpp" line="212"/>
         <source>&amp;File</source>
         <translation>&amp;Súbor</translation>
     </message>
     <message>
-        <location filename="../src/gui/dialogs/MainWindow.cpp" line="212"/>
+        <location filename="../src/gui/dialogs/MainWindow.cpp" line="214"/>
         <source>&amp;Help</source>
         <translation>&amp;Pomoc</translation>
     </message>
     <message>
-        <location filename="../src/gui/dialogs/MainWindow.cpp" line="141"/>
+        <location filename="../src/gui/dialogs/MainWindow.cpp" line="143"/>
         <source>Move</source>
         <translation>Presun</translation>
     </message>
     <message>
-        <location filename="../src/gui/dialogs/MainWindow.cpp" line="142"/>
+        <location filename="../src/gui/dialogs/MainWindow.cpp" line="144"/>
         <source>Rotate</source>
         <translation>Otáčanie</translation>
     </message>
     <message>
-        <location filename="../src/gui/dialogs/MainWindow.cpp" line="199"/>
+        <location filename="../src/gui/dialogs/MainWindow.cpp" line="201"/>
         <source>&amp;Configure SimuNet</source>
         <translation>&amp;Nastaviť SimuNet</translation>
     </message>
     <message>
-        <location filename="../src/gui/dialogs/MainWindow.cpp" line="211"/>
+        <location filename="../src/gui/dialogs/MainWindow.cpp" line="213"/>
         <source>&amp;Settings</source>
         <translation>&amp;Nastavenia</translation>
+    </message>
+</context>
+<context>
+    <name>SNColorSelectWidget</name>
+    <message>
+        <location filename="../src/gui/widgets/SNColorSelectWidget.cpp" line="40"/>
+        <source>Select ...</source>
+        <translation>Vybrať ...</translation>
     </message>
 </context>
 <context>
@@ -234,6 +259,26 @@ Chcete uložiť Vaše zmeny?</translation>
         <location filename="../src/gui/dialogs/SecondaryWindow.cpp" line="55"/>
         <source>Tools</source>
         <translation>Nástroje</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/dialogs/SecondaryWindow.cpp" line="61"/>
+        <source>New generic device</source>
+        <translation>Nové generické zariadenie</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/dialogs/SecondaryWindow.cpp" line="62"/>
+        <source>New Directory</source>
+        <translation>Nový adresár</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/dialogs/SecondaryWindow.cpp" line="63"/>
+        <source>Settings</source>
+        <translation>Nastavenia</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/dialogs/SecondaryWindow.cpp" line="64"/>
+        <source>Delete</source>
+        <translation>Vymazať</translation>
     </message>
     <message>
         <location filename="../src/gui/dialogs/SecondaryWindow.cpp" line="100"/>

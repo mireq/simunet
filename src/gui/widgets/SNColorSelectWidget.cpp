@@ -36,8 +36,8 @@ SNColorSelectWidget::SNColorSelectWidget(QWidget *parent)
 	QHBoxLayout *layout = new QHBoxLayout(this);
 	setLayout(layout);
 
-	m_colorPreview = new SNColorPreviewWidget();
-	m_selectButton = new QPushButton(tr("Select"));
+	m_colorPreview = new SNColorPreviewWidget_Private::SNColorPreviewWidget();
+	m_selectButton = new QPushButton(tr("Select ..."));
 
 	layout->addWidget(m_colorPreview);
 	layout->addWidget(m_selectButton);
@@ -62,17 +62,6 @@ void SNColorSelectWidget::selectColor()
 	}
 }
 
-SNColorPreviewWidget::SNColorPreviewWidget(QWidget *parent)
-	: QWidget(parent), m_color(Qt::white)
-{
-	setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-	setAutoFillBackground(true);
-	updateColor();
-}
-
-SNColorPreviewWidget::~SNColorPreviewWidget()
-{
-}
 
 
 QColor SNColorSelectWidget::color() const
@@ -87,6 +76,21 @@ void SNColorSelectWidget::setColor(const QColor &color)
 		m_colorPreview->setColor(color);
 		emit colorChanged(color);
 	}
+}
+
+namespace SNColorPreviewWidget_Private
+{
+
+SNColorPreviewWidget::SNColorPreviewWidget(QWidget *parent)
+	: QWidget(parent), m_color(Qt::white)
+{
+	setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+	setAutoFillBackground(true);
+	updateColor();
+}
+
+SNColorPreviewWidget::~SNColorPreviewWidget()
+{
 }
 
 QSize SNColorPreviewWidget::sizeHint() const
@@ -113,4 +117,4 @@ void SNColorPreviewWidget::updateColor()
 	setPalette(p);
 }
 
-
+}

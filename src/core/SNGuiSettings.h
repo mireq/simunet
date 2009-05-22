@@ -20,51 +20,71 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
+#ifndef SNGUISETTINGS_H
+#define SNGUISETTINGS_H
 
-#include "SNFontSelect.h"
+#include <QObject>
+#include <QMetaType>
 
-#include "core/SNGuiSettings.h"
-
+#include <QFont>
 #include <QColor>
 
+#include "SNDynamicSettings.h"
 
-class QPushButton;
-class SNColorSelectWidget;
-
-namespace CfgApperance_Private
-{
-
-class FontSelect : public SNFontSelect
+/**
+ @author Miroslav Bendik <miroslav.bendik@gmail.com>
+ */
+class SNGuiSettings : public SNDynamicSettings
 {
 	Q_OBJECT
 	public:
-		FontSelect(const QFont &font, SNGuiSettings::FontType type, QWidget *parent = 0);
-		~FontSelect();
-		SNGuiSettings::FontType type() const;
-	signals:
-		void fontChanged(const QFont &font, SNGuiSettings::FontType);
-	private slots:
-		void emitFontChanged(const QFont &font);
-	private:
-		SNGuiSettings::FontType m_type;
-};
+/*!
+  Typy fontov ktore mozu byt nastavene v aplikacii.
+*/
+		enum FontType
+		{
+			APP_FONT = 0, /*!< Aplikacny font platny pre celu aplikaciu. */
+			TERM_FONT     /*!< Font pouzivany v integrovanom emulatore terminalu */
+		};
 
-class ColorSelectHandler: public QObject
-{
-	Q_OBJECT
-	public:
-		ColorSelectHandler(SNColorSelectWidget *widget, QPushButton *resetBtn, SNGuiSettings::ColorGroup group, QObject *parent = 0);
-		~ColorSelectHandler();
-	private slots:
-		void newColor(const QColor &color);
-		void resetTriggered();
+		enum ColorGroup
+		{
+			GridColor = 0,
+			BgColor = 1
+		};
+
+		SNGuiSettings(QObject *parent = 0);
+		~SNGuiSettings();
+
+		QFont guiFont(FontType type) const;
+		void setGuiFont(const QFont &font, FontType type);
+		QFont defaultFont(FontType type) const;
+		static const int NumFonts;
+
+		bool antialiasing() const;
+		void setAntialiasing(bool antialiasing);
+
+		QColor color(ColorGroup group) const;
+		void setColor(const QColor &color, ColorGroup group);
+		void resetColor(ColorGroup group);
+		bool colorIsDefault(ColorGroup group);
+		static const int NumColors;
+
 	signals:
+		void termFontChanged(const QFont &font);
+		void antialiasingChanged(bool antialiasing);
 		void colorChanged(const QColor &color, SNGuiSettings::ColorGroup group);
-		void reset(SNGuiSettings::ColorGroup group);
+
 	private:
-		SNColorSelectWidget *m_colorSelect;
-		SNGuiSettings::ColorGroup m_group;
-		QPushButton *m_resetBtn;
+		QFont **m_defaultFont;
+		QFont **m_font;
+		QColor **m_colors;
+		static const char *m_fontNames[];
+		static const char *m_colorNames[];
+		bool m_antialiasing;
+
 };
 
-}
+Q_DECLARE_METATYPE(SNGuiSettings *);
+
+#endif

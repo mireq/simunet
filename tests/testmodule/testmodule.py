@@ -7,7 +7,7 @@ class testmodule(SimuNet.SNDevice):
 		print("init")
 	def __del__(self):
 		print("del " + str(self.deviceId))
-	def processFrame(self, data, port):
+	def processFrame(self, port, data):
 		print(data)
 		self.sendFrame(data[::-1]);
 		return False
@@ -23,7 +23,7 @@ class testmodule(SimuNet.SNDevice):
 		return False
 	def dumpConfig(self):
 		return self.__config
-	def httpRequest(self, url, post):
+	def httpRequest(self, url, get, post):
 		postName = post.keys()[0];
 		print "hr:"+url+":"+postName+":"+post[postName];
 		return "htmlrecv"

@@ -64,7 +64,7 @@ class SNWebConfigWidget : public QWidget
 		void setHtml(const QString &html);
 		void htmlLoadFinished();
 	private:
-		static char *startLoadHtml(SNWebConfigWidget *self, uint32_t devId, const QUrl &url);
+		static char *startLoadHtml(uint32_t devId, const QUrl &url);
 		uint32_t m_devId;
 
 		QSplitter *m_vSplitter;

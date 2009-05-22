@@ -40,6 +40,9 @@
 #include <QDebug>
 #include <QApplication>
 
+namespace CfgApperance_Private
+{
+
 FontSelect::FontSelect(const QFont &font, SNGuiSettings::FontType type, QWidget *parent)
 	: SNFontSelect(font, parent)
 {
@@ -59,6 +62,35 @@ SNGuiSettings::FontType FontSelect::type() const
 void FontSelect::emitFontChanged(const QFont &font)
 {
 	emit fontChanged(font, m_type);
+}
+
+ColorSelectHandler::ColorSelectHandler(SNColorSelectWidget *widget, QPushButton *resetBtn, SNGuiSettings::ColorGroup group, QObject *parent)
+	: QObject(parent)
+{
+	m_colorSelect = widget;
+	m_group = group;
+	m_resetBtn = resetBtn;
+
+	connect(widget, SIGNAL(colorChanged(const QColor &)), SLOT(newColor(const QColor &)));
+	connect(resetBtn, SIGNAL(clicked()), this, SLOT(resetTriggered()));
+}
+
+ColorSelectHandler::~ColorSelectHandler()
+{
+}
+
+void ColorSelectHandler::newColor(const QColor &color)
+{
+	m_resetBtn->setHidden(false);
+	emit colorChanged(color, m_group);
+}
+
+void ColorSelectHandler::resetTriggered()
+{
+	emit reset(m_group);
+	m_resetBtn->setHidden(true);
+}
+
 }
 
 /* ----------------------------------------------------------------------- */
@@ -96,8 +128,8 @@ CfgApperance::CfgApperance(QWidget* parent): SNConfigPanel(parent)
 	QWidget *fontsSelect = new QWidget;
 	fontsSelect->setLayout(m_fontsSelectLayout);
 
-	m_appFontSelect = new FontSelect(appFont, SNGuiSettings::APP_FONT);
-	m_termFontSelect = new FontSelect(termFont, SNGuiSettings::TERM_FONT);
+	m_appFontSelect = new CfgApperance_Private::FontSelect(appFont, SNGuiSettings::APP_FONT);
+	m_termFontSelect = new CfgApperance_Private::FontSelect(termFont, SNGuiSettings::TERM_FONT);
 
 	addFontSelectRow(tr("Application font"), m_appFontSelect);
 	addFontSelectRow(tr("Terminal font"), m_termFontSelect);
@@ -244,7 +276,7 @@ void CfgApperance::fontReset(int type)
 /*!
   Pridanie riadku s vyberom fontu do layoutu.
 */
-void CfgApperance::addFontSelectRow(const QString &label, FontSelect *fontSelect)
+void CfgApperance::addFontSelectRow(const QString &label, CfgApperance_Private::FontSelect *fontSelect)
 {
 	QPushButton *button = new QPushButton(tr("Reset"));
 	QLabel *l = new QLabel(label);
@@ -299,7 +331,7 @@ void CfgApperance::addColorSelectRow(const QString &label, SNColorSelectWidget *
 	QLabel *l = new QLabel(label);
 	QPushButton *reset = new QPushButton(tr("Reset"));
 	colorSelect->setColor(m_settings->color(group));
-	ColorSelectHandler *h = new ColorSelectHandler(colorSelect, reset, group, this);
+	CfgApperance_Private::ColorSelectHandler *h = new CfgApperance_Private::ColorSelectHandler(colorSelect, reset, group, this);
 
 	connect(h, SIGNAL(colorChanged(const QColor &, SNGuiSettings::ColorGroup)), SLOT(colorChanged(const QColor &, SNGuiSettings::ColorGroup)));
 	connect(h, SIGNAL(reset(SNGuiSettings::ColorGroup)), SLOT(reset(SNGuiSettings::ColorGroup)));
@@ -327,29 +359,4 @@ void CfgApperance::reset(SNGuiSettings::ColorGroup group)
 	m_settings->resetColor(group);
 }
 
-ColorSelectHandler::ColorSelectHandler(SNColorSelectWidget *widget, QPushButton *resetBtn, SNGuiSettings::ColorGroup group, QObject *parent)
-	: QObject(parent)
-{
-	m_colorSelect = widget;
-	m_group = group;
-	m_resetBtn = resetBtn;
 
-	connect(widget, SIGNAL(colorChanged(const QColor &)), SLOT(newColor(const QColor &)));
-	connect(resetBtn, SIGNAL(clicked()), this, SLOT(resetTriggered()));
-}
-
-ColorSelectHandler::~ColorSelectHandler()
-{
-}
-
-void ColorSelectHandler::newColor(const QColor &color)
-{
-	m_resetBtn->setHidden(false);
-	emit colorChanged(color, m_group);
-}
-
-void ColorSelectHandler::resetTriggered()
-{
-	emit reset(m_group);
-	m_resetBtn->setHidden(true);
-}

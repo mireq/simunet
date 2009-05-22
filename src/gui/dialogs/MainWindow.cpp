@@ -290,7 +290,7 @@ void MainWindow::initSimuNet()
 	m_toolWindow->setModel(m_devicesModel);
 	/*for (int i = 0; i < 10; ++i)
 	{
-		m_devicesModel->startDevice("router");
+		m_devicesModel->startDevice("generic");
 		qApp->processEvents();
 	}*/
 	setWindowsEnabled(true);

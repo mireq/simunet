@@ -214,6 +214,7 @@ void DeviceSettingsDlg::setErrorsAvitable(bool avitable)
 
 void DeviceSettingsDlg::showWebLink(const QString &link, const QString &title, const QString &content)
 {
+	Q_UNUSED(content);
 	if (!title.isNull())
 	{
 		m_statusBar->showMessage(title + QString(":") + link);

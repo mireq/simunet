@@ -26,8 +26,6 @@
 #include <QObject>
 #include <QMetaType>
 
-#include <QFont>
-#include <QColor>
 
 /**
  @author Miroslav Bendik <miroslav.bendik@gmail.com>
@@ -45,60 +43,5 @@ class SNDynamicSettings : public QObject
 
 Q_DECLARE_METATYPE(SNDynamicSettings *);
 
-/**
- @author Miroslav Bendik <miroslav.bendik@gmail.com>
- */
-class SNGuiSettings : public SNDynamicSettings
-{
-	Q_OBJECT
-	public:
-/*!
-  Typy fontov ktore mozu byt nastavene v aplikacii.
-*/
-		enum FontType
-		{
-			APP_FONT = 0, /*!< Aplikacny font platny pre celu aplikaciu. */
-			TERM_FONT     /*!< Font pouzivany v integrovanom emulatore terminalu */
-		};
-
-		enum ColorGroup
-		{
-			GridColor = 0,
-			BgColor = 1
-		};
-
-		SNGuiSettings(QObject *parent = 0);
-		~SNGuiSettings();
-
-		QFont guiFont(FontType type) const;
-		void setGuiFont(const QFont &font, FontType type);
-		QFont defaultFont(FontType type) const;
-		static const int NumFonts;
-
-		bool antialiasing() const;
-		void setAntialiasing(bool antialiasing);
-
-		QColor color(ColorGroup group) const;
-		void setColor(const QColor &color, ColorGroup group);
-		void resetColor(ColorGroup group);
-		bool colorIsDefault(ColorGroup group);
-		static const int NumColors;
-
-	signals:
-		void termFontChanged(const QFont &font);
-		void antialiasingChanged(bool antialiasing);
-		void colorChanged(const QColor &color, SNGuiSettings::ColorGroup group);
-
-	private:
-		QFont **m_defaultFont;
-		QFont **m_font;
-		QColor **m_colors;
-		static const char *m_fontNames[];
-		static const char *m_colorNames[];
-		bool m_antialiasing;
-
-};
-
-Q_DECLARE_METATYPE(SNGuiSettings *);
 
 #endif
