@@ -137,8 +137,25 @@ SNGuiSettings::~ SNGuiSettings()
 	}
 	settings.setValue("antialiasing", QVariant(m_antialiasing));
 	settings.endGroup();
-	delete m_defaultFont;
-	delete m_font;
+
+	for (int i  = 0; i < NumFonts; ++i)
+	{
+		if (m_defaultFont[i] != NULL)
+		{
+			delete m_defaultFont[i];
+			m_defaultFont[i] = NULL;
+		}
+
+		if (m_font[i] != NULL)
+		{
+			delete m_font[i];
+			m_font[i]  = NULL;
+		}
+	}
+
+	delete[] m_defaultFont;
+	delete[] m_font;
+	delete[] m_colors;
 }
 
 /*!

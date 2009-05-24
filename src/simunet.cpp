@@ -55,8 +55,6 @@ int main(int argc, char *argv[])
 	app.installTranslator(&qtTranslator);
 	app.installTranslator(&appTranslator);
 
-	//SNSimulate simulate;
-
 	MainWindow mainwin;
 	mainwin.show();
 	int returnCode = app.exec();

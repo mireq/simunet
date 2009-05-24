@@ -35,8 +35,6 @@
 
 #include <vector>
 
-#include <QDebug>
-
 using namespace std;
 
 /*!
@@ -72,6 +70,8 @@ SNMap::SNMap()
 */
 SNMap::~SNMap()
 {
+	delete m_rootDir;
+	m_rootDir = NULL;
 }
 
 /*!

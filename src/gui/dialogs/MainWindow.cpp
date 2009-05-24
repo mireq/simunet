@@ -64,7 +64,7 @@ class GraphicsView : public QGraphicsView
   Vytvorenie hlavneho okna.
 */
 MainWindow::MainWindow(QWidget* parent, Qt::WindowFlags flags): QMainWindow(parent, flags),
-	m_2DView(NULL), m_3DView(NULL)
+	m_scene(NULL), m_2DView(NULL), m_3DView(NULL)
 {
 	m_settings = SNSingleton::getDynSettings<SNGuiSettings>();
 	connect(m_settings, SIGNAL(antialiasingChanged(bool)), SLOT(setAntialiasing(bool)));
@@ -95,8 +95,11 @@ MainWindow::MainWindow(QWidget* parent, Qt::WindowFlags flags): QMainWindow(pare
 */
 MainWindow::~MainWindow()
 {
-	m_scene->deleteLater();
-	m_splash->deleteLater();
+	if (m_scene != NULL)
+	{
+		delete m_scene;
+	}
+	delete m_splash;
 	saveWindowState();
 	SNSingleton::deleteObjects();
 }
@@ -185,7 +188,7 @@ void MainWindow::setupToolBars()
 	m_navigateMoveAct->setCheckable(true);
 	m_navigateRotateAct->setCheckable(true);
 	m_navigateMoveAct->setChecked(true);
-	sceneNavigationModeChanged(m_navigateMoveAct);
+	//sceneNavigationModeChanged(m_navigateMoveAct);
 }
 
 /*!
@@ -193,10 +196,21 @@ void MainWindow::setupToolBars()
 */
 void MainWindow::setupSNScene()
 {
-	m_scene = new SNScene();
+	//m_scene = new SNScene();
 
 	m_diagram = new SNDevicesDiagramScene(this);
 	m_diagram->setSceneRect(0, 0, 500, 500);
+}
+
+/*!
+  Vytvorenie 3D sceny.
+*/
+void MainWindow::createSNScene()
+{
+	if (m_scene == NULL)
+	{
+		m_scene = new SNScene;
+	}
 }
 
 /*!
@@ -288,6 +302,7 @@ void MainWindow::graphicsViewChanged(QAction *action)
 	}
 	else if (action == m_3DAct)
 	{
+		createSNScene();
 		m_3DView = new GraphicsView;
 		m_3DView->setFrameStyle(QFrame::NoFrame);
 		m_3DView->setViewport(new QGLWidget(QGLFormat(QGL::SampleBuffers)));
@@ -304,6 +319,7 @@ void MainWindow::graphicsViewChanged(QAction *action)
 */
 void MainWindow::sceneNavigationModeChanged(QAction *action)
 {
+	createSNScene();
 	if (action == m_navigateRotateAct)
 	{
 		m_scene->setNavigationMode(SNScene::Rotate);
@@ -322,6 +338,7 @@ void MainWindow::initSimuNet()
 {
 	m_splash->setProgress(50);
 	m_splash->setMessage(tr("Starting devices"));
+	qApp->processEvents();
 	m_toolWindow->setModel(new SNDevicesListModel(this));
 	/*for (int i = 0; i < 10; ++i)
 	{

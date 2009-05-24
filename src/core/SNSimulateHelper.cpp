@@ -70,6 +70,9 @@ SNSimulateHelper::~SNSimulateHelper()
 	PyEval_AcquireLock();
 	Py_XDECREF(m_simulateHelper);
 	PyEval_ReleaseLock();
+	m_simulateHelper = NULL;
+	m_threadState = NULL;
+	m_mainThreadState = NULL;
 }
 
 /*!

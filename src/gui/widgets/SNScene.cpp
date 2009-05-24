@@ -103,6 +103,7 @@ SNScene::SNScene(QObject* parent): QGraphicsScene(parent), m_tahanie(false), m_r
 */
 SNScene::~SNScene()
 {
+	delete m_dialog;
 }
 
 /*!

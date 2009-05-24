@@ -48,10 +48,7 @@ class SNSimulateHelper: public QThread
   Zoznam zariadeni prisluchajucich danemu vlaknu.
 */
 		std::list<SNDevice *> m_devices;
-/*!
-  Odkaz na celkovy zoznam zairadeni.
-*/
-		PyObject *m_pDevicesDict;
+
 /*!
   Odkaz na objekt SNSimulateHelper pouzivany vy pythonovi.
 */

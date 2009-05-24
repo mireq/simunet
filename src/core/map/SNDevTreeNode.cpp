@@ -79,7 +79,7 @@ void SNDevTreeNode::insert(SNDevTreeItem *item, int pos)
 */
 SNDevTreeItem *SNDevTreeNode::itemAt(int pos) const
 {
-	if (pos >= (int)m_childs->size())
+	if (m_childs == NULL || pos >= (int)m_childs->size())
 	{
 		return NULL;
 	}
