@@ -44,12 +44,28 @@ class SNSimulateHelper: public QThread
 		void addDevice(SNDevice *device);
 		void sendFrame(uint32_t targetDevId, port_num hwPort, PyObject *frame);
 	private:
-		bool m_stop;
+/*!
+  Zoznam zariadeni prisluchajucich danemu vlaknu.
+*/
 		std::list<SNDevice *> m_devices;
+/*!
+  Odkaz na celkovy zoznam zairadeni.
+*/
 		PyObject *m_pDevicesDict;
+/*!
+  Odkaz na objekt SNSimulateHelper pouzivany vy pythonovi.
+*/
 		PyObject *m_simulateHelper;
+/*!
+  Odkaz na hlavne vlakno.
+*/
 		static PyThreadState *m_mainThreadState;
+/*!
+  Odkaz na vlakno tohto objektu.
+*/
 		PyThreadState *m_threadState;
+
+		bool m_stop;
 
 };
 

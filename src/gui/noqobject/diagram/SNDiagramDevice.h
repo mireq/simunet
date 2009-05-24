@@ -75,7 +75,6 @@ class SNDiagramDevice : public SNDiagramItem
 		void removeConnector(port_num port);
 		void setPos(const QPointF &pos);
 		void setPos(qreal x, qreal y);
-		void setItemDiff(QPointF diff);
 
 		SNMapDeviceItem *device() const;
 		void setDevice(SNMapDeviceItem *device);
@@ -86,7 +85,6 @@ class SNDiagramDevice : public SNDiagramItem
 
 	private:
 		void updateConnectorDiffs();
-		//QList<SNDiagramConnector *> m_controlPoints;
 		SNMapDeviceItem *m_device;
 		QMap<port_num, SNDiagramConnector *> m_connectors;
 		QString m_name;

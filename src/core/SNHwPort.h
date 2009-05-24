@@ -47,9 +47,21 @@ class SNHwPort
 		bool operator >(const SNHwPort &other) const;
 		bool operator ==(const SNHwPort &other) const;
 	private:
+/*!
+  Cislo zariadenia, ktoremu patri port.
+*/
 		uint32_t m_devId;
+/*!
+  Cislo fyzickeho portu.
+*/
 		uint32_t m_hwPort;
+/*!
+  Smernik na susedny port.
+*/
 		SNHwPort *m_buddy;
+/*!
+  Smernik na zariadenie, ktoremu patri port.
+*/
 		SNDevice *m_device;
 };
 

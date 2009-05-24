@@ -267,7 +267,10 @@ void ConfigureDlg::setMsgPixmap(SNTitleWidget::MessageType type)
 	m_titleWidget->setPixmap(type);
 }
 
-
+/*!
+  Prepojenie niektorych signalov, ktore emituje panel so slotmi na zobraznie
+  roznych informacnych hlaseni.
+*/
 void ConfigureDlg::connectPanel(SNConfigPanel *panel)
 {
 	connect(panel, SIGNAL(info(QString, QString, int)), SLOT(showInfo(QString, QString, int)));
@@ -276,19 +279,27 @@ void ConfigureDlg::connectPanel(SNConfigPanel *panel)
 	connect(panel, SIGNAL(changed(bool)), m_buttons->button(QDialogButtonBox::Apply), SLOT(setEnabled(bool)));
 }
 
+/*!
+  Odpojenie vsetkych slotov od panelu.
+*/
 void ConfigureDlg::disconnectPanel(SNConfigPanel *panel)
 {
 	panel->disconnect();
 }
 
+/*!
+  Vrati referenciu na aktualne zobrazeny panel.
+*/
 SNConfigPanel *ConfigureDlg::currentPanel()
 {
 	return static_cast<SNConfigPanel *>(m_panel->currentWidget());
 }
 
+/*!
+  Pri zmene vyberu panelu sa zmeni aktualne zobrazovany panel.
+*/
 void ConfigureDlg::listSelectionChanged()
 {
-
 	QListWidgetItem *pom = m_currentItem;
 	m_currentItem = m_panelsList->currentItem();
 
@@ -335,12 +346,19 @@ void ConfigureDlg::listSelectionChanged()
 	}
 }
 
+/*!
+  Ulozenie zmien po kliknuti na OK a zatvorenie dialogu.
+*/
 void ConfigureDlg::onOkClicked()
 {
 	currentPanel()->saveChanges();
 	accept();
 }
 
+/*!
+  Zobrazenie dialogu o ulozeni zmien v pripade, ze zmeny neboli ulozene a
+  zatvorenie okna.
+*/
 void ConfigureDlg::onCancelClicked()
 {
 	if (currentPanel()->panelChanged())
@@ -349,10 +367,10 @@ void ConfigureDlg::onCancelClicked()
 	}
 }
 
+/*!
+  Aplikovanie zmien bez zatvorenia dialogu.
+*/
 void ConfigureDlg::onApplyClicked()
 {
 	currentPanel()->saveChanges();
 }
-
-
-

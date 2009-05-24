@@ -65,16 +65,7 @@ uint32_t SNDevTreeItem::internalId() const
 	return m_internalId;
 }
 
-/*!
-  Zistenie ID (uzivatel moze definovat ID pre vlastne ucely, u zariadenia moze
-  znamenat napr. ID zariadenia).
 
-  \sa setID
-*/
-uint32_t SNDevTreeItem::id() const
-{
-	return m_id;
-}
 
 /*!
   Zistenie nadreadenej polozky stromovej struktury. V pripade, ze taka neexistuje
@@ -124,32 +115,43 @@ void SNDevTreeItem::setParent(SNDevTreeItem *parent)
 	m_parent = parent;
 }
 
+
 /*!
-  Nastavenie noveho ID (uzivatelom definovane, nema nic spolocne s internym ID).
+  Nastavenie odkazu na polozku mapy.
 
-  \sa id
+  \sa mapItem
 */
-void SNDevTreeItem::setId(uint32_t id)
-{
-	m_id = id;
-}
-
 void SNDevTreeItem::setMapItem(SNMapItem *mapItem)
 {
 	m_mapItem = mapItem;
 }
 
+/*!
+  Zistenie polozky menu, ktora je spojena s touto polozkou zoznamu zariadeni.
+
+  \sa setMapItem
+*/
 SNMapItem *SNDevTreeItem::mapItem() const
 {
 	return m_mapItem;
 }
 
+/*!
+  Nastavenie uzlu v danej polozke zoznamu zariadeni.
 
+  \sa node
+*/
 void SNDevTreeItem::setNode(SNDevTreeNode *node)
 {
 	m_node = node;
 }
 
+/*!
+  Zistenie uzlu v polozke zoznamu zariadeni. Ak je pocet podpoloziek nulovy
+  moze byt uzol nealokovany (NULL).
+
+  \sa setNode
+*/
 SNDevTreeNode *SNDevTreeItem::node() const
 {
 	return m_node;
@@ -165,7 +167,11 @@ SNDevTreeNode *SNDevTreeItem::node() const
  */
 
 /*!
-  Vytvorenie noveho adresara s nazvom \a name a nadradenym adresarom \a parent.
+  Vytvorenie noveho adresara.
+
+  \param name Nazov noveho adresara.
+  \param mapItem Polozka mapy, ktorej prislucha polozka zonznamu zariadeni.
+  \param parent Nadradena polozka zoznamu zariadeni.
 */
 SNDevTreeDirectoryItem::SNDevTreeDirectoryItem(const std::string &name, SNMapItem *mapItem, SNDevTreeItem *parent)
 	: SNDevTreeItem(Directory, mapItem, parent)
@@ -205,8 +211,10 @@ void SNDevTreeDirectoryItem::setName(const std::string &name)
  */
 
 /*!
-  Vytvorenie novej polozky zoznamu zariadeni s ID zariadenia \a devId v
-  adresari \a parent.
+  Vytvorenie noveho zariadenia v zozname zariadeni.
+
+  \param mapItem Polozka mapy so zariadeniami. Z tejto polozky sa ziskavaju informacie ako napr. ID zariadenia.
+  \param parent Nadradena polozka zoznamu zariadeni.
 */
 SNDevTreeDeviceItem::SNDevTreeDeviceItem(SNMapDeviceItem *mapItem, SNDevTreeItem *parent)
 	: SNDevTreeItem(Device, mapItem, parent)
@@ -222,8 +230,6 @@ SNDevTreeDeviceItem::~ SNDevTreeDeviceItem()
 
 /*!
   Zistenie ID zariadenia.
-
-  \sa SNDevTreeItem::id
 */
 uint32_t SNDevTreeDeviceItem::devId() const
 {
@@ -235,18 +241,8 @@ uint32_t SNDevTreeDeviceItem::devId() const
 }
 
 /*!
-  Nastavenie noveho ID zariadenia.
-
-  \sa devId
+  Ziskanie referencie na zariadenie z mapy so zariadeniami.
 */
-void SNDevTreeDeviceItem::setDevId(uint32_t devId)
-{
-	if (m_mapItem != NULL)
-	{
-		static_cast<SNMapDeviceItem *>(m_mapItem)->setDeviceId(devId);
-	}
-}
-
 SNMapDeviceItem *SNDevTreeDeviceItem::mapDevice() const
 {
 	return static_cast<SNMapDeviceItem *>(mapItem());

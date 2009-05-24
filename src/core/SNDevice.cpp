@@ -80,7 +80,7 @@ SNDevice::SNDevice(const std::string &filename, uint32_t deviceId, SNSimulate *p
 
 		// natiahneme globalnu premennu devices
 		PyCPPObject pMainModule(PyImport_AddModule("snsimulate"));
-		PyCPPObject pDevicesDict(PyObject_GetAttrString(pMainModule, "devices"));
+		PyCPPObject pDevicesDict(PyObject_GetAttrString(pMainModule, "devices"), true);
 
 		// vytvorime novu instanciu zariadenia
 		//PyCPPObject pDeviceInstance(PyInstance_New(pDeviceClass, NULL, NULL), true);
@@ -95,7 +95,7 @@ SNDevice::SNDevice(const std::string &filename, uint32_t deviceId, SNSimulate *p
 		PyObject_SetAttrString(pDeviceInstance, "pSNDevice", pSNDevice);
 
 		PyCPPObject constructor(PyObject_GetAttrString(pDeviceInstance, "__init__"), true);
-		PyCPPObject args(PyTuple_New(0));
+		PyCPPObject args(PyTuple_New(0), true);
 		PyObject_Call(constructor, args, NULL);
 	}
 	catch (PyObjectNULLException e)
@@ -117,14 +117,14 @@ SNDevice::~SNDevice()
 	PyCPPObject pDevicesDict(PyObject_GetAttrString(pMainModule, "devices"), true);
 	if (PyDict_Contains(pDevicesDict, pDeviceId) == 1)
 	{
-		PyCPPObject pDevice(PyDict_GetItem(pDevicesDict, pDeviceId));
+		PyCPPObject pDevice(PyDict_GetItem(pDevicesDict, pDeviceId), true);
 		try
 		{
 			PyCPPObject pStopFunc(PyObject_GetAttrString(pDevice, "stop"), true);
 			if (pStopFunc.isCallable())
 			{
-				PyCPPObject args(PyTuple_New(0));
-				PyObject_Call(pStopFunc, args, NULL);
+				PyCPPObject args(PyTuple_New(0), true);
+				Py_XDECREF(PyObject_Call(pStopFunc, args, NULL));
 			}
 		}
 		catch (PyObjectNULLException e)
@@ -244,6 +244,7 @@ PyObject *SNDevice::dumpConfig(void)
  Odoslanie http poziadavky zariadeniu.
 
  \param url Url ktore pozadujeme od http serveru zariadenia.
+ \param get Get data, ktore posielame zariadeniu.
  \param post Post data ktore mu posielame.
  */
 char *SNDevice::httpRequest(const std::string &url, PyObject *get, PyObject *post)
@@ -349,7 +350,7 @@ char *SNDevice::telnetRequest(const std::string &line, char symbol)
 
 
 /*!
-  Ziskanie zoznamu znakoch po ktorych odosielame data zariadeniu.
+  Ziskanie zoznamu znakov, po ktorych odosielame data zariadeniu.
  */
 char *SNDevice::telnetGetControlChars(void)
 {
@@ -378,6 +379,9 @@ const std::vector<port_num> &SNDevice::portNumbers() const
 	return m_portNumbers;
 }
 
+/*!
+  Reakcia na prijatie ramca odoslaneho zariadenim.
+*/
 PyObject *SNDevice::frameResponseWrapper(PyObject *, PyObject *args)
 {
 	if (PyTuple_Size(args) != 4)
@@ -401,6 +405,9 @@ PyObject *SNDevice::frameResponseWrapper(PyObject *, PyObject *args)
 	Py_RETURN_NONE;
 }
 
+/*!
+  Spracovanie telnet dat prijatych od zariadenia.
+*/
 PyObject* SNDevice::telnetResponseWrapper(PyObject *, PyObject *args)
 {
 	if (PyTuple_Size(args) != 4)
@@ -430,6 +437,9 @@ PyObject* SNDevice::telnetResponseWrapper(PyObject *, PyObject *args)
 	Py_RETURN_NONE;
 }
 
+/*!
+  Spracovanie poziadavky zariadenia na pridanie fyzickeho portu.
+*/
 PyObject *SNDevice::insertHwPortWrapper(PyObject *, PyObject *args)
 {
 
@@ -464,6 +474,9 @@ PyObject *SNDevice::insertHwPortWrapper(PyObject *, PyObject *args)
 	Py_RETURN_TRUE;
 }
 
+/*!
+  Spracovanie poziadavky zariadenia na odstranenie fyzickeho portu.
+*/
 PyObject *SNDevice::removeHwPortWrapper(PyObject *, PyObject *args)
 {
 	if (PyTuple_Size(args) != 2)
@@ -498,6 +511,9 @@ PyObject *SNDevice::removeHwPortWrapper(PyObject *, PyObject *args)
 	
 }
 
+/*!
+  Nastavenie obsluhy fyzickeho portu zariadenia.
+*/
 PyObject *SNDevice::setHwPortHandlerWrapper(PyObject *, PyObject *)
 {
 	Py_RETURN_NONE;

@@ -22,16 +22,31 @@
  ***************************************************************************/
 #include "SNMapControlPointItem.h"
 
+/*!
+  \class SNMapControlPointItem
+  \brief Kontrolny bod, cez ktory prechadza ciara spajajuca zariadenia.
+  \ingroup map
+ */
+
+/*!
+  Vytvorenie noveho kontrolneho bodu na pozicii urcenej argumentom \a pos
+  typom \a type.
+*/
 SNMapControlPointItem::SNMapControlPointItem(const SNPoint3f &pos, ControlPointType type)
 	: SNMapItem(pos), m_type(type)
 {
 }
 
-
+/*!
+  Zrusenie kontrolneho bodu.
+*/
 SNMapControlPointItem::~SNMapControlPointItem()
 {
 }
 
+/*!
+  Zistenie typu kontrolneho bodu.
+*/
 int SNMapControlPointItem::type() const
 {
 	return m_type;
@@ -40,6 +55,16 @@ int SNMapControlPointItem::type() const
 
 /* ------------------------------------------------------------------ */
 
+/*!
+  \class SNMapConnectorItem
+  \brief Koncove kontrolne body (konektory).
+  \ingroup map
+ */
+
+/*!
+  Vytvorenie konektoru na pozicii urcenej argumentom \a pos. Konektor patri
+  zariadeniu \a device a jeho cislo je urcene argumentom \a port.
+*/
 SNMapConnectorItem::SNMapConnectorItem(const SNPoint3f &pos, SNMapDeviceItem *device, port_num port)
 	: SNMapControlPointItem(pos, Connector)
 {
@@ -47,15 +72,24 @@ SNMapConnectorItem::SNMapConnectorItem(const SNPoint3f &pos, SNMapDeviceItem *de
 	m_port = port;
 }
 
+/*!
+  Zrusenie konektoru.
+*/
 SNMapConnectorItem::~ SNMapConnectorItem()
 {
 }
 
+/*!
+  Ziskanie referencie na zariadenie, ktoremu patri konektor.
+*/
 SNMapDeviceItem *SNMapConnectorItem::device() const
 {
 	return m_device;
 }
 
+/*!
+  Zistenie cisla portu.
+*/
 port_num SNMapConnectorItem::port() const
 {
 	return m_port;

@@ -647,6 +647,14 @@ SNDevice *SNDevicesListModel::device(const QModelIndex &index) const
 	return m_map->device(dev->devId());
 }
 
+/*!
+  Vypocet meista, na ktore sa vlozi nova polozka.
+
+  \param[out] index Nadradeny index, do ktoreho sa bude vkladat nova polozka.
+  \param[out] parent Nadradena poloza, do kotrej sa vlozi podpolozka.
+  \param[in]  row Riadok, na ktory sa prida polozka.
+  \param[in]  parentIndex Index polozky na ktorej bolo vyvolane vlozenie (ak to bol adresar prida sa polozka do adresara, ak to bolo zariadenie prida sa pod zariadenie).
+*/
 void SNDevicesListModel::insertCompute(const QModelIndex &index, SNDevTreeItem **parent, int &row, QModelIndex &parentIndex)
 {
 	if (index.isValid())

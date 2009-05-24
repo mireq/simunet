@@ -48,7 +48,13 @@ class CfgPerformance : public SNConfigPanel
 	private:
 		void readConfig();
 
+/*!
+  Nastavenie poctu vlakien.
+*/
 		QSpinBox *m_threadsCount;
+/*!
+  Pocet vlakien.
+*/
 		int m_sThreadsCount;
 
 	private slots:

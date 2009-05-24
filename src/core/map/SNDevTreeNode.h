@@ -35,7 +35,7 @@ class SNDevTreeItem;
 class SNDevTreeNode
 {
 	public:
-		SNDevTreeNode(SNDevTreeItem *parent);
+		SNDevTreeNode(SNDevTreeItem *treeItem);
 		~SNDevTreeNode();
 		void insert(SNDevTreeItem *item, int pos = -1);
 		SNDevTreeItem *itemAt(int pos) const;
@@ -43,10 +43,17 @@ class SNDevTreeNode
 		std::vector<SNDevTreeItem *> *childs() const;
 		int index(uint32_t id) const;
 		void removeItem(uint32_t id, bool del = true);
-		SNDevTreeItem *parent() const;
+		SNDevTreeItem *treeItem() const;
 
 	private:
-		SNDevTreeItem *m_parent;
+/*!
+  Polozka zoznamu zariadeni, ktorej patri uzol.
+*/
+		SNDevTreeItem *m_treeItem;
+
+/*!
+  Zoznam poloziek v tomto uzle.
+*/
 		std::vector<SNDevTreeItem *> *m_childs;
 
 };

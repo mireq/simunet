@@ -73,6 +73,11 @@ void SNSingleton::deleteSimulate()
 	m_simulate = NULL;
 }
 
+/*!
+  Vrati smernik na instanciu SNMap.
+
+  Ak nebola nova instancia vytvorena automaticky ju vytvori.
+*/
 SNMap *SNSingleton::getMap()
 {
 	if (m_map == NULL)
@@ -83,6 +88,9 @@ SNMap *SNSingleton::getMap()
 
 }
 
+/*!
+  Zrusenie instancie SNMap (ak bola vytvorena).
+*/
 void SNSingleton::deleteMap()
 {
 	if (m_map != NULL)
@@ -116,9 +124,4 @@ void SNSingleton::deleteObjects()
 	deleteMap();
 	deleteDynSettings();
 }
-
-
-
-
-
 

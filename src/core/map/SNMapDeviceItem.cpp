@@ -72,6 +72,9 @@ uint32_t SNMapDeviceItem::deviceId() const
 	return m_deviceId;
 }
 
+/*!
+  Vrati zariadenie asociovane s touto polozkou zoznamu zariadeni.
+ */
 SNDevice *SNMapDeviceItem::device()
 {
 	if (m_device == NULL)
@@ -81,11 +84,17 @@ SNDevice *SNMapDeviceItem::device()
 	return m_device;
 }
 
+/*!
+  Vrati nazov zariadenia.
+ */
 std::string SNMapDeviceItem::name() const
 {
 	return m_name;
 }
 
+/*!
+  Nastavenie nazvu zariadenia na \a name.
+ */
 void SNMapDeviceItem::setName(std::string name)
 {
 	m_name = name;

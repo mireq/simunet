@@ -27,7 +27,7 @@
 
 void interpreterInit()
 {
-	PyCPPObject pOsModuleName(PyString_FromString("os"));
+	PyCPPObject pOsModuleName(PyString_FromString("os"), true);
 	PyCPPObject pOsModule(PyImport_Import(pOsModuleName));
 	char funcName[5] = "path";
 	PyCPPObject pPathObject(PySys_GetObject(funcName));

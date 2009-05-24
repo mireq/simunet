@@ -28,8 +28,17 @@
 
 #include <QColorDialog>
 
-#include <QDebug>
+/*!
+  \class SNColorSelectWidget
+  \brief Prvok na vyber farieb.
+  \ingroup widgets
 
+  Tento prvok sluzi na vyber farby a zobrazenie nahladu na farbu.
+ */
+
+/*!
+  Vytvorenie noveho prvku na vyber farby.
+*/
 SNColorSelectWidget::SNColorSelectWidget(QWidget *parent)
 	: QWidget(parent)
 {
@@ -45,30 +54,36 @@ SNColorSelectWidget::SNColorSelectWidget(QWidget *parent)
 	connect(m_selectButton, SIGNAL(clicked()), SLOT(selectColor()));
 }
 
+/*!
+  Zrusenie prvku na vyber farby.
+*/
 SNColorSelectWidget::~SNColorSelectWidget()
 {
 }
 
+/*!
+  Zobrazenie dialogu vyberu farby.
+*/
 void SNColorSelectWidget::selectColor()
 {
 	QColor color = QColorDialog::getColor(m_colorPreview->color(), this);
 	if (color.isValid())
 	{
-		if (m_colorPreview->color() != color)
-		{
-			m_colorPreview->setColor(color);
-			emit colorChanged(color);
-		}
+		setColor(color);
 	}
 }
 
-
-
+/*!
+  Vrati aktualne nastavenu farbu.
+*/
 QColor SNColorSelectWidget::color() const
 {
 	return m_colorPreview->color();
 }
 
+/*!
+  Nastavenie na farbu urcenu argumentom \a color.
+*/
 void SNColorSelectWidget::setColor(const QColor &color)
 {
 	if (color != m_colorPreview->color())
@@ -77,6 +92,18 @@ void SNColorSelectWidget::setColor(const QColor &color)
 		emit colorChanged(color);
 	}
 }
+
+/* ------------------------------------------------------------------ */
+
+/*!
+  \fn void SNColorSelectWidget::colorChanged(const QColor &color)
+
+  Signal sa emituje vtedy, ked uzivatel zmeni farbu, alebo farba sa zmeni
+  volanim setColor.
+ */
+
+/* ------------------------------------------------------------------ */
+
 
 namespace SNColorPreviewWidget_Private
 {

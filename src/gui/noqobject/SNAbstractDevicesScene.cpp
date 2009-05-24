@@ -25,28 +25,47 @@
 #include "core/map/SNMap.h"
 #include "core/map/SNMapDeviceItem.h"
 
-#include <QDebug>
+/*!
+  \class SNAbstractDevicesScene
+  \brief Zakladna scena, z ktorej sa vytvaraju rozne pohlady na zariadenia.
+  \ingroup widgets
+ */
 
+
+/*!
+  Vytvorenie novej grafickej sceny.
+*/
 SNAbstractDevicesScene::SNAbstractDevicesScene()
 		: m_map(NULL)
 {
 }
 
-
+/*!
+  Zrusenie grafickej sceny.
+*/
 SNAbstractDevicesScene::~SNAbstractDevicesScene()
 {
 }
 
+/*!
+  Nastavenie odkazu na mapu, ktoru pohlad ovlada.
+*/
 void SNAbstractDevicesScene::setMap(SNMap *map)
 {
 	m_map = map;
 }
 
+/*!
+  Ziskanie odkazu na mapu, ktoru pohlad ovlada.
+*/
 SNMap *SNAbstractDevicesScene::map() const
 {
 	return m_map;
 }
 
+/*!
+  Pridanie noveho zariadenia do grafickej sceny so zariadeniami.
+*/
 void SNAbstractDevicesScene::addDevice(SNMapDeviceItem *item)
 {
 	if (!m_devices.contains(item))
@@ -55,6 +74,9 @@ void SNAbstractDevicesScene::addDevice(SNMapDeviceItem *item)
 	}
 }
 
+/*!
+  Odstranenie zariadenia zo sceny so zariadeniami.
+*/
 void SNAbstractDevicesScene::removeDevice(SNMapDeviceItem *item)
 {
 	if (m_devices.contains(item))

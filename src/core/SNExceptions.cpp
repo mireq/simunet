@@ -86,6 +86,7 @@ SNPythonInterpreterException::pythonErr SNPythonInterpreterException::problemTyp
 /*!
   \class PyObjectNULLException
   \brief Vynimka vyvolana pri vratenie NULL namiesto PyObject *
+  \ingroup exceptions
 */
 
 /*!

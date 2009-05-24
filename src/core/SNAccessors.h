@@ -46,8 +46,21 @@ class SNSingleton
 
 		static void deleteObjects();
 	private:
+/*!
+  Odkaz na instanciu SNSimulate.
+*/
 		static SNSimulate *m_simulate;
+
+/*!
+  Odkaz na instanciu SNMap.
+*/
 		static SNMap *m_map;
+
+/*!
+  Zoznam odkazov na instancie SNDynamicSettings. Klucom je ID metatypu
+  (qMetaTypeId), ktore je unikatne pre kazdu triedu odvodenu od zakladnej
+  triedy QObject.
+*/
 		static QMap<int, SNDynamicSettings*> m_dynSettings;
 };
 

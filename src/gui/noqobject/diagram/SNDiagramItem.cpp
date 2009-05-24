@@ -25,16 +25,31 @@
 #include <QGraphicsScene>
 #include <QDebug>
 
+/*!
+  \class SNDiagramItem
+  \brief Polozka diagramu so zariadeniami.
+  \ingroup widgets
+ */
+
+/*!
+  Vytovrenie novej polozky na pozicii [0, 0].
+*/
 SNDiagramItem::SNDiagramItem()
 		: QGraphicsItem(), m_pos(0, 0)
 {
 }
 
-
+/*!
+  Zrusenie polozky.
+*/
 SNDiagramItem::~SNDiagramItem()
 {
 }
 
+/*!
+  Nastavenie novej pozicie na \a pos. Metoda zabezpecuje to, aby polozka nemohla
+  byt mimo sceny.
+*/
 void SNDiagramItem::setPos(const QPointF &pos)
 {
 	m_pos = pos;
@@ -67,11 +82,17 @@ void SNDiagramItem::setPos(const QPointF &pos)
 	}
 }
 
+/*!
+  \overload
+*/
 void SNDiagramItem::setPos(qreal x, qreal y)
 {
 	setPos(QPointF(x, y));
 }
 
+/*!
+  Zistenie aktualnej pozicie.
+*/
 QPointF SNDiagramItem::pos() const
 {
 	return m_pos;

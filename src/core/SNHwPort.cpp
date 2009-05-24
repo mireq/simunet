@@ -22,11 +22,27 @@
  ***************************************************************************/
 #include "SNHwPort.h"
 
+/*!
+  \class SNHwPort
+  \brief Tato trieda ma informacie o porte zariadenia a susednom porte.
+  \ingroup core
+ */
+
+/*!
+  Vytvorenie fyzickeho potru zariadenia.
+
+  \param devId ID zariadenia.
+  \param hwPort Cislo fyzickeho portu.
+  \param device Zariadenie, ktoremu patri port.
+*/
 SNHwPort::SNHwPort(uint32_t devId, port_num hwPort, SNDevice *device)
 	: m_devId(devId), m_hwPort(hwPort), m_buddy(0), m_device(device)
 {
 }
 
+/*!
+  Vytvorenie kopie portu.
+*/
 SNHwPort::SNHwPort(const SNHwPort &other)
 {
 	m_devId = other.m_devId;
@@ -35,6 +51,9 @@ SNHwPort::SNHwPort(const SNHwPort &other)
 	m_device = other.m_device;
 }
 
+/*!
+  Zrusenie portu.
+*/
 SNHwPort::~SNHwPort()
 {
 	if (m_buddy != 0)
@@ -43,6 +62,11 @@ SNHwPort::~SNHwPort()
 	}
 }
 
+/*!
+  Nastavenie susedneho portu, s ktorym je tento port spojeny.
+
+  \sa buddy, unsetBuddy
+*/
 void SNHwPort::setBuddy(const SNHwPort &buddy)
 {
 	if (m_buddy != 0)
@@ -53,38 +77,67 @@ void SNHwPort::setBuddy(const SNHwPort &buddy)
 	m_buddy = new SNHwPort(buddy.m_devId, buddy.m_hwPort, buddy.m_device);
 }
 
+/*!
+  Rozpojenie dvoch portov.
+
+  \sa setBuddy, buddy
+*/
 void SNHwPort::unsetBuddy()
 {
 	delete m_buddy;
 	m_buddy = 0;
 }
 
+/*!
+  Nastavenie zariadenia, ktoremu prislucha port.
+
+  \sa device
+*/
 void SNHwPort::setDevice(SNDevice *device)
 {
 	m_device = device;
 }
 
+/*!
+  Zistenie portu spojeneho s tymto portom. Ak je port odpojeny vrati \e NULL.
+*/
 SNHwPort *SNHwPort::buddy() const
 {
 	return m_buddy;
 }
 
+/*!
+  ID zariadenia, ktoremu patri port.
+*/
 uint32_t SNHwPort::devId() const
 {
 	return m_devId;
 }
 
+/*!
+  Cislo portu na zariadeni.
+*/
 port_num SNHwPort::hwPort() const
 {
 	return m_hwPort;
 }
 
+/*!
+  Vrati zariadenie, ktoremu patri port.
+
+  \sa setDevice
+*/
 SNDevice *SNHwPort::device() const
 {
 	return m_device;
 }
 
+/*!
+  Porovnanie dvoch portov (kvoli moznosti zoradenia v kontajneri \e map).
 
+  Ak je cislo prveho zariadenia mensie nez cislo druheho vrati \e true. Ak je
+  vacsie vrati \e false. V pripade rovnakych cisel zariadenia porovnava porty.
+*/
 bool SNHwPort::operator <(const SNHwPort &other) const
 {
 	if (this->m_devId == other.m_devId)
@@ -97,6 +150,9 @@ bool SNHwPort::operator <(const SNHwPort &other) const
 	}
 }
 
+/*!
+  Porovnanie dvoch portov (kvoli moznosti zoradenia v kontajneri \e map).
+*/
 bool SNHwPort::operator >(const SNHwPort &other) const
 {
 	if (this->m_devId == other.m_devId)
@@ -109,6 +165,9 @@ bool SNHwPort::operator >(const SNHwPort &other) const
 	}
 }
 
+/*!
+  Test na to, ci oba porty su tie iste a patria tomu istemu zariadeniu.
+*/
 bool SNHwPort::operator ==(const SNHwPort &other) const
 {
 	return (this->m_devId == other.m_devId && this->m_hwPort == other.m_hwPort);

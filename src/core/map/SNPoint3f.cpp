@@ -112,11 +112,19 @@ float SNPoint3f::z() const
 	return m_z;
 }
 
+/*!
+  Porovnanie 2 suradnic. Vrati \e true, ak su tieto suradnice rovnake, v opacnom
+  pripade false.
+*/
 bool SNPoint3f::operator ==(const SNPoint3f &other) const
 {
 	return m_x == other.m_x && m_y == other.m_y && m_z == other.m_z;
 }
 
+/*!
+  Vrati \e true, ak porovnavane suradnice nie su rovnake, v opacnom pripade vrati
+  \e false.
+*/
 bool SNPoint3f::operator !=(const SNPoint3f &other) const
 {
 	return !(*this == other);

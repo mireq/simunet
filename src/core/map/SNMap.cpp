@@ -105,26 +105,6 @@ uint32_t SNMap::startDevice(const std::string &filename)
   argumentom \a parent. Argument \a pos urcuje poradie, v ktorom sa vlozi
   zariadenie.
 */
-/*void SNMap::insertDevice(uint32_t devId, uint32_t parent, int pos)
-{
-	SNMapDeviceItem *device = new SNMapDeviceItem(devId);
-	m_mapItems.insert(device);
-	m_devices[devId] = device;
-
-	SNDevTreeDeviceItem *item = new SNDevTreeDeviceItem(device);
-	map<uint32_t, SNDevTreeNode*>::iterator it;
-	if (m_itemsTree.find(parent) == m_itemsTree.end())
-	{
-		m_itemsTree[parent] = new SNDevTreeNode(m_items[parent]);
-	}
-	SNDevTreeNode *node = m_itemsTree[parent];
-	node->insert(item, pos);
-	m_items[item->internalId()] = item;
-	item->setNode(node);
-
-	// vlozenie zariadenia do sceny
-	m_scene->addDevice(device);
-}*/
 void SNMap::insertDevice(uint32_t devId, SNDevTreeItem *parent, int pos)
 {
 	SNMapDeviceItem *device = new SNMapDeviceItem(devId);
@@ -153,28 +133,8 @@ void SNMap::insertDevice(uint32_t devId, SNDevTreeItem *parent, int pos)
 /*!
   Vytvorenie noveho adresara s menom \a name v adresari \a parent. Ak je
   nadradeny adresar \a parent rovny 0 prida sa adresar do korenoveho adresara.
-  Poradie v ktorom sa vlozi adresar je urceny argumentom \a pos.
+  Riadok, do ktoreho sa vlozi novy adresar je urceny argumentom \a pos.
 */
-/*void SNMap::addDirectory(std::string name, uint32_t parent, int pos)
-{
-	SNDevTreeDirectoryItem *item = new SNDevTreeDirectoryItem(name);
-	map<uint32_t, SNDevTreeNode*>::iterator it;
-	if (m_itemsTree.find(parent) == m_itemsTree.end())
-	{
-		if (parent == 0)
-		{
-			m_itemsTree[parent] = new SNDevTreeNode(NULL);
-		}
-		else
-		{
-			m_itemsTree[parent] = new SNDevTreeNode(m_items[parent]);
-		}
-	}
-	SNDevTreeNode *node = m_itemsTree[parent];
-	node->insert(item, pos);
-	m_items[item->internalId()] = item;
-	item->setNode(node);
-}*/
 void SNMap::addDirectory(std::string name, SNDevTreeItem *parent, int pos)
 {
 	SNDevTreeDirectoryItem *item = new SNDevTreeDirectoryItem(name);
@@ -214,38 +174,11 @@ int SNMap::numItems(SNDevTreeItem *parent) const
 		return node->childCount();
 	}
 }
-/*int SNMap::numItems(uint32_t parent) const
-{
-	map<uint32_t, SNDevTreeNode*>::const_iterator it;
-	it = m_itemsTree.find(parent);
-	if (it == m_itemsTree.end())
-	{
-		return 0;
-	}
-	else
-	{
-		return it->second->childCount();
-	}
-}*/
 
 /*!
   Vrati polozku stromu zaraideni, ktora sa nachadza v riadku urcenom argumentom
   \a pos nachadzajucu sa v adresari urcenom argumentom \a parent.
 */
-/*SNDevTreeItem *SNMap::itemAt(int pos, uint32_t parent) const
-{
-	map<uint32_t, SNDevTreeNode*>::const_iterator it;
-	it = m_itemsTree.find(parent);
-	if (it == m_itemsTree.end())
-	{
-		return NULL;
-	}
-	else
-	{
-		return it->second->itemAt(pos);
-	}
-
-}*/
 SNDevTreeItem *SNMap::itemAt(int pos, SNDevTreeItem *parent) const
 {
 	SNDevTreeNode *node = NULL;
@@ -264,22 +197,6 @@ SNDevTreeItem *SNMap::itemAt(int pos, SNDevTreeItem *parent) const
 	return node->itemAt(pos);
 }
 
-/*!
-  Vrati polozku stromu zariadeni s internym ID \a intenralId.
-*/
-/*SNDevTreeItem *SNMap::item(uint32_t internalId) const
-{
-	map<uint32_t, SNDevTreeItem *>::const_iterator it;
-	it = m_items.find(internalId);
-	if (it == m_items.end())
-	{
-		return NULL;
-	}
-	else
-	{
-		return it->second;
-	}
-}*/
 
 /*!
   Vrati zariadenie na mape podla ID zariadenia
@@ -298,19 +215,8 @@ SNMapDeviceItem *SNMap::mapDeviceItem(uint32_t devId)
 }
 
 /*!
-  Vrati riadok polozky s internym cislom \a internalId v adresari \a parent.
+  Vrati riadok polozky \a item nachadzajucej sa v adresari \a parent.
 */
-/*int SNMap::itemIndex(uint32_t internalId, uint32_t parent) const
-{
-	
-	map<uint32_t, SNDevTreeNode *>::const_iterator it;
-	it = m_itemsTree.find(parent);
-	if (it == m_itemsTree.end())
-	{
-		return -1;
-	}
-	return it->second->index(internalId);
-}*/
 int SNMap::itemIndex(SNDevTreeItem *item, SNDevTreeItem *parent) const
 {
 	SNDevTreeNode *node = NULL;
@@ -331,78 +237,11 @@ int SNMap::itemIndex(SNDevTreeItem *item, SNDevTreeItem *parent) const
 }
 
 /*!
-  Odstranenie polozky alebo celeho adresara s internym ID \a internalId
-  nachadzajucej sa v adresari \a parent.
+  Odstranenie polozky alebo celeho adresara vratane vsetkych podpoloziek
+  v zozname zariadeni. Polozka, ktora sa ma odstranit je urcena argumentom
+  \a item. Specifikovat sa musi aj nadradeny adresar (pripadne \b NULL v
+  pripade korenoveho adresara), v ktoom sa polozka nachadza.
 */
-/*void SNMap::deleteItem(uint32_t internalId, uint32_t parent)
-{
-	// najdenie stromu
-	map<uint32_t, SNDevTreeNode *>::iterator tree;
-	tree = m_itemsTree.find(parent);
-	if (tree == m_itemsTree.end())
-	{
-		return;
-	}
-
-	map<uint32_t, SNDevTreeItem *>::iterator itemIter;
-	itemIter = m_items.find(internalId);
-	if (itemIter != m_items.end())
-	{
-		SNDevTreeItem *it = itemIter->second;
-
-		// odstranenie adresara
-		map<uint32_t, SNDevTreeNode *>::iterator subtree;
-		subtree = m_itemsTree.find(internalId);
-		if (subtree != m_itemsTree.end())
-		{
-			vector<SNDevTreeItem *> *childs = subtree->second->childs();
-			vector<SNDevTreeItem *>::iterator childIt;
-			list<SNDevTreeItem *> itemsToDelete;
-			for (childIt = childs->begin(); childIt != childs->end(); ++childIt)
-			{
-				itemsToDelete.push_back(*childIt);
-			}
-			list<SNDevTreeItem *>::iterator iter;
-			for (iter = itemsToDelete.begin(); iter != itemsToDelete.end(); ++iter)
-			{
-				deleteItem((*iter)->internalId(), internalId);
-			}
-		}
-
-		if (it->type() == SNDevTreeItem::Device)
-		{
-			stopDevice(static_cast<SNDevTreeDeviceItem *>(it)->devId());
-
-			set<SNMapItem *>::iterator mapItem = m_mapItems.find(it->mapItem());
-			if (mapItem != m_mapItems.end())
-			{
-				if (it->type() == SNDevTreeItem::Device)
-				{
-					SNMapDeviceItem *device = static_cast<SNMapDeviceItem *>(*mapItem);
-					m_scene->removeDevice(device);
-					uint32_t deviceId = device->deviceId();
-					std::map<uint32_t, SNMapDeviceItem *>::iterator deviceIterator = m_devices.find(deviceId);
-					if (deviceIterator != m_devices.end())
-					{
-						m_devices.erase(deviceIterator);
-					}
-				}
-				m_mapItems.erase(mapItem);
-				delete (*mapItem);
-			}
-		}
-		m_items.erase(itemIter);
-	}
-
-	SNDevTreeNode *node = tree->second;
-	node->removeItem(internalId);
-	if (node->childCount() == 0)
-	{
-		node->parent()->setNode(0);
-		delete node;
-		m_itemsTree.erase(tree);
-	}
-}*/
 void SNMap::deleteItem(SNDevTreeItem *item, SNDevTreeItem *parent)
 {
 	SNDevTreeNode *tree = NULL;
@@ -463,13 +302,13 @@ void SNMap::deleteItem(SNDevTreeItem *item, SNDevTreeItem *parent)
 
 	if (tree->childCount() == 0)
 	{
-		tree->parent()->setNode(NULL);
+		tree->treeItem()->setNode(NULL);
 		delete tree;
 	}
 }
 
 /*!
-  Odstranenie jedinej polozky s internym ID \a internalId (moze byt aj adresar)
+  Odstranenie jedinej polozky \a item (moze byt aj adresar)
   z adresara \a parent. Podpolozky zoztanu nezmenene vratane nadradenych
   poloziek. Tato funkcia sa pouziva pri presuvani adresarov. Polozka sa
   neodstrani ani z interneho zoznamu aby sa dala znovu vlozit pomocou
@@ -477,24 +316,6 @@ void SNMap::deleteItem(SNDevTreeItem *item, SNDevTreeItem *parent)
 
   \sa insertItem
 */
-/*void SNMap::removeItem(uint32_t internalId, uint32_t parent)
-{
-	// najdenie stromu
-	map<uint32_t, SNDevTreeNode *>::iterator tree;
-	tree = m_itemsTree.find(parent);
-	if (tree == m_itemsTree.end())
-	{
-		return;
-	}
-
-	SNDevTreeNode *node = tree->second;
-	node->removeItem(internalId, false);
-	if (node->childCount() == 0)
-	{
-		delete node;
-		m_itemsTree.erase(tree);
-	}
-}*/
 void SNMap::removeItem(SNDevTreeItem *item, SNDevTreeItem *parent)
 {
 	SNDevTreeNode *node = NULL;
@@ -510,41 +331,17 @@ void SNMap::removeItem(SNDevTreeItem *item, SNDevTreeItem *parent)
 	node->removeItem(item->internalId(), false);
 	if (node->childCount() == 0)
 	{
-		node->parent()->setNode(NULL);
+		node->treeItem()->setNode(NULL);
 		delete node;
 	}
 }
 
 /*!
-  Vlozenie uz existujucej polozky \a internalId do adresara \a parent na riadok
+  Vlozenie uz existujucej polozky \a idtem do adresara \a parent na riadok
   \a pos. Tato polozka musi byt najskor zrusena pomocou removeItem.
 
   \sa removeItem
 */
-/*void SNMap::insertItem(uint32_t internalId, uint32_t parent, int pos)
-{
-	map<uint32_t, SNDevTreeItem *>::iterator itemIter;
-	itemIter = m_items.find(internalId);
-	if (itemIter == m_items.end())
-	{
-		return;
-	}
-
-	SNDevTreeItem *item = itemIter->second;
-	map<uint32_t, SNDevTreeNode*>::iterator it;
-	if (m_itemsTree.find(parent) == m_itemsTree.end())
-	{
-		if (parent == 0)
-		{
-			m_itemsTree[parent] = new SNDevTreeNode(NULL);
-		}
-		else
-		{
-			m_itemsTree[parent] = new SNDevTreeNode(m_items[parent]);
-		}
-	}
-	m_itemsTree[parent]->insert(item, pos);
-}*/
 void SNMap::insertItem(SNDevTreeItem *item, SNDevTreeItem *parent, int pos)
 {
 	SNDevTreeNode *node = NULL;
@@ -564,35 +361,8 @@ void SNMap::insertItem(SNDevTreeItem *item, SNDevTreeItem *parent, int pos)
 }
 
 /*!
-  Vrati zoznam poloziek v podstrome urcenom internym ID \a parent.
+  Vrati zoznam poloziek v podstrome \a parent.
 */
-/*std::list<SNDevTreeItem *> SNMap::itemsInTree(uint32_t parent) const
-{
-	list<SNDevTreeItem *> ret;
-
-	map<uint32_t, SNDevTreeItem *>::const_iterator itemIter;
-	itemIter = m_items.find(parent);
-	if (itemIter == m_items.end())
-	{
-		return ret;
-	}
-	ret.push_back(itemIter->second);
-
-	map<uint32_t, SNDevTreeNode*>::const_iterator node;
-	node = m_itemsTree.find(parent);
-	if (node != m_itemsTree.end())
-	{
-		vector<SNDevTreeItem *> *childs = node->second->childs();
-		vector<SNDevTreeItem *>::iterator child;
-		for (child = childs->begin(); child != childs->end(); ++child)
-		{
-			list<SNDevTreeItem *> items = itemsInTree((*child)->internalId());
-			ret.merge(items);
-		}
-	}
-
-	return ret;
-}*/
 std::list<SNDevTreeItem *> SNMap::itemsInTree(SNDevTreeItem *parent) const
 {
 	list<SNDevTreeItem *> ret;
@@ -676,6 +446,9 @@ void SNMap::removePort(uint32_t devId, port_num hwPort)
 	}
 }
 
+/*!
+  Aktualizacia vlastnosti zariadenia (znovu sa nacitaju napr. porty).
+*/
 void SNMap::updateDevice(SNMapDeviceItem *device)
 {
 	if (m_scene != NULL)
@@ -684,6 +457,9 @@ void SNMap::updateDevice(SNMapDeviceItem *device)
 	}
 }
 
+/*!
+  Vytvorenie noveho prepojenia.
+*/
 SNMapLineItem *SNMap::addLine()
 {
 	SNMapLineItem *line = new SNMapLineItem(this);
@@ -691,6 +467,9 @@ SNMapLineItem *SNMap::addLine()
 	return line;
 }
 
+/*!
+  Odstranenie prepojenia.
+*/
 void SNMap::removeLine(SNMapLineItem *line)
 {
 	set<SNMapLineItem *>::iterator lineIter;
@@ -702,11 +481,17 @@ void SNMap::removeLine(SNMapLineItem *line)
 	}
 }
 
+/*!
+  Vytvorenie fyzickeho prepojenia medzi zariadeniami.
+*/
 void SNMap::addConnection(const SNMapConnection &conn)
 {
 	m_simulate->addConnection(conn.dev1()->deviceId(), conn.port1(), conn.dev2()->deviceId(), conn.port2());
 }
 
+/*!
+  Zrusenie prepojenia medzi zariadeniami.
+*/
 void SNMap::removeConnection(const SNMapConnection &conn)
 {
 	m_simulate->removeConnection(conn.dev1()->deviceId(), conn.port1(), conn.dev2()->deviceId(), conn.port2());

@@ -54,17 +54,25 @@ CfgPerformance::~CfgPerformance()
 {
 }
 
+/*!
+  \reimp
+*/
 QString CfgPerformance::panelName() const
 {
 	return QString(tr("Performance"));
 }
 
+/*!
+  \reimp
+*/
 SNIcon CfgPerformance::icon() const
 {
 	return SNIcon("preferences-system-performance");
 }
 
-
+/*!
+  \reimp
+*/
 bool CfgPerformance::panelSelected()
 {
 	readConfig();
@@ -72,7 +80,9 @@ bool CfgPerformance::panelSelected()
 	return false;
 }
 
-
+/*!
+  \reimp
+*/
 void CfgPerformance::saveChanges()
 {
 	SNConfig config;
@@ -82,6 +92,9 @@ void CfgPerformance::saveChanges()
 	emit changed(settingsChanged());
 }
 
+/*!
+  Nacitanie konfiguracie.
+*/
 void CfgPerformance::readConfig()
 {
 	SNConfig config;
@@ -101,11 +114,17 @@ bool CfgPerformance::settingsChanged()
 	return false;
 }
 
+/*!
+  \reimp
+*/
 void CfgPerformance::dropChanges()
 {
 	m_threadsCount->setValue(m_sThreadsCount);
 }
 
+/*!
+  Vypis varovania o nutnosti restartu aplikacie pri zmene poctu vlakien.
+*/
 void CfgPerformance::updateThreads(int newValue)
 {
 	emit changed(settingsChanged());

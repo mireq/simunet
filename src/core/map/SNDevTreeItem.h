@@ -50,13 +50,11 @@ class SNDevTreeItem
 		virtual ~SNDevTreeItem();
 
 		uint32_t internalId() const;
-		uint32_t id() const;
 		SNDevTreeItem *parent() const;
 		uint32_t parentId() const;
 		int type() const;
 
 		void setParent(SNDevTreeItem *parent);
-		void setId(uint32_t id);
 
 		void setMapItem(SNMapItem *mapItem);
 		SNMapItem *mapItem() const;
@@ -65,15 +63,35 @@ class SNDevTreeItem
 		SNDevTreeNode *node() const;
 
 	protected:
+/*!
+  Odkaz na polozku mapy.
+*/
 		SNMapItem *m_mapItem;
 
 	private:
+/*!
+  Nasledujuce ID polozky zoznamu zariadeni.
+*/
 		static uint32_t m_nextId;
 
+/*!
+  Interne ID polozky zoznamu zariadeni.
+*/
 		uint32_t m_internalId;
-		uint32_t m_id;
+
+/*!
+  Odkaz na nadradenu polozku.
+*/
 		SNDevTreeItem *m_parent;
+
+/*!
+  Typ polozky zoznamu zariadeni (zariadenie, adresar ...)
+*/
 		ItemType m_type;
+
+/*!
+  Odkaz na uzol u polozky zoznamu.
+*/
 		SNDevTreeNode *m_node;
 };
 
@@ -90,6 +108,9 @@ class SNDevTreeDirectoryItem: public SNDevTreeItem
 		std::string name() const;
 		void setName(const std::string &name);
 	private:
+/*!
+  Nazov adresara.
+*/
 		std::string m_name;
 };
 
@@ -104,7 +125,6 @@ class SNDevTreeDeviceItem: public SNDevTreeItem
 		SNDevTreeDeviceItem(SNMapDeviceItem *item = 0, SNDevTreeItem *parent = 0);
 		~SNDevTreeDeviceItem();
 		uint32_t devId() const;
-		void setDevId(uint32_t devId);
 		SNMapDeviceItem *mapDevice() const;
 };
 

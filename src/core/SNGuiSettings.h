@@ -47,10 +47,13 @@ class SNGuiSettings : public SNDynamicSettings
 			TERM_FONT     /*!< Font pouzivany v integrovanom emulatore terminalu */
 		};
 
+/*!
+  Typy farieb, ktore je mozne nastavit v aplikacii.
+*/
 		enum ColorGroup
 		{
-			GridColor = 0,
-			BgColor = 1
+			GridColor = 0, /*!< Farba mriezky v diagrame so zariadeniami. */
+			BgColor = 1    /*!< Farba pozadia v diagrame so zariadeniami. */
 		};
 
 		SNGuiSettings(QObject *parent = 0);
@@ -76,11 +79,25 @@ class SNGuiSettings : public SNDynamicSettings
 		void colorChanged(const QColor &color, SNGuiSettings::ColorGroup group);
 
 	private:
+/*!
+  Zoznam standardnych fontov.
+*/
 		QFont **m_defaultFont;
+
+/*!
+  Zoznam nastavenych fontov. Ak je polozka \e NULL pouzije sa standardny font.
+*/
 		QFont **m_font;
+/*!
+  Zoznam farieb, ak je farba \e NULL pouzije sa standardna farba.
+*/
 		QColor **m_colors;
 		static const char *m_fontNames[];
 		static const char *m_colorNames[];
+
+/*!
+  Nastavenie antialiasingu.
+*/
 		bool m_antialiasing;
 
 };

@@ -177,8 +177,9 @@ uint32_t SNSimulate::startDevice(const std::string &filename)
 }
 
 /*!
-  \brief Spracovanie ramca / preposlanie inym zariadeniam.
+  \brief Spracovanie ramca / odoslanie inym zariadeniam.
   \param id ID zariadenia.
+  \param hwPort Port zariadenia, z ktoreho prisli data.
   \param data Data ktore poslalo zariadenie.
 
   Tato metoda zachytava spravy od zariadeni a spracuje ich / preposiela
@@ -230,7 +231,7 @@ void SNSimulate::telnetResponse(uint32_t id, const char *text, const char *cmd)
 
 /*!
   Odoslanie HTTP požiadavky zariadeniu špecifikovanému atribútom \a devId.
-  V prípade, že toto zariadenie neexistuje bude návratovou hodnotou NULL.
+  V prípade, že toto zariadenie neexistuje bude návratovou hodnotou \e NULL.
 
   \sa SNDevice::httpRequest
 */
@@ -269,7 +270,7 @@ char *SNSimulate::httpRequest(uint32_t devId, const std::string &url, const std:
 
 /*!
   Odoslanie telnet požiadavky vybranému zariadeniu. Ak zariadenie s daným
-  \a devId neexistuje váti táto funkcia NULL.
+  \a devId neexistuje váti táto funkcia \e NULL.
 
   \sa SNDevice::telnetRequest
 */
@@ -289,7 +290,7 @@ char *SNSimulate::telnetRequest(uint32_t devId, const std::string &line, char sy
 }
 
 /*!
-  Odosllanie ramca zariadeni urcenemu argumentom \a targetDevId.
+  Odoslanie ramca zariadeni urcenemu argumentom \a targetDevId.
 */
 void SNSimulate::sendFrame(uint32_t targetDevId, port_num hwPort, PyObject *frame)
 {
@@ -325,11 +326,18 @@ void SNSimulate::hwPortRemoved(uint32_t devId, port_num hwPort)
 	m_map->removePort(devId, hwPort);
 }
 
+/*!
+  Nastavenie mapy, do kotrej sa prenasaju zmeny zo systemu.
+*/
 void SNSimulate::setMap(SNMap *map)
 {
 	m_map = map;
 }
 
+/*!
+  Odstranenie spojenia medzi portom \a port1 zariadenia \a dev1 a potrom \a port2
+  zariadenia \a dev2.
+*/
 void SNSimulate::removeConnection(uint32_t dev1, port_num port1, uint32_t dev2, port_num port2)
 {
 	SNHwPort a(dev1, port1);
@@ -362,6 +370,10 @@ void SNSimulate::removeConnection(uint32_t dev1, port_num port1, uint32_t dev2, 
 	m_connections.erase(bIt);
 }
 
+/*!
+  Pridanie spojenia medzi portom \a port1 zariadenia \a dev1 a potrom \a port2
+  zariadenia \a dev2.
+ */
 void SNSimulate::addConnection(uint32_t dev1, port_num port1, uint32_t dev2, port_num port2)
 {
 	SNHwPort a(dev1, port1, device(dev2));

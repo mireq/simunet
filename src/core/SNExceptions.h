@@ -38,6 +38,9 @@ class SNDeviceImportException: public SNException
 		SNDeviceImportException(const std::string &moduleName);
 		const std::string &moduleName();
 	private:
+/*!
+  Nazov modulu, ktory vyvolal vynimku.
+*/
 		std::string m_moduleName;
 };
 
@@ -62,7 +65,14 @@ class SNPythonInterpreterException: public SNException
 		const std::string &problem();
 		pythonErr problemType();
 	private:
+/*!
+  Problem v textovej podobe.
+*/
 		std::string m_problem;
+
+/*!
+  Typ chyby, ktora nastala.
+*/
 		pythonErr m_type;
 };
 
@@ -77,6 +87,9 @@ class PyObjectNULLException: public SNException
 
 /**
  @author Miroslav Bendik
+ \class SNoutOfRangeException
+ \brief Vynimka vyvolana pri pokuse o pristp mimo hranic poli / zoznamov
+ \ingroup exceptions
  */
 class SNoutOfRangeException: public SNException
 {

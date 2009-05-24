@@ -57,10 +57,6 @@ class SNDevice
 		const std::vector<port_num> &portNumbers() const;
 
 	private:
-		uint32_t m_deviceId;
-		PyObject *m_pDeviceInstance;
-		SNSimulate *m_simulate;
-
 		static PyObject *frameResponseWrapper(PyObject *self, PyObject *args);
 		static PyObject *telnetResponseWrapper(PyObject *self, PyObject *args);
 
@@ -68,7 +64,30 @@ class SNDevice
 		static PyObject *removeHwPortWrapper(PyObject *self, PyObject *args);
 		static PyObject *setHwPortHandlerWrapper(PyObject *self, PyObject *args);
 
+	private:
+/*!
+  Unikatne ID zariadenia.
+*/
+		uint32_t m_deviceId;
+
+/*!
+  Odkakz na insnaciu zairadenia.
+*/
+		PyObject *m_pDeviceInstance;
+
+/*!
+  Odkaz na instanciu SNSimulate, v ramci ktorej bezi zariadenie.
+*/
+		SNSimulate *m_simulate;
+
+/*!
+  Cislo nasledujuceho fyzickeho portu.
+*/
 		port_num m_nextHwPortNum;
+
+/*!
+  Zoznam fyzickych portov.
+*/
 		std::vector<port_num> m_portNumbers;
 
 };

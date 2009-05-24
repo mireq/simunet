@@ -39,6 +39,9 @@ class SNMapItem
 		SNPoint3f pos() const;
 
 	private:
+/*!
+  Pozicia polozky na mape.
+*/
 		SNPoint3f m_pos;
 
 };

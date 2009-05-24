@@ -44,8 +44,21 @@
 
 using namespace std;
 
+/*!
+  Sirka medzier v mriezke.
+*/
 const int SNDevicesDiagramScene::m_gridSize = 10;
 
+
+/*!
+  \class SNDevicesDiagramScene
+  \brief Scena zobrazujuca zariadenia.
+  \ingroup widgets
+ */
+
+/*!
+  Vytvorenie novej grafickej sceny.
+*/
 SNDevicesDiagramScene::SNDevicesDiagramScene(QObject* parent)
 	:QGraphicsScene(parent), m_mode(Norm),
 	m_newPoint(NULL), m_endControlPointClicked(NULL)
@@ -55,6 +68,7 @@ SNDevicesDiagramScene::SNDevicesDiagramScene(QObject* parent)
 	QColor hgColor = palette.color(QPalette::Highlight);
 	QColor bgColor = palette.color(QPalette::Base);
 
+	// aktualizacia farieb pri zmene nastaveni
 	connect(settings, SIGNAL(colorChanged(const QColor &, SNGuiSettings::ColorGroup)), SLOT(colorChanged(const QColor &, SNGuiSettings::ColorGroup)));
 	m_sceneBgColor = settings->color(SNGuiSettings::BgColor);
 	m_sceneGridColor = settings->color(SNGuiSettings::GridColor);
@@ -64,7 +78,9 @@ SNDevicesDiagramScene::SNDevicesDiagramScene(QObject* parent)
 	m_controlPointBgColor.setAlpha(180);
 }
 
-
+/*!
+  Zrusenie sceny a prvkov v nej.
+*/
 SNDevicesDiagramScene::~SNDevicesDiagramScene()
 {
 	QSet<SNDiagramLine *>::iterator it;
@@ -74,6 +90,11 @@ SNDevicesDiagramScene::~SNDevicesDiagramScene()
 	}
 }
 
+/*!
+  Pridanie zariadenia do zoznamu zairadeni a aktualizacia jeho vlasntosti.
+
+  \reimp
+*/
 void SNDevicesDiagramScene::addDevice(SNMapDeviceItem *item)
 {
 	SNAbstractDevicesScene::addDevice(item);
@@ -83,6 +104,9 @@ void SNDevicesDiagramScene::addDevice(SNMapDeviceItem *item)
 	updateDevice(item);
 }
 
+/*!
+  \reimp
+*/
 void SNDevicesDiagramScene::removeDevice(SNMapDeviceItem *item)
 {
 	QMap<SNMapDeviceItem *, SNDiagramDevice *>::iterator dev;
@@ -102,6 +126,12 @@ void SNDevicesDiagramScene::removeDevice(SNMapDeviceItem *item)
 	SNAbstractDevicesScene::removeDevice(item);
 }
 
+/*!
+  Aktualizacia portov (ak boli niektore pridane pridaju sa aj do sceny, ak)
+  boli odstranene, potom sa zo sceny odstrania.
+
+  \reimp
+*/
 void SNDevicesDiagramScene::updateDevice(SNMapDeviceItem *item)
 {
 	QMap<SNMapDeviceItem *, SNDiagramDevice *>::const_iterator dev;
@@ -140,8 +170,6 @@ void SNDevicesDiagramScene::updateDevice(SNMapDeviceItem *item)
 		portSet.insert(*port);
 	}
 
-
-
 	if (devPortsList != m_ports.end())
 	{
 		QMap<port_num, SNDiagramConnector *>::const_iterator portIter;
@@ -155,6 +183,9 @@ void SNDevicesDiagramScene::updateDevice(SNMapDeviceItem *item)
 	}
 }
 
+/*!
+  \reimp
+*/
 void SNDevicesDiagramScene::addHwPort(SNMapDeviceItem *item, port_num hwPort)
 {
 	QMap<SNMapDeviceItem *, SNDiagramDevice *>::iterator device;
@@ -172,6 +203,9 @@ void SNDevicesDiagramScene::addHwPort(SNMapDeviceItem *item, port_num hwPort)
 	updateDevice(item);
 }
 
+/*!
+  \reimp
+*/
 void SNDevicesDiagramScene::removeHwPort(SNMapDeviceItem *item, port_num hwPort)
 {
 	QMap<SNMapDeviceItem *, SNDiagramDevice *>::iterator device;
@@ -185,6 +219,10 @@ void SNDevicesDiagramScene::removeHwPort(SNMapDeviceItem *item, port_num hwPort)
 	dev->removeConnector(hwPort);
 }
 
+/*!
+  Vukreslenie pozadia grafickej sceny. Scena sa vykresli farbou m_sceneBgColor,
+  farba mriezky je m_sceneGridColor.
+*/
 void SNDevicesDiagramScene::drawBackground(QPainter *painter, const QRectF &rect)
 {
 	painter->setPen(Qt::NoPen);
@@ -225,6 +263,12 @@ void SNDevicesDiagramScene::drawBackground(QPainter *painter, const QRectF &rect
 	}
 }
 
+/*!
+  Reakcia na stlacenie tlacidla mysi. Podla rezimu prace sa dalej stlacenie
+  spracuje funkciami ako mousePressEventNorm, alebo mousePressEventLine.
+
+  \reimp
+*/
 void SNDevicesDiagramScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
 	switch(m_mode)
@@ -235,8 +279,15 @@ void SNDevicesDiagramScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
 	QGraphicsScene::mousePressEvent(event);
 }
 
+/*!
+  Reakcia na stlacenie tlacidla mysi v normalnom rezime.
+*/
 void SNDevicesDiagramScene::mousePressEventNorm(QGraphicsSceneMouseEvent *event)
 {
+	/*
+	  Ak bolo stlacene stredne tlacidlo mysi v normalnom rezime nad kontrolnym
+	  bodom potom sa tento kontrolny bod odstrani.
+	*/
 	if (event->buttons() & Qt::MidButton)
 	{
 		QGraphicsItem *item = itemAt(event->scenePos());
@@ -250,6 +301,12 @@ void SNDevicesDiagramScene::mousePressEventNorm(QGraphicsSceneMouseEvent *event)
 			}
 		}
 	}
+	/*
+	  Ak bolo stlacne lave tlacitko nad nie plnym kontorlnym bodom (tj. moze
+	  do tohto kontorlneho bodu vstupit este jeden segment ciary), potom
+	  sa nastavi pomocna premenna m_endControlPointClicked obsahujuca bod, na
+	  ktory uzivatel klikol.
+	*/
 	else if (event->buttons() & Qt::LeftButton)
 	{
 		QGraphicsItem *item = itemAt(event->scenePos());
@@ -267,6 +324,10 @@ void SNDevicesDiagramScene::mousePressEventNorm(QGraphicsSceneMouseEvent *event)
 	}
 }
 
+/*!
+  Spracovanie stlaccenia tlacidla mysi v rezime pridavania ciary. Ak bolo
+  stlacene ine tlacidlo nez lave ukonci sa rezim pridavania ciary.
+*/
 void SNDevicesDiagramScene::mousePressEventLine(QGraphicsSceneMouseEvent *event)
 {
 	if (!(event->buttons() & Qt::LeftButton))
@@ -277,8 +338,15 @@ void SNDevicesDiagramScene::mousePressEventLine(QGraphicsSceneMouseEvent *event)
 	}
 }
 
+/*!
+  Spracovanie pustenia tlacidla mysi.
+*/
 void SNDevicesDiagramScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
+	/*
+	  Ak bolo tlacidlo mysi stlacene nad kontrolnym bodom pri jeho pusteni sa
+	  vytvori novy kontrolny bod.
+	*/
 	if (m_endControlPointClicked != NULL)
 	{
 		newPoint(event->scenePos());
@@ -294,6 +362,10 @@ void SNDevicesDiagramScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 	QGraphicsScene::mouseReleaseEvent(event);
 }
 
+/*!
+  Reakcia na pohyb mysi. Tato funkcia preposiela data o pohybe mysi dalsim
+  funkciam podla rezimu prace so scenou.
+*/
 void SNDevicesDiagramScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
 	switch (m_mode)
@@ -304,6 +376,9 @@ void SNDevicesDiagramScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 	QGraphicsScene::mouseMoveEvent(event);
 }
 
+/*!
+  Reakcia na pohyb mysi v normalnom rezime.
+*/
 void SNDevicesDiagramScene::mouseMoveEventNorm(QGraphicsSceneMouseEvent *event)
 {
 	QSet<SNDiagramDevice *> devices;
@@ -326,6 +401,7 @@ void SNDevicesDiagramScene::mouseMoveEventNorm(QGraphicsSceneMouseEvent *event)
 				return;
 			}
 		}
+		// presunieme oznacene polozky
 		foreach (item, items)
 		{
 			SNDiagramControlPoint *point;
@@ -360,6 +436,11 @@ void SNDevicesDiagramScene::mouseMoveEventNorm(QGraphicsSceneMouseEvent *event)
 	}
 }
 
+/*!
+  Presun mysi v rezime kreslenia ciary.
+
+  V tomto rezime sa presuva kontrolny bod spolu s kurzorom.
+*/
 void SNDevicesDiagramScene::mouseMoveEventLine(QGraphicsSceneMouseEvent *event)
 {
 	QPointF diff = (event->scenePos() - event->lastScenePos());
@@ -370,6 +451,9 @@ void SNDevicesDiagramScene::mouseMoveEventLine(QGraphicsSceneMouseEvent *event)
 	event->accept();
 }
 
+/*!
+  Vytvorenie noveho kontrolneho bodu na pozicii \a point.
+*/
 void SNDevicesDiagramScene::newPoint(const QPointF &point)
 {
 	if (m_endControlPointClicked == NULL)
@@ -377,6 +461,10 @@ void SNDevicesDiagramScene::newPoint(const QPointF &point)
 		return;
 	}
 
+	/*
+	  Ak bolo kliknute na niektory nie plny kontrolny bod inej ciary potom sa tieto
+	  ciary spoja.
+	*/
 	QList<QGraphicsItem *> it = items(point);
 	QGraphicsItem *item;
 	foreach(item, it)
@@ -392,6 +480,10 @@ void SNDevicesDiagramScene::newPoint(const QPointF &point)
 		}
 	}
 
+	/*
+	  Pri kliknuti na konektor nie je este na nom vytvorene ziadne prepojenie,
+	  preto sa prepojenie vytvori pri pridani tohto kontrolneho bodu.
+	*/
 	if (m_endControlPointClicked->line() == NULL)
 	{
 		SNMapLineItem *mapLine = m_map->addLine();
@@ -419,6 +511,11 @@ void SNDevicesDiagramScene::newPoint(const QPointF &point)
 	m_endControlPointClicked = m_newPoint;
 }
 
+/*!
+  Odstranenie kontorlneho bodu \a point. Ak je \a forceRemovePersistent odstrani
+  sa aj taky kontrolny bod, ktory moze existovat bez prepojovacej ciary
+  (napr. konektor).
+*/
 void SNDevicesDiagramScene::removeControlPoint(SNDiagramControlPoint *point, bool forceRemovePersistent)
 {
 	SNDiagramLine *line = point->line();
@@ -439,6 +536,10 @@ void SNDevicesDiagramScene::removeControlPoint(SNDiagramControlPoint *point, boo
 	}
 }
 
+/*!
+  Spojenie ciary patriacej bodu \e m_endControlPointClicked a bodu
+  \a point.
+*/
 void SNDevicesDiagramScene::mergeLine(SNDiagramControlPoint *point)
 {
 	SNDiagramLine *newLine = m_endControlPointClicked->line();
@@ -509,6 +610,9 @@ void SNDevicesDiagramScene::mergeLine(SNDiagramControlPoint *point)
 	return;
 }
 
+/*!
+  Reakcia na zmenu farieb sceny.
+*/
 void SNDevicesDiagramScene::colorChanged(const QColor & color, SNGuiSettings::ColorGroup group)
 {
 	switch (group)

@@ -77,23 +77,55 @@ class SNDevicesDiagramScene : public QGraphicsScene, public SNAbstractDevicesSce
 		void colorChanged(const QColor &color, SNGuiSettings::ColorGroup group);
 
 	private:
+/*!
+  Farba ciary medzi kontrolnymi bodmi.
+*/
 		QColor m_controlPointLineColor;
+
+/*!
+  Farba pozadia kontrolneho bodu.
+*/
 		QColor m_controlPointBgColor;
+
+/*!
+  Farba  pozadia sceny.
+*/
 		QColor m_sceneBgColor;
+
+/*!
+  Farba mriezky.
+*/
 		QColor m_sceneGridColor;
 		static const int m_gridSize;
 
+/*!
+  Aktualny rezim prace so scenou.
+*/
 		SceneMode m_mode;
 
-		// pomocne premenne vyuzivane pri pridavani novej ciary
+/*!
+  Novy bod v rezime pridavania ciary. Automaticky sa presuva na poziciu kurzoru.
+*/
 		SNDiagramControlPoint *m_newPoint;
 
-		// kontrolny bod na ktory bolo kliknute v rezime pridavania ciar
+/*!
+  Koncovy bod, na ktory uzivatel klikol v rezime pridavania ciary.
+*/
 		SNDiagramControlPoint *m_endControlPointClicked;
 
+/*!
+  Zoznam prepojeni kontrolnych bodov.
+*/
 		QSet<SNDiagramLine *> m_lines;
 
+/*!
+  Zoznam zariadeni zobrazenych v diagrame.
+*/
 		QMap<SNMapDeviceItem *, SNDiagramDevice *> m_devices;
+
+/*!
+  Zoznam portov. Pouziva sa pri aktualizacii informacii o zariadeni.
+*/
 		QMap<uint32_t, QMap<port_num, SNDiagramConnector *> >m_ports;
 
 		friend class SNDiagramDevice;

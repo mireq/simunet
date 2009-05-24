@@ -53,31 +53,20 @@ class SNMap
 		bool stopDevice(uint32_t devId);
 		uint32_t startDevice(const std::string &filename);
 
-		//void insertDevice(uint32_t devId, uint32_t parent, int pos);
 		void insertDevice(uint32_t devId, SNDevTreeItem *parent, int pos);
-		//void addDirectory(std::string name, uint32_t parent, int pos);
 		void addDirectory(std::string name, SNDevTreeItem *parent, int pos);
 
-		//int numItems(uint32_t parent) const;
 		int numItems(SNDevTreeItem *parent) const;
-
-		//SNDevTreeItem *itemAt(int pos, uint32_t parent = 0) const;
 		SNDevTreeItem *itemAt(int pos, SNDevTreeItem *parent) const;
-		//SNDevTreeItem *item(uint32_t internalId) const;
+
 		SNMapDeviceItem *mapDeviceItem(uint32_t devId);
 
-		//int itemIndex(uint32_t internalId, uint32_t parent = 0) const;
 		int itemIndex(SNDevTreeItem *item, SNDevTreeItem *parent = 0) const;
 
-		//void deleteItem(uint32_t internalId, uint32_t parent = 0);
 		void deleteItem(SNDevTreeItem *item, SNDevTreeItem *parent = 0);
-
-		//void removeItem(uint32_t internalId, uint32_t parent = 0);
 		void removeItem(SNDevTreeItem *item, SNDevTreeItem *parent = 0);
-		//void insertItem(uint32_t internalId, uint32_t parent, int pos);
 		void insertItem(SNDevTreeItem *item, SNDevTreeItem *parent, int pos);
 
-		//std::list<SNDevTreeItem *> itemsInTree(uint32_t parent) const;
 		std::list<SNDevTreeItem *> itemsInTree(SNDevTreeItem *parent) const;
 
 		SNDevice *device(uint32_t devId);
@@ -105,17 +94,6 @@ class SNMap
 */
 		SNSimulate *m_simulate;
 
-/*
-  Zoznam uzlov je asociativne pole. Klucom je cislo nadradeneho adresara.
-  Korenovy uzol ma cislo nadradeneho adresara 0.
-*/
-		//std::map<uint32_t, SNDevTreeNode*> m_itemsTree;
-
-/*
-  Zoznam poloziek pricom klucom je ID polozky, hodnotou polozka samotna.
-*/
-		//std::map<uint32_t, SNDevTreeItem*> m_items;
-
 /*!
   Scena do ktorej sa premietaju zmeny v modeli.
 */
@@ -131,10 +109,13 @@ class SNMap
 */
 		std::map<uint32_t, SNMapDeviceItem *> m_devices;
 
+/*!
+  Odkaz na korenovy adresar so zariadeniami.
+*/
 		SNDevTreeNode *m_rootDir;
 
 /*!
-  Zoznam ciar.
+  Zoznam vodicov.
 */
 		std::set<SNMapLineItem *> m_lines;
 

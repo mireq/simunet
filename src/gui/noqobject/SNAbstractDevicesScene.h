@@ -42,13 +42,29 @@ class SNAbstractDevicesScene
 		SNMap *map() const;
 		virtual void addDevice(SNMapDeviceItem *item);
 		virtual void removeDevice(SNMapDeviceItem *item);
+/*!
+  Znovunacitanie informacii o zariadeni.
+*/
 		virtual void updateDevice(SNMapDeviceItem *item) = 0;
 
+/*!
+  Pridanie fyzickeho portu zariadeniu.
+*/
 		virtual void addHwPort(SNMapDeviceItem *item, port_num hwPort) = 0;
+/*!
+  Odstranenie fyzickeho portu zo zariadenia.
+*/
 		virtual void removeHwPort(SNMapDeviceItem *item, port_num hwPort) = 0;
 
 	protected:
+/*!
+  Odkaz na mapu, ktoru ovlada pohlad.
+*/
 		SNMap *m_map;
+
+/*!
+  Zoznam zariadeni v pohlade.
+*/
 		QSet<SNMapDeviceItem *> m_devices;
 };
 

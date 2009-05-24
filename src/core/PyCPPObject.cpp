@@ -25,6 +25,19 @@
 
 #include <iostream>
 
+/*!
+  \class PyCPPObject
+  \brief Reprezentacia PyObject * v C++
+  \ingroup core
+
+  Tato trieda sluzi na zjednodusenie prace s PyObject * v C++.
+ */
+
+/*!
+  Vytvorenie novej instancie PyCPPObject zo struktury \a pyobject. Premenna
+  \a clean rozhoduje o tom, ci sa ma tento objekt automaticky upratat pri
+  uvolneni objekty PyCPPObject.
+*/
 PyCPPObject::PyCPPObject(PyObject *pyobject, bool clean)
 {
 	if (pyobject == NULL)
@@ -36,7 +49,10 @@ PyCPPObject::PyCPPObject(PyObject *pyobject, bool clean)
 	m_object = pyobject;
 }
 
-
+/*!
+  Zrusenie objektu PyCPPOjbect. Ak bol konstruktor volany s argumentom \a clean
+  rovnym \e true potom bude znizeny pocet referencii na PyObject *.
+*/
 PyCPPObject::~PyCPPObject()
 {
 	
@@ -46,22 +62,34 @@ PyCPPObject::~PyCPPObject()
 	}
 }
 
-
+/*!
+  Pretazeny operator dereferencie kvoli kompatibilite s PyObject *.
+*/
 PyCPPObject::operator PyObject *()
 {
 	return m_object;
 }
 
+/*!
+  Pretazeny operator pristupu k zlozkam strukuty PyObject * kvoli kompatibilite
+  s PyObject *.
+*/
 PyObject *PyCPPObject::operator ->()
 {
 	return m_object;
 }
 
+/*!
+  Vrati \e true, ak je tento objekt triedou.
+*/
 bool PyCPPObject::isClass()
 {
 	return PyClass_Check(m_object);
 }
 
+/*!
+  Vrati \e true, ak sa da tento objekt volat.
+*/
 bool PyCPPObject::isCallable()
 {
 	return PyCallable_Check(m_object);

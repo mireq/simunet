@@ -38,6 +38,9 @@ class SNConfig
 		void setThreadsCount(int threads);
 
 	private:
+/*!
+  Odkaz na nastavenia.
+*/
 		QSettings *m_settings;
 
 };

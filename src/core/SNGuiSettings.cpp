@@ -29,9 +29,13 @@
 
 
 /*!
-  Pocet typov prvkov pre ktore je mozne vyberat fonty.
+  Pocet typov prvkov, pre ktore je mozne vyberat fonty.
 */
 const int SNGuiSettings::NumFonts = 2;
+
+/*!
+  Pocet typov prvkov, pre ktore je mozne vyberat farby.
+*/
 const int SNGuiSettings::NumColors = 2;
 
 
@@ -43,6 +47,10 @@ const char *SNGuiSettings::m_fontNames[] = {
 	"TerminalFont"
 };
 
+/*!
+  Mena typov prvkov, pre ktore je mozne zmenit farby (tieto mena sa ukladaju
+  do suboru, nemali by teda obsahovat narodne znaky).
+*/
 const char *SNGuiSettings::m_colorNames[] = {
 	"BackgroundColor",
 	"GridColor"
@@ -66,18 +74,25 @@ SNGuiSettings::SNGuiSettings(QObject *parent)
 	m_defaultFont = new QFont *[NumFonts];
 	m_font        = new QFont *[NumFonts];
 	m_colors      = new QColor *[NumColors];
+
+	// vynulovanie fontov
 	for (int i  = 0; i < NumFonts; ++i)
 	{
 		m_defaultFont[i] = NULL;
 		m_font[i]        = NULL;
 	}
+
+	// vynulovanie farieb
 	for (int i  = 0; i < NumColors; ++i)
 	{
 		m_colors[i] = NULL;
 	}
+
+	// nacitanie nastaveni
 	QSettings settings;
 	settings.beginGroup("gui");
 	m_antialiasing =  settings.value("antialiasing", QVariant(true)).toBool();
+	// nacitanie hodnoty farieb
 	for (int i  = 0; i < NumColors; ++i)
 	{
 		QVariant color = settings.value(m_colorNames[i], QVariant());
@@ -90,7 +105,8 @@ SNGuiSettings::SNGuiSettings(QObject *parent)
 }
 
 /*!
-  Zrusenie nastavenia vzhladu aplikacie.
+  Ulozenie nastaveni vzhladu aplikacie do konfiguracneho suboru a zrusenie
+  instancie tejto triedy.
 */
 SNGuiSettings::~ SNGuiSettings()
 {
@@ -134,6 +150,11 @@ QFont SNGuiSettings::guiFont(FontType type) const
 {
 	if (m_font[type] == NULL)
 	{
+/*
+  Ak este font tohto typu nebol pouzivany nacitame standardny font.
+  Potom sa nacita font z QSettings a ak sa tam nachadza potom sa pouzije
+  tento font, v opacnom pripade sa pouzije standardny font.
+*/
 		if (m_defaultFont[type] == NULL)
 		{
 			m_defaultFont[type] = new QFont(defaultFont(type));
@@ -214,20 +235,35 @@ QFont SNGuiSettings::defaultFont(FontType type) const
 	return font;
 }
 
+/*!
+  Zistenie ci je %antialiasing zapnuty.
+*/
 bool SNGuiSettings::antialiasing() const
 {
 	return m_antialiasing;
 }
 
+/*!
+  Nastavenie stavu antialiasingu.
+*/
 void SNGuiSettings::setAntialiasing(bool antialiasing)
 {
 	if (antialiasing != m_antialiasing)
 	{
 		m_antialiasing = antialiasing;
 		emit antialiasingChanged(antialiasing);
+		emit settingsChanged();
 	}
 }
 
+/*!
+  Zistenie farby urcitej skupiny prvkov.
+
+  Ak je farba v danej skupine nastavena vrati metoda tuto farbu. Ak nie vrati
+  standardnu farbu, ktora vacsinou zavisi od nastavenia systemu.
+
+  \sa ColorGroup, setColor
+*/
 QColor SNGuiSettings::color(ColorGroup group) const
 {
 	QPalette palette;
@@ -258,12 +294,18 @@ QColor SNGuiSettings::color(ColorGroup group) const
 	}
 }
 
+/*!
+  Nastavenie farby skupiny prvkov.
+
+  \sa ColorGroup, color
+*/
 void SNGuiSettings::setColor(const QColor &color, ColorGroup group)
 {
 	if (m_colors[group] == NULL)
 	{
 		m_colors[group] = new QColor(color);
 		emit colorChanged(color, group);
+		emit settingsChanged();
 	}
 	else
 	{
@@ -276,10 +318,14 @@ void SNGuiSettings::setColor(const QColor &color, ColorGroup group)
 			delete m_colors[group];
 			m_colors[group] = new QColor(color);
 			emit colorChanged(color, group);
+			emit settingsChanged();
 		}
 	}
 }
 
+/*!
+  Obnovenie standardnej farby skupiny farieb \a group.
+*/
 void SNGuiSettings::resetColor(ColorGroup group)
 {
 	if (m_colors[group] != NULL)
@@ -287,9 +333,13 @@ void SNGuiSettings::resetColor(ColorGroup group)
 		delete m_colors[group];
 		m_colors[group] = NULL;
 		emit colorChanged(color(group), group);
+		emit settingsChanged();
 	}
 }
 
+/*!
+  Vrati \e true ak je farba standardna (tj. generovana).
+*/
 bool SNGuiSettings::colorIsDefault(ColorGroup group)
 {
 	if (m_colors[group] == NULL)
@@ -305,17 +355,24 @@ bool SNGuiSettings::colorIsDefault(ColorGroup group)
 // ----------------------------------------------------------------
 
 /*!
-  \fn SNDynamicSettings::settingsChanged()
-
-  Tento signal je emitovany pri zmene nastaveni v sbutriede SNDynamicSettings.
-*/
-
-// ----------------------------------------------------------------
-
-/*!
   \fn SNGuiSettings::termFontChanged(const QFont &font)
 
   Tento signal sa vyvola len pri zmene terminaloveho fontu.
 
   \sa setGuiFont, FontType
+*/
+
+/*!
+  \fn void SNGuiSettings::antialiasingChanged(bool antialiasing)
+
+  Signal antialiasingChanged sa emituje vzdy ked uzivatel zmeni nastavenia
+  antialiasingu.
+
+  \sa setAntialiasing
+*/
+
+/*!
+  \fn void SNGuiSettings::colorChanged(const QColor &color, SNGuiSettings::ColorGroup group)
+
+  Signal sa emituje pri zmene skupiny farieb.
 */

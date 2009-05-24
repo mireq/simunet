@@ -116,12 +116,18 @@ void MainWindow::setWindowsEnabled(bool enabled)
 	}
 }
 
+/*!
+  Inicializacia premennych, ktore pouziva hlavne okno.
+*/
 void MainWindow::setupVariables()
 {
 	m_configureDlg = NULL;
 	m_aboutDlg = NULL;
 }
 
+/*!
+  Inicializacia GUI hlavneho okna.
+*/
 void MainWindow::setupUi()
 {
 	m_centralWidget = new QStackedWidget();
@@ -132,9 +138,12 @@ void MainWindow::setupUi()
 	setupToolBars();
 }
 
+/*!
+  Inicializacia poloziek tool baru.
+*/
 void MainWindow::setupToolBars()
 {
-	m_navigateToolBar = new QToolBar("Navigate Tool Bar");
+	m_navigateToolBar = new QToolBar(tr("Navigate Tool Bar"));
 	m_navigateToolBar->setObjectName("NavigateToolBar");
 
 	m_2DAct = new QAction(tr("2D"), this);
@@ -179,6 +188,9 @@ void MainWindow::setupToolBars()
 	sceneNavigationModeChanged(m_navigateMoveAct);
 }
 
+/*!
+  Inicializacia grafickej sceny.
+*/
 void MainWindow::setupSNScene()
 {
 	m_scene = new SNScene();
@@ -187,12 +199,18 @@ void MainWindow::setupSNScene()
 	m_diagram->setSceneRect(0, 0, 500, 500);
 }
 
+/*!
+  Inicializacia sekundarneho okna so zoznamom zariadeni.
+*/
 void MainWindow::setupSecondaryWindow()
 {
 	m_toolWindow = new SecondaryWindow(this);
 	addDockWidget(Qt::RightDockWidgetArea, m_toolWindow);
 }
 
+/*!
+  Inicializacia akcii (ukoncenie aplikacie, zobrazenie konfiguracie ...).
+*/
 void MainWindow::setupActions()
 {
 	m_quitAct = new QAction(tr("&Quit"), this);
@@ -207,6 +225,9 @@ void MainWindow::setupActions()
 	connect(m_aboutAct, SIGNAL(triggered()), SLOT(about()));
 }
 
+/*!
+  Inicializacia obsahu menu, pridanie akcii medzi polozky menu.
+*/
 void MainWindow::setupMenus()
 {
 	m_fileMenu = menuBar()->addMenu(tr("&File"));
@@ -218,7 +239,9 @@ void MainWindow::setupMenus()
 	m_helpMenu->addAction(m_aboutAct);
 }
 
-
+/*!
+  Zobrazenie informacii o oaplikacii.
+*/
 void MainWindow::about()
 {
 	if (m_aboutDlg == NULL)
@@ -228,6 +251,9 @@ void MainWindow::about()
 	m_aboutDlg->exec();
 }
 
+/*!
+  Zobrazenie konfiguracie.
+*/
 void MainWindow::configure()
 {
 	if (m_configureDlg == NULL)
@@ -239,6 +265,9 @@ void MainWindow::configure()
 	m_configureDlg->exec();
 }
 
+/*!
+  Zmena typu zobrazenia zariadeni (2D / 3D).
+*/
 void MainWindow::graphicsViewChanged(QAction *action)
 {
 	clearView();
@@ -270,6 +299,9 @@ void MainWindow::graphicsViewChanged(QAction *action)
 	}
 }
 
+/*!
+  Zmena rezimu navigacie v scene (lave tlacitko otacanie / presun v scene).
+*/
 void MainWindow::sceneNavigationModeChanged(QAction *action)
 {
 	if (action == m_navigateRotateAct)
@@ -282,12 +314,15 @@ void MainWindow::sceneNavigationModeChanged(QAction *action)
 	}
 }
 
+/*!
+  Oneskorena inicializacia simulacneho jadra. Tato cast sa spusti az po
+  zobrazeni GUI pre pocit vyssej odozvy aplikacie.
+*/
 void MainWindow::initSimuNet()
 {
 	m_splash->setProgress(50);
 	m_splash->setMessage(tr("Starting devices"));
-	m_devicesModel = new SNDevicesListModel(this);
-	m_toolWindow->setModel(m_devicesModel);
+	m_toolWindow->setModel(new SNDevicesListModel(this));
 	/*for (int i = 0; i < 10; ++i)
 	{
 		m_devicesModel->startDevice("generic");
@@ -300,6 +335,9 @@ void MainWindow::initSimuNet()
 	m_splash->closeDelayed();
 }
 
+/*!
+  Nastavenie antialiasingu pre scenu.
+*/
 void MainWindow::setAntialiasing(bool antialiasing)
 {
 	if (m_2DView != NULL)
@@ -308,6 +346,9 @@ void MainWindow::setAntialiasing(bool antialiasing)
 	}
 }
 
+/*!
+  Obnovenie stavu hlavneho okna.
+*/
 void MainWindow::restoreWindowState()
 {
 	QSettings settings;
@@ -317,6 +358,9 @@ void MainWindow::restoreWindowState()
 	settings.endGroup();
 }
 
+/*!
+  Ulozenie stavu hlavneho okna.
+*/
 void MainWindow::saveWindowState()
 {
 	QSettings settings;
@@ -326,6 +370,9 @@ void MainWindow::saveWindowState()
 	settings.endGroup();
 }
 
+/*!
+  Vycistenie pohladu na zariadenia v pripade prepnutia medzi 2D / 3D rezimom.
+*/
 void MainWindow::clearView()
 {
 	if (m_2DView != NULL)

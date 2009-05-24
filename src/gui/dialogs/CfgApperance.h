@@ -60,20 +60,49 @@ class CfgApperance : public SNConfigPanel
 		void fontReset(int type);
 		void on_antialiasing_stateChanged(int state);
 		void colorChanged(const QColor &color, SNGuiSettings::ColorGroup group);
-		void reset(SNGuiSettings::ColorGroup group);
+		void resetColor(SNGuiSettings::ColorGroup group);
 
 	private:
 		void addFontSelectRow(const QString &label, CfgApperance_Private::FontSelect *fontSelect);
 		void addColorSelectRow(const QString &label, SNColorSelectWidget *colorSelect, SNGuiSettings::ColorGroup group);
 
+	private:
+/*!
+  Rozlozenie, v ktorom sa nachadzaju dialogy pre vyber fontu.
+*/
 		QGridLayout *m_fontsSelectLayout;
+/*!
+  Rozlozenie, v ktorom su polozky pre nastavenie vzhladu aplikacie.
+*/
 		QGridLayout *m_apperanceLayout;
+/*!
+  Widget pre vyber fontu aplikacie.
+*/
 		CfgApperance_Private::FontSelect *m_appFontSelect;
+
+/*!
+  Widget pre vyber fontu emulatora terminalu.
+ */
 		CfgApperance_Private::FontSelect *m_termFontSelect;
+
+/*!
+  Tlacidla na obnovenie povodnych nastaveni fontu.
+*/
 		QPushButton **m_fontResetButtons;
+
+/*!
+  Prvky na nastavenie farieb.
+*/
 		SNColorSelectWidget **m_colorSelectWidgets;
+
+/*!
+  Priznak zmeny fontu (indexom pola je typ fontu).
+*/
 		bool *m_changed;
-		SNGuiSettings *m_settings;
+
+/*!
+  Mapovanie resetovacich tlacidiel na sloty.
+*/
 		QSignalMapper *m_mapper;
 
 };

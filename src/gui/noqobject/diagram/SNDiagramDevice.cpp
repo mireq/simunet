@@ -32,7 +32,19 @@
 
 #include <QDebug>
 
+/*!
+  \class SNDiagramConnector
+  \brief Konektor v grafickej scene.
+  \ingroup widgets
 
+  Trieda SNDiagramConnector vykresuluje graficku reprezentaciu konektoru v scene.
+*/
+
+/*!
+  Vytvorenie konektoru zariadenia \a device na pozicii \a x, \a y. Cislo konektoru
+  je urcene argumentom \a port_num. Konektor sa bude vykreslovat s okrajom
+  \a pen a vyplnou \a brush.
+*/
 SNDiagramConnector::SNDiagramConnector(SNDiagramDevice *device, qreal x, qreal y, port_num portNum, const QPen &pen, const QBrush &brush)
 	: SNDiagramControlPoint(x, y, pen, brush)
 {
@@ -44,45 +56,70 @@ SNDiagramConnector::SNDiagramConnector(SNDiagramDevice *device, qreal x, qreal y
 	setPersistent(true);
 }
 
+/*!
+  Zrusenie konektoru.
+*/
 SNDiagramConnector::~SNDiagramConnector()
 {
 }
 
+/*!
+  Nastavenie pozicie konektoru. Tato operacia presunie okrem konektoru aj
+  cele zariadenie.
+
+  \sa SNDevice::setPos
+*/
 void SNDiagramConnector::setPos(const QPointF &point)
 {
 	m_pos = point - m_diff;
-	//SNDiagramControlPoint::setPos(point);
 	m_device->setPos(m_pos);
 }
 
+/*!
+  Nastavenie pozicie podla pozicie zariadenia.
+*/
 void SNDiagramConnector::setDevicePos(const QPointF &point)
 {
 	m_pos = point;
 	SNDiagramControlPoint::setPos(point + m_diff);
 }
 
+/*!
+  \overload
+*/
 void SNDiagramConnector::setPos(qreal x, qreal y)
 {
 	setPos(QPointF(x, y));
 }
 
+/*!
+  Nastavenie relativnej pozicie konektoru od zariadenia.
+*/
 void SNDiagramConnector::setItemDiff(const QPointF &diff)
 {
 	m_diff = diff;
 	setDevicePos(m_pos);
-	//setPos(m_pos);
 }
 
+/*!
+  Tato metoda vrati smernik na zariadenie, ktoremu patri konektor.
+*/
 SNDiagramDevice *SNDiagramConnector::device() const
 {
 	return m_device;
 }
 
+/*!
+  Vrati typ polozky grafickej sceny.
+*/
 int SNDiagramConnector::type() const
 {
 	return Connector;
 }
 
+/*!
+  Vrati \e true, ak je mozne konektoru este pridat segment ciary.
+*/
 bool SNDiagramConnector::isFull() const
 {
 	if (m_leftSegment == NULL && m_rightSegment == NULL)
@@ -95,6 +132,9 @@ bool SNDiagramConnector::isFull() const
 	}
 }
 
+/*!
+  Vrati cislo fyzickeho portu zariadenia.
+*/
 port_num SNDiagramConnector::hwPowrt() const
 {
 	return m_hwPort;
@@ -103,6 +143,18 @@ port_num SNDiagramConnector::hwPowrt() const
 
 /* ------------------------------------------------------------------ */
 
+/*!
+  \class SNDiagramDevice
+  \brief Zariadenie v grafickej scene.
+  \ingroup widgets
+
+  Trieda SNDiagramDevice vykresluje zariadenie v grafickej scene a stara sa
+  o relativnu poziciu konektorov voci zariadeniu.
+*/
+
+/*!
+  Vytvorenie noveho zariadenia v grafickej scene.
+*/
 SNDiagramDevice::SNDiagramDevice(SNMapDeviceItem *device, SNDevicesDiagramScene *scene)
 	:SNDiagramItem(), m_scene(scene)
 {
@@ -111,6 +163,9 @@ SNDiagramDevice::SNDiagramDevice(SNMapDeviceItem *device, SNDevicesDiagramScene 
 }
 
 
+/*!
+  Zrusenie zariadenia v grafickej scene.
+*/
 SNDiagramDevice::~SNDiagramDevice()
 {
 	/*SNDiagramConnector *conn;
@@ -120,11 +175,17 @@ SNDiagramDevice::~SNDiagramDevice()
 	}*/
 }
 
+/*!
+  \reimp
+*/
 QRectF SNDiagramDevice::boundingRect() const
 {
 	return shape().controlPointRect();
 }
 
+/*!
+  \reimp
+*/
 void SNDiagramDevice::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
 	Q_UNUSED(option);
@@ -135,6 +196,9 @@ void SNDiagramDevice::paint(QPainter *painter, const QStyleOptionGraphicsItem *o
 	painter->drawText(textRect, Qt::AlignVCenter, m_name);
 }
 
+/*!
+  \reimp
+*/
 QPainterPath SNDiagramDevice::shape() const
 {
 	QPainterPath path;
@@ -145,6 +209,9 @@ QPainterPath SNDiagramDevice::shape() const
 	return path;
 }
 
+/*!
+  Pridanie konektoru s cislom \a port medzi konektory zariadenia.
+*/
 SNDiagramConnector *SNDiagramDevice::addConnector(port_num port)
 {
 	SNDiagramConnector *point = new SNDiagramConnector(this, 0, 0, port);
@@ -156,6 +223,9 @@ SNDiagramConnector *SNDiagramDevice::addConnector(port_num port)
 	return point;
 }
 
+/*!
+  Odstranenie konektoru s cislom \a port zo zariadenia.
+*/
 void SNDiagramDevice::removeConnector(port_num port)
 {
 	QMap<port_num, SNDiagramConnector *>::iterator connector;
@@ -176,6 +246,9 @@ void SNDiagramDevice::removeConnector(port_num port)
 	}
 }
 
+/*!
+  \reimp
+*/
 void SNDiagramDevice::setPos(const QPointF &pos)
 {
 	if (pos == this->pos())
@@ -196,21 +269,33 @@ void SNDiagramDevice::setPos(const QPointF &pos)
 	}
 }
 
+/*!
+  \overload
+*/
 void SNDiagramDevice::setPos(qreal x, qreal y)
 {
 	setPos(QPointF(x, y));
 }
 
+/*!
+  Vrati zariadenie asociovane s touto polozkou diagramu.
+*/
 SNMapDeviceItem *SNDiagramDevice::device() const
 {
 	return m_device;
 }
 
+/*!
+  Nastavenie zariadenia asociovaneho s touto polozkou diagramu.
+*/
 void SNDiagramDevice::setDevice(SNMapDeviceItem *device)
 {
 	m_device = device;
 }
 
+/*!
+  Aktualizacia relativnych pozicii konektorov voci zariadeniu.
+*/
 void SNDiagramDevice::updateConnectorDiffs()
 {
 	const QRectF bRect = boundingRect();
@@ -231,6 +316,9 @@ void SNDiagramDevice::updateConnectorDiffs()
 	}
 }
 
+/*!
+  Nastavenie mena zariadenia.
+*/
 void SNDiagramDevice::setName(QString name)
 {
 	m_name = name;
@@ -238,11 +326,17 @@ void SNDiagramDevice::setName(QString name)
 	updateConnectorDiffs();
 }
 
+/*!
+  Zistenie mena zariadenia.
+*/
 QString SNDiagramDevice::name() const
 {
 	return m_name;
 }
 
+/*!
+  Ziskanie zoznamu konektorov.
+*/
 const QMap< port_num, SNDiagramConnector *> *SNDiagramDevice::connectors() const
 {
 	return &m_connectors;

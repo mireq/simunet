@@ -119,7 +119,7 @@ int main(int argc, char *argv[])
 	interpreterInit();
 
 	Py_InitModule("snsimulate", const_cast<PyMethodDef *>(SNSimulateMethods));
-	PyCPPObject pSNSimulateName(PyString_FromString("snsimulate"));
+	PyCPPObject pSNSimulateName(PyString_FromString("snsimulate"), true);
 	PyCPPObject pSNSimulateModule(PyImport_Import(pSNSimulateName));
 	PyCPPObject pBuiltinsDict(PyEval_GetBuiltins());
 	PyDict_SetItemString(pBuiltinsDict, "snsimulate", pSNSimulateModule);
@@ -127,7 +127,7 @@ int main(int argc, char *argv[])
 	PyCPPObject pSimuNetModule(PyImport_AddModule("SimuNet"));
 	PyCPPObject pSimuNetDict(PyModule_GetDict(pSimuNetModule));
 
-	PyRun_String("class SNDevice:\n"
+	Py_XDECREF(PyRun_String("class SNDevice:\n"
 			"\tdef sendFrame(self, data):\n"
 			"\t\tsnsimulate.sendFrame(self.pSNDevice, self.deviceId, data)\n"
 			"\tdef sendTelnet(self, text, cmd):\n"
@@ -147,12 +147,12 @@ int main(int argc, char *argv[])
 			"\tdef telnetGetControlChars(self):\n"
 			"\t\tprint(\"telnetGetControlChars not implemented\")\n"
 			"\tdef stop(self):\n"
-			"\t\tpass\n", Py_single_input, pSimuNetDict, pSimuNetDict);
+			"\t\tpass\n", Py_single_input, pSimuNetDict, pSimuNetDict));
 
 	for (int i = 1; i < argc; ++i)
 	{
 		SNDevice test(argv[i], i);
-		PyCPPObject f1(PyString_FromString("frame"));
+		PyCPPObject f1(PyString_FromString("frame"), true);
 		test.processFrame(f1, 0);
 	}
 

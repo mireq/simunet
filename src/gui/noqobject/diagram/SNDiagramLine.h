@@ -82,14 +82,40 @@ class SNDiagramControlPoint : public SNDiagramItem
 		void updateLinePositions();
 
 	protected:
+/*!
+  Lavy segment ciary v kontrolnom bode.
+*/
 		SNDiagramLineSegment *m_leftSegment;
+
+/*!
+  Pravy segment ciary v kontorlnom bode.
+*/
 		SNDiagramLineSegment *m_rightSegment;
+
+/*!
+  Kontajner, v ktorom sa nachadza tento kontrolny bod.
+*/
 		SNDiagramLine *m_line;
+
+/*!
+  Informacia o tom, ci je tento kontrolny bod perzistentny.
+*/
 		bool m_persistent;
 
+
+/*!
+  Styl, ktorym sa vykresluje obvod kontrolneho bodu.
+*/
 		QPen m_pen;
+
+/*!
+  Styl, ktorym sa vykresluje vnutorna cast kontrolneho bodu.
+*/
 		QBrush m_brush;
 
+/*!
+  Oblast, na ktorej sa vykresluje konektor.
+*/
 		QRectF m_ellipseRect;
 };
 

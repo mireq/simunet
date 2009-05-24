@@ -39,6 +39,7 @@
 /*!
   \class DeviceSettingsDlg
   \brief Nastavenie vlastnosti zariadenia.
+  \ingroup dialogs
 
   V tomto dialogu je mozne nastavovat zariadenia cez ich webove rozhranie,
   alebo cez telnet.
@@ -145,6 +146,9 @@ bool DeviceSettingsDlg::event(QEvent *event)
 	return QDialog::event(event);
 }
 
+/*!
+  Ulozenie vlastnosti okna pri zatvoreni.
+*/
 void DeviceSettingsDlg::saveWindowState()
 {
 	if (size() == m_initialSize)
@@ -157,6 +161,9 @@ void DeviceSettingsDlg::saveWindowState()
 	settings.endGroup();
 }
 
+/*!
+  Obnovenie ulozenych vlastnosti okna pri otvoreni.
+*/
 void DeviceSettingsDlg::restoreWindowState()
 {
 	QSettings settings;
@@ -166,6 +173,9 @@ void DeviceSettingsDlg::restoreWindowState()
 	settings.endGroup();
 }
 
+/*!
+  Zmena zobrazeneho tabu.
+*/
 void DeviceSettingsDlg::currentTabItemChanged(int index)
 {
 	if (index == 0)
@@ -178,6 +188,10 @@ void DeviceSettingsDlg::currentTabItemChanged(int index)
 	}
 }
 
+/*!
+  Zobrazenie, alebo skrytie chyb javascriptu ak uzivatel klikol na tlacidlo
+  v statusbare zobrazovane pri existujucich chybach javascriptu.
+*/
 void DeviceSettingsDlg::switchJsErrors()
 {
 	if (m_errorsVisible)
@@ -190,19 +204,28 @@ void DeviceSettingsDlg::switchJsErrors()
 	}
 }
 
+/*!
+  Zobrazenie chyb javascriptu.
+*/
 void DeviceSettingsDlg::showJsErrors()
 {
 	m_webConfig->setErrorsVisible(true);
 	m_errorsVisible = true;
 }
 
+/*!
+  Skrytie chyb javascriptu.
+*/
 void DeviceSettingsDlg::hideJsErrors()
 {
 	m_webConfig->setErrorsVisible(false);
 	m_errorsVisible = false;
 }
 
-
+/*!
+  Ak sa nastavi dostupnost chyb na \e true, potom sa v statusbare zobrazi
+  tlacidlo na zobrazenie chyb.
+*/
 void DeviceSettingsDlg::setErrorsAvitable(bool avitable)
 {
 	m_errorButton->setVisible(avitable);
@@ -212,6 +235,9 @@ void DeviceSettingsDlg::setErrorsAvitable(bool avitable)
 	}
 }
 
+/*!
+  Zobrazenie odkazu v statusbare.
+*/
 void DeviceSettingsDlg::showWebLink(const QString &link, const QString &title, const QString &content)
 {
 	Q_UNUSED(content);
@@ -225,7 +251,9 @@ void DeviceSettingsDlg::showWebLink(const QString &link, const QString &title, c
 	}
 }
 
-
+/*!
+  Nastavenie hodnoty progressbaru v statusbare.
+*/
 void DeviceSettingsDlg::setProgress(int progress)
 {
 	if (!m_loadProgressVisible)
@@ -235,12 +263,18 @@ void DeviceSettingsDlg::setProgress(int progress)
 	m_loadProgress->setValue(progress);
 }
 
+/*!
+  Zobrazenie progressbaru (standardne pri zaciatku stahovania dat).
+*/
 void DeviceSettingsDlg::showProgressBar()
 {
 	m_loadProgress->show();
 	m_loadProgressVisible = true;
 }
 
+/*!
+  Skrytie progressbaru.
+*/
 void DeviceSettingsDlg::hideProgressBar()
 {
 	m_loadProgress->hide();

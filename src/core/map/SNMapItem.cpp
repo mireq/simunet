@@ -32,13 +32,16 @@
 */
 
 /*!
-  Vytvorenie novej polozky mapy.
+  Vytvorenie novej polozky mapy na pozicii (0, 0, 0).
 */
 SNMapItem::SNMapItem()
 	: m_pos(SNPoint3f(0.0, 0.0, 0.0))
 {
 }
 
+/*!
+  Vytvorenie novej polozky mapy na pozicii \a pos.
+*/
 SNMapItem::SNMapItem(const SNPoint3f &pos)
 	: m_pos(pos)
 {

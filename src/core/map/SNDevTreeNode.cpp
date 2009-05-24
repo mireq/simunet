@@ -27,13 +27,17 @@
   \class SNDevTreeNode
   \brief Uzol v stromovom zozname zariadeni.
   \ingroup map
+
+  Kazda polozka zoznamu zariadeni ma odkaz na uzol. Ten moze byt nenastaveny
+  (\b NULL). Uzol ma zoznam podpoloziek.
  */
 
 /*!
-  Vytvorenie noveho uzlu v adresari \a parent.
+  Vytvorenie noveho uzla v polozke zoznamu zariadeni definovanej argumentom
+  \a treeItem.
 */
-SNDevTreeNode::SNDevTreeNode(SNDevTreeItem *parent)
-	: m_parent(parent), m_childs(NULL)
+SNDevTreeNode::SNDevTreeNode(SNDevTreeItem *treeItem)
+	: m_treeItem(treeItem), m_childs(NULL)
 {
 }
 
@@ -51,7 +55,7 @@ SNDevTreeNode::~SNDevTreeNode()
 
 /*!
   Vlozenie novej polozky \a item do zoznamu poloziek v aktualnom uzle
-  na riadok urceny argumentom \a pos.
+  do riadku urcenom argumentom \a pos.
 */
 void SNDevTreeNode::insert(SNDevTreeItem *item, int pos)
 {
@@ -65,13 +69,13 @@ void SNDevTreeNode::insert(SNDevTreeItem *item, int pos)
 		pos = m_childs->size();
 	}
 
-	item->setParent(m_parent);
+	item->setParent(m_treeItem);
 
 	m_childs->insert(m_childs->begin() + pos, item);
 }
 
 /*!
-  Vrati polozku v riadku \a pos v aktualnom uzle.
+  Vrati polozku v riadku \a pos v tomto uzle.
 */
 SNDevTreeItem *SNDevTreeNode::itemAt(int pos) const
 {
@@ -153,9 +157,12 @@ void SNDevTreeNode::removeItem(uint32_t id, bool del)
 	}
 }
 
-SNDevTreeItem *SNDevTreeNode::parent() const
+/*!
+  Vratenie polozky zoznamu zariadeni ktorej prislucha tento uzol.
+*/
+SNDevTreeItem *SNDevTreeNode::treeItem() const
 {
-	return m_parent;
+	return m_treeItem;
 }
 
 

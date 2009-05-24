@@ -43,6 +43,11 @@ class SNMapControlPointItem: public SNMapItem
 		~SNMapControlPointItem();
 		int type() const;
 	private:
+/*!
+  Typ kontrolneho bodu
+
+  \sa SNMapControlPointItem::ControlPointType
+*/
 		int m_type;
 };
 
@@ -58,7 +63,13 @@ class SNMapConnectorItem: public SNMapControlPointItem
 		port_num port() const;
 
 	private:
+/*!
+  Odkaz na zariadenie, ktoremu patri konektor.
+*/
 		SNMapDeviceItem *m_device;
+/*!
+  Cislo konektoru na zariadeni.
+*/
 		port_num m_port;
 };
 

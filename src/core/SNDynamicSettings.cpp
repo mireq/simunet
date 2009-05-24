@@ -48,6 +48,15 @@ SNDynamicSettings::~SNDynamicSettings()
 {
 }
 
+/* ----------------------------------------------------------------------- */
+
+
+/*!
+  \fn SNDynamicSettings::settingsChanged()
+
+  Tento signal je emitovany pri zmene nastaveni v sbutriede SNDynamicSettings.
+ */
+
 
 
 

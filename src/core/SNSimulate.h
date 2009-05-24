@@ -115,10 +115,19 @@ class SNSimulate: public QObject
 */
 		uint32_t m_nextDeviceId;
 
+/*!
+  \brief Zoznam portov zariadeni a ich susedov.
+*/
 		std::set<SNHwPort> m_connections;
 
+/*!
+  \brief Odkaz na hlavne vlakno.
+*/
 		PyThreadState *m_mainThreadState;
 
+/*!
+  \brief Odkaz na mapu, do ktorej sa premietaju zmeny.
+*/
 		SNMap *m_map;
 };
 

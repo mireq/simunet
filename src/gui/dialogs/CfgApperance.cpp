@@ -112,10 +112,10 @@ CfgApperance::CfgApperance(QWidget* parent): SNConfigPanel(parent)
 	connect(m_mapper, SIGNAL(mapped(int)), SLOT(fontReset(int)));
 	m_fontResetButtons = new QPushButton *[SNGuiSettings::NumFonts];
 	m_changed = new bool[SNGuiSettings::NumFonts];
-	m_settings = SNSingleton::getDynSettings<SNGuiSettings>();
+	SNGuiSettings *settings = SNSingleton::getDynSettings<SNGuiSettings>();
 
-	QFont appFont  = m_settings->guiFont(SNGuiSettings::APP_FONT);
-	QFont termFont = m_settings->guiFont(SNGuiSettings::TERM_FONT);
+	QFont appFont  = settings->guiFont(SNGuiSettings::APP_FONT);
+	QFont termFont = settings->guiFont(SNGuiSettings::TERM_FONT);
 
 	QVBoxLayout *layout = new QVBoxLayout(this);
 	QTabWidget *tabs = new QTabWidget();
@@ -170,7 +170,7 @@ CfgApperance::CfgApperance(QWidget* parent): SNConfigPanel(parent)
 	tabs->setMovable(true);
 
 	Qt::CheckState checkState;
-	if (m_settings->antialiasing())
+	if (settings->antialiasing())
 	{
 		checkState = Qt::Checked;
 	}
@@ -224,8 +224,9 @@ void CfgApperance::saveChanges()
 {
 	if (settingsChanged())
 	{
-		m_settings->setGuiFont(m_appFontSelect->selectedFont(), SNGuiSettings::APP_FONT);
-		m_settings->setGuiFont(m_termFontSelect->selectedFont(), SNGuiSettings::TERM_FONT);
+		SNGuiSettings *settings = SNSingleton::getDynSettings<SNGuiSettings>();
+		settings->setGuiFont(m_appFontSelect->selectedFont(), SNGuiSettings::APP_FONT);
+		settings->setGuiFont(m_termFontSelect->selectedFont(), SNGuiSettings::TERM_FONT);
 	}
 	emit changed(false);
 }
@@ -235,7 +236,8 @@ void CfgApperance::saveChanges()
 */
 void CfgApperance::fontChanged(const QFont &font, SNGuiSettings::FontType type)
 {
-	if (m_settings->defaultFont(type) == font)
+	SNGuiSettings *settings = SNSingleton::getDynSettings<SNGuiSettings>();
+	if (settings->defaultFont(type) == font)
 	{
 		m_fontResetButtons[type]->hide();
 	}
@@ -244,7 +246,7 @@ void CfgApperance::fontChanged(const QFont &font, SNGuiSettings::FontType type)
 		m_fontResetButtons[type]->show();
 	}
 
-	if (m_settings->guiFont(type) == font)
+	if (settings->guiFont(type) == font)
 	{
 		m_changed[type] = false;
 	}
@@ -261,7 +263,7 @@ void CfgApperance::fontChanged(const QFont &font, SNGuiSettings::FontType type)
 void CfgApperance::fontReset(int type)
 {
 	SNGuiSettings::FontType t = static_cast<SNGuiSettings::FontType>(type);
-	QFont font = m_settings->defaultFont(t);
+	QFont font = SNSingleton::getDynSettings<SNGuiSettings>()->defaultFont(t);
 	switch (type)
 	{
 		case SNGuiSettings::APP_FONT:
@@ -284,7 +286,7 @@ void CfgApperance::addFontSelectRow(const QString &label, CfgApperance_Private::
 	m_fontResetButtons[fontSelect->type()] = button;
 	m_changed[fontSelect->type()] = false;
 
-	if (m_settings->defaultFont(fontSelect->type()) == fontSelect->selectedFont())
+	if (SNSingleton::getDynSettings<SNGuiSettings>()->defaultFont(fontSelect->type()) == fontSelect->selectedFont())
 	{
 		button->hide();
 	}
@@ -313,30 +315,39 @@ bool CfgApperance::settingsChanged()
 	return false;
 }
 
+/*!
+  Nastavenie hodnoty antialiasingu pri zaskrtnuti / odskrtnuti nastavenia.
+*/
 void CfgApperance::on_antialiasing_stateChanged(int state)
 {
+	SNGuiSettings *settings = SNSingleton::getDynSettings<SNGuiSettings>();
 	if (state == Qt::Checked)
 	{
-		m_settings->setAntialiasing(true);
+		settings->setAntialiasing(true);
 	}
 	else
 	{
-		m_settings->setAntialiasing(false);
+		settings->setAntialiasing(false);
 	}
 }
 
+/*!
+  Pridanie polozky pre vyber farby.
+*/
 void CfgApperance::addColorSelectRow(const QString &label, SNColorSelectWidget *colorSelect, SNGuiSettings::ColorGroup group)
 {
+	SNGuiSettings *settings = SNSingleton::getDynSettings<SNGuiSettings>();
+
 	m_colorSelectWidgets[group] = colorSelect;
 	QLabel *l = new QLabel(label);
 	QPushButton *reset = new QPushButton(tr("Reset"));
-	colorSelect->setColor(m_settings->color(group));
+	colorSelect->setColor(settings->color(group));
 	CfgApperance_Private::ColorSelectHandler *h = new CfgApperance_Private::ColorSelectHandler(colorSelect, reset, group, this);
 
 	connect(h, SIGNAL(colorChanged(const QColor &, SNGuiSettings::ColorGroup)), SLOT(colorChanged(const QColor &, SNGuiSettings::ColorGroup)));
-	connect(h, SIGNAL(reset(SNGuiSettings::ColorGroup)), SLOT(reset(SNGuiSettings::ColorGroup)));
+	connect(h, SIGNAL(reset(SNGuiSettings::ColorGroup)), SLOT(resetColor(SNGuiSettings::ColorGroup)));
 
-	if (m_settings->colorIsDefault(group))
+	if (settings->colorIsDefault(group))
 	{
 		reset->setHidden(true);
 	}
@@ -346,17 +357,23 @@ void CfgApperance::addColorSelectRow(const QString &label, SNColorSelectWidget *
 	m_apperanceLayout->addWidget(reset);
 }
 
+/*!
+  Reakcia na zmenu farby.
+*/
 void CfgApperance::colorChanged(const QColor &color, SNGuiSettings::ColorGroup group)
 {
-	m_settings->setColor(color, group);
+	SNSingleton::getDynSettings<SNGuiSettings>()->setColor(color, group);
 }
 
-
-void CfgApperance::reset(SNGuiSettings::ColorGroup group)
+/*!
+  Obnovenie povodnych vlastnosti farby.
+*/
+void CfgApperance::resetColor(SNGuiSettings::ColorGroup group)
 {
-	m_settings->resetColor(group);
-	m_colorSelectWidgets[group]->setColor(m_settings->color(group));
-	m_settings->resetColor(group);
+	SNGuiSettings *settings = SNSingleton::getDynSettings<SNGuiSettings>();
+	settings->resetColor(group);
+	m_colorSelectWidgets[group]->setColor(settings->color(group));
+	settings->resetColor(group);
 }
 
 

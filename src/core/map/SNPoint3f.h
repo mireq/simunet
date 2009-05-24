@@ -47,8 +47,17 @@ class SNPoint3f
 		bool operator !=(const SNPoint3f &other) const;
 
 	private:
+/*!
+  Poloha na osi x.
+*/
 		float m_x;
+/*!
+  Poloha na osi y.
+*/
 		float m_y;
+/*!
+  Poloha na osi z.
+*/
 		float m_z;
 
 };

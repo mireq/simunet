@@ -45,8 +45,19 @@ class SNMapLineItem
 		void addControlPoint(SNMapControlPointItem *point, std::vector<SNMapControlPointItem *>::size_type pos);
 		void removeControlPoint(std::vector<SNMapControlPointItem *>::size_type pos);
 	private:
+/*!
+  Zoznam kontrolnych bodov prepojenia.
+*/
 		std::vector<SNMapControlPointItem *>m_controlPoints;
+
+/*!
+  Zoznam konektorov.
+*/
 		std::set<SNMapConnectorItem *>m_connectors;
+
+/*!
+  Odkaz na mapu.
+*/
 		SNMap *m_map;
 
 };
@@ -71,9 +82,21 @@ class SNMapConnection
 		SNMapDeviceItem *dev2() const;
 		bool isValid() const;
 	private:
+/*!
+  Odkaz na prve zariadenie.
+*/
 		SNMapDeviceItem *m_dev1;
+/*!
+  Odkaz na druhe zariadenie.
+*/
 		SNMapDeviceItem *m_dev2;
+/*!
+  Cislo portu prveho zariadenia.
+*/
 		port_num m_port1;
+/*!
+  Cislo portu druheho zariadenia.
+*/
 		port_num m_port2;
 };
 

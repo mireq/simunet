@@ -38,13 +38,12 @@ PyThreadState *SNSimulateHelper::m_mainThreadState = NULL;
   \brief Trieda zabezpecujuca beh jednotlivych modulov.
   \ingroup core
 
-  Kazda instancia tejto triedy bezi v samostatnom vlakne a stara sa o
-  1 vlakno v pythonovi.
+  Kazda instancia tejto triedy sa stara o jedno vlakno v pythonovi.
 */
 
 
 /*!
-  Vytvorenie instancie v hlavnom vlakne.
+  Vytvorenie novej instancie a noveho vlakna v pythonovi.
 */
 SNSimulateHelper::SNSimulateHelper(PyThreadState *mainThreadState)
 	:m_stop(false)
@@ -112,6 +111,10 @@ void SNSimulateHelper::addDevice(SNDevice *device)
 	m_devices.push_back(device);
 }
 
+/*!
+  Odoslanie ramca zariadeniu urcenemu jeho ID - \a targetDevId na port \a hwPort.
+  Data su v strukture \a frame.
+*/
 void SNSimulateHelper::sendFrame(uint32_t targetDevId, port_num hwPort, PyObject *frame)
 {
 	PyEval_AcquireLock();

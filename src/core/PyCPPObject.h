@@ -25,6 +25,9 @@
 
 #include <Python.h>
 
+/**
+ @author Miroslav Bendik
+ */
 class PyCPPObject
 {
 	public:
@@ -36,10 +39,23 @@ class PyCPPObject
 		bool isCallable();
 
 	private:
+/*!
+  Zakaz priradenia tohto objektu.
+*/
 		PyCPPObject&  operator = (const PyCPPObject &) { return *this; }
+/*!
+  Zakaz kopirovania objektu.
+*/
 		PyCPPObject(const PyCPPObject &) {}
 
+/*!
+  Odkaz na strukturu typu PyObject *.
+*/
 		PyObject *m_object;
+
+/*!
+  Ak je \e true v destruktore sa znizi pocet referencii na m_object.
+*/
 		bool m_clean;
 };
 

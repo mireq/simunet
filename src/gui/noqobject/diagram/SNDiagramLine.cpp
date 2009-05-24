@@ -32,6 +32,19 @@
 
 #include <QDebug>
 
+/*!
+  \class SNDiagramControlPoint
+  \brief Kontrolny bod v grafickej scene.
+  \ingroup widgets
+
+  Tato trieda vykresluje kontrolne body v zlomoch ciary spajajucej zariadenia.
+*/
+
+/*!
+  Vytvorenie noveho kontrolneho bodu na pozicii [\a x, \a y]. Styl ciary
+  obvodu konektoru je urceny argumentom \a pen. Vypln je urcena argumentom
+  \a brush.
+*/
 SNDiagramControlPoint::SNDiagramControlPoint(qreal x, qreal y, const QPen &pen, const QBrush &brush)
 	: SNDiagramItem(), m_leftSegment(0), m_rightSegment(0), m_line(0), m_persistent(false)
 {
@@ -44,23 +57,33 @@ SNDiagramControlPoint::SNDiagramControlPoint(qreal x, qreal y, const QPen &pen, 
 	setPos(QPointF(x, y));
 }
 
-
+/*!
+  Zrusenie kontrolneho bodu.
+*/
 SNDiagramControlPoint::~SNDiagramControlPoint()
 {
 }
 
-
+/*!
+  Nastavenie pozicie kontorlneho bodu na novu poziciu \a point.
+*/
 void SNDiagramControlPoint::setPos(const QPointF &point)
 {
 	SNDiagramItem::setPos(point);
 	updateLinePositions();
 }
 
+/*!
+  \overload
+*/
 void SNDiagramControlPoint::setPos(qreal x, qreal y)
 {
 	setPos(QPointF(x, y));
 }
 
+/*!
+  \reimp
+*/
 void SNDiagramControlPoint::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
 	Q_UNUSED(option);
@@ -78,75 +101,127 @@ void SNDiagramControlPoint::paint(QPainter *painter, const QStyleOptionGraphicsI
 	painter->drawEllipse(m_ellipseRect);
 }
 
+/*!
+  \reimp
+*/
 QRectF SNDiagramControlPoint::boundingRect() const
 {
 	return m_ellipseRect;
 }
 
-
-
+/*!
+  Vrati styl obvodu konektoru.
+*/
 QPen SNDiagramControlPoint::pen() const
 {
 	return m_pen;
 }
 
+/*!
+  Vrati styl vyplne konektoru.
+*/
 QBrush SNDiagramControlPoint::brush() const
 {
 	return m_brush;
 }
 
+/*!
+  Nastavenie stylu obvodu konektoru.
+*/
 void SNDiagramControlPoint::setPen(const QPen &pen)
 {
 	m_pen = pen;
 }
 
+/*!
+  Nastavenie stylu vyplne konektoru.
+*/
 void SNDiagramControlPoint::setBrush(const QBrush &brush)
 {
 	m_brush = brush;
 }
 
+/*!
+  Vrati lavy segment ciary. Ak takyto segment neexistuje vrati \e NULL.
+
+  \sa setLeftLineSegment
+*/
 SNDiagramLineSegment *SNDiagramControlPoint::leftLineSegment() const
 {
 	return m_leftSegment;
 }
 
+/*!
+  Vrati pravy segment ciary. Ak takyto segment neexistuje vrati \e NULL.
+
+  \sa setRightLineSegment
+*/
 SNDiagramLineSegment *SNDiagramControlPoint::rightLineSegment() const
 {
 	return m_rightSegment;
 }
 
+/*!
+  Nastavenie laveho segmentu ciary. Pri presune kontrolneho bodu sa bude jedna
+  strana segmentu ciary presuvat.
+
+  \sa leftLineSegment
+*/
 void SNDiagramControlPoint::setLeftLineSegment(SNDiagramLineSegment *segment)
 {
 	m_leftSegment = segment;
 	updateLinePositions();
 }
 
+/*!
+  Nastavenie praveho segmentu ciary.
+
+  \sa rightLineSegment
+*/
 void SNDiagramControlPoint::setRightLineSegment(SNDiagramLineSegment *segment)
 {
 	m_rightSegment = segment;
 	updateLinePositions();
 }
 
+/*!
+  Nastavenie kontajneru, ktory obsahuje kontrolne body a segmenty ciary.
+*/
 void SNDiagramControlPoint::setLine(SNDiagramLine *line)
 {
 	m_line = line;
 }
 
+/*!
+  Vrati kontajner obsahujuci kontrolne body a segmenty ciary.
+*/
 SNDiagramLine *SNDiagramControlPoint::line() const
 {
 	return m_line;
 }
 
+/*!
+  Vrati \e true, ak je tento bod perzistentny (tj. neodstranuje sa pri odstraneni
+  ciary).
+*/
 bool SNDiagramControlPoint::persistent() const
 {
 	return m_persistent;
 }
 
+/*!
+  Nastavenie toho, ci kontrolny bod ma byt perzistentny.
+*/
 void SNDiagramControlPoint::setPersistent(bool persistent)
 {
 	m_persistent = persistent;
 }
 
+/*!
+  Zistenie, ci je mozne pridat do kontrolneho bodu dalsi segment ciary. Konektory
+  su vzdy kontrolnymi bodmi, preto mozu mat nastavenu jedinu ciaru. Bezne
+  kontrolne body maju vstupujuci a vystupujuci segment ciary.
+*/
 bool SNDiagramControlPoint::isFull() const
 {
 	if (m_leftSegment == 0 || m_rightSegment == 0)
@@ -159,11 +234,20 @@ bool SNDiagramControlPoint::isFull() const
 	}
 }
 
+/*!
+  Vrati typ kontrolneho bodu.
+*/
 int SNDiagramControlPoint::type() const
 {
 	return ControlPoint;
 }
 
+/*!
+  Aktualizacia laveho a praveho segmentu ciary (ak taky existuje) pri presune
+  kontrolneho bodu.
+
+  \sa setLeftLineSegment, setRightLineSegment
+*/
 void SNDiagramControlPoint::updateLinePositions()
 {
 	if (m_leftSegment != NULL)
@@ -182,6 +266,25 @@ void SNDiagramControlPoint::updateLinePositions()
 
 /* ------------------------------------------------------------------ */
 
+/*!
+  \class SNDiagramLineSegment
+  \brief Segment ciary sprajajucej zariadenia.
+  \ingroup widgets
+
+  Trieda SNDiagramLineSegment vykresluje jeden segment ciary sprajajucej
+  kontrolne body.
+ */
+
+/*!
+  Vytvorenie segmentu ciary.
+
+  \param[in] line Kontajner reprezentujuci celu ciaru, v ktorom je tento segment.
+  \param[in] x1 X-ova pozicia prveho bodu.
+  \param[in] y1 Y-ova pozicia prveho bodu.
+  \param[in] x2 X-ova pozicia druheho bodu.
+  \param[in] y2 Y-ova pozicia druheho bodu.
+  \param[in] pen Styl ciary.
+*/
 SNDiagramLineSegment::SNDiagramLineSegment(SNDiagramLine *line, qreal x1, qreal y1, qreal x2, qreal y2, const QPen &pen)
 	: QGraphicsLineItem(x1, y1, x2, y2)
 {
@@ -190,6 +293,13 @@ SNDiagramLineSegment::SNDiagramLineSegment(SNDiagramLine *line, qreal x1, qreal 
 	m_line = line;
 }
 
+/*!
+  Kontajner \a line sa nastavi na \e NULL.
+
+  \par
+
+  \overload
+*/
 SNDiagramLineSegment::SNDiagramLineSegment(qreal x1, qreal y1, qreal x2, qreal y2, const QPen &pen)
 	: QGraphicsLineItem(x1, y1, x2, y2)
 {
@@ -198,6 +308,9 @@ SNDiagramLineSegment::SNDiagramLineSegment(qreal x1, qreal y1, qreal x2, qreal y
 	m_line = NULL;
 }
 
+/*!
+  \reimp
+*/
 QPainterPath SNDiagramLineSegment::shape() const
 {
 	QPainterPath path;
@@ -210,11 +323,17 @@ QPainterPath SNDiagramLineSegment::shape() const
 	return p;
 }
 
+/*!
+  \reimp
+*/
 QRectF SNDiagramLineSegment::boundingRect() const
 {
 	return shape().controlPointRect();
 }
 
+/*!
+  \reimp
+*/
 void SNDiagramLineSegment::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
 	Q_UNUSED(option);
@@ -234,6 +353,9 @@ void SNDiagramLineSegment::paint(QPainter *painter, const QStyleOptionGraphicsIt
 	painter->drawLine(line());
 }
 
+/*!
+  Vrati smernik na kontajner, v ktorom sa nachadza tento segment.
+*/
 SNDiagramLine *SNDiagramLineSegment::parentLine() const
 {
 	return m_line;
@@ -241,12 +363,27 @@ SNDiagramLine *SNDiagramLineSegment::parentLine() const
 
 /* ------------------------------------------------------------------ */
 
+/*!
+  \class SNDiagramLine
+  \brief Kontajner obsahujuci zoznam kontrolnych bodov a segmentov ciary.
+  \ingroup widgets
+ */
+
+/*!
+  Vytvorenie novej ciary.
+
+  \param[in] scene Scena, ktorej patri ciara.
+  \param[in] mapLine Smernik na reprezentaciu ciary v mape.
+*/
 SNDiagramLine::SNDiagramLine(SNDevicesDiagramScene *scene, SNMapLineItem *mapLine)
 	: m_scene(scene), m_persistentPoints(0), m_mapLine(mapLine)
 {
 }
 
-
+/*!
+  Zrusenie ciary (odstranenie segmentov ciary a kontrolnych bodov z sceny a
+  ich dealokacia).
+*/
 SNDiagramLine::~SNDiagramLine()
 {
 	QList<SNDiagramControlPoint *> persPoints;
@@ -290,22 +427,33 @@ SNDiagramLine::~SNDiagramLine()
 	}
 }
 
-
+/*!
+  Vrati styl ciary, ktorou su vykreslovane okraje kontrolnych bodov.
+*/
 QPen SNDiagramLine::controlPointsPen() const
 {
 	return m_controlPointsPen;
 }
 
+/*!
+  Vrati styl pozadia kontrolnych bodov.
+*/
 QBrush SNDiagramLine::controlPointsBrush() const
 {
 	return m_controlPointsBrush;
 }
 
+/*!
+  Vrati styl ciary prepajajucej kontrolne body.
+*/
 QPen SNDiagramLine::linePen() const
 {
 	return m_linePen;
 }
 
+/*!
+  Nastavenie stylu ciary kontrolneho bodu.
+*/
 void SNDiagramLine::setControlPointsPen(const QPen &pen)
 {
 	m_controlPointsPen = pen;
@@ -316,6 +464,9 @@ void SNDiagramLine::setControlPointsPen(const QPen &pen)
 	}
 }
 
+/*!
+  Nastavenie stylu vyplne kontrolneho bodu.
+*/
 void SNDiagramLine::setControlPointsBrush(const QBrush &brush)
 {
 	m_controlPointsBrush = brush;
@@ -326,6 +477,9 @@ void SNDiagramLine::setControlPointsBrush(const QBrush &brush)
 	}
 }
 
+/*!
+  Nastavenie stylu prepojovacej ciary.
+*/
 void SNDiagramLine::setLinePen(const QPen &pen)
 {
 	m_linePen = pen;
@@ -336,6 +490,16 @@ void SNDiagramLine::setLinePen(const QPen &pen)
 	}
 }
 
+/*!
+  Pridanie kontrolneho bodu do ciary.
+
+  \param x Pozicia na X-ovej osi.
+  \param y Pozicia na Y-ovej osi.
+  \param pos Poradie, v ktorom sa vklada kontrolny bod do ciary.
+  \param point Kontrolny bod, ktory sa ma pridat do ciary. Ak je hodnota \e NULL
+    vytvori sa novy.
+  \return Kontrolny bod, ktory bol pridany do ciary.
+*/
 SNDiagramControlPoint *SNDiagramLine::addControlPoint(qreal x, qreal y, int pos, SNDiagramControlPoint *point)
 {
 	if (pos < 0 || pos > m_controlPoints.size())
@@ -403,11 +567,22 @@ SNDiagramControlPoint *SNDiagramLine::addControlPoint(qreal x, qreal y, int pos,
 	return p;
 }
 
+/*!
+  Pridanie kontrolneho bodu na poziciu [0, 0].
+
+  \overload
+*/
 void SNDiagramLine::addControlPoint(SNDiagramControlPoint *point, int pos)
 {
 	addControlPoint(0, 0, pos, point);
 }
 
+/*!
+  Rozdelenie segmentu ciary na 2 casti a vlozenie noveho kontrolneho bodu medzi ne.
+
+  \param segment Segment, ktory sa ma "zlomit" na 2 casti.
+  \param newPointPosition Pozicia noveho kontrolneho bodu.
+*/
 void SNDiagramLine::breakLineSegment(SNDiagramLineSegment *segment, const QPointF &newPointPosition)
 {
 	int i = m_lines.indexOf(segment);
@@ -419,7 +594,14 @@ void SNDiagramLine::breakLineSegment(SNDiagramLineSegment *segment, const QPoint
 	}
 }
 
+/*!
+  Odstranenie kontrolneho bodu z prepojovacej ciary.
 
+  \param point Kontrolny bod, ktory sa ma odstranit.
+  \param pos Poradove cislo kontorlneho bodu, ktory odstranujeme.
+  \param removePersistent Ak je \e true odstrani sa tento kontrolny bod bez ohladu
+    na to, ci ma nastaveny atribut \e persistent.
+*/
 void SNDiagramLine::removeControlPoint(QVector<SNDiagramControlPoint *>::iterator point, int pos, bool removePersistent)
 {
 	if (pos >= m_controlPoints.size())
@@ -480,6 +662,9 @@ void SNDiagramLine::removeControlPoint(QVector<SNDiagramControlPoint *>::iterato
 	return;
 }
 
+/*!
+  \overload
+*/
 void SNDiagramLine::removeControlPoint(SNDiagramControlPoint *controlPoint, bool removePersistent)
 {
 	QVector<SNDiagramControlPoint *>::size_type poradie = 0;
@@ -495,11 +680,18 @@ void SNDiagramLine::removeControlPoint(SNDiagramControlPoint *controlPoint, bool
 	}
 }
 
+/*!
+  Vrati pocet poloziek, ktore vlastni tato ciara (tj. nie perzistentnych).
+*/
 int SNDiagramLine::size() const
 {
 	return m_controlPoints.size() - m_persistentPoints;
 }
 
+/*!
+  Vrati \e true v pripade, ze je tato ciara zbytocna (napr. obsahuje jediny
+  kontrolny bod, ktory je konetorom).
+*/
 bool SNDiagramLine::empty() const
 {
  	if (m_persistentPoints > 1)
@@ -513,11 +705,17 @@ bool SNDiagramLine::empty() const
 	return true;
 }
 
+/*!
+  Vrati zoznam kontrolnych bodov.
+*/
 QVector<SNDiagramControlPoint *> SNDiagramLine::controlPoints() const
 {
 	return m_controlPoints;
 }
 
+/*!
+  Vrati kontrolny bod, ktory je na pozicii urcenej argumentom \a pos.
+*/
 SNDiagramControlPoint *SNDiagramLine::pointAt(int pos) const
 {
 	if (pos >= 0 && pos < m_controlPoints.size())
@@ -530,16 +728,30 @@ SNDiagramControlPoint *SNDiagramLine::pointAt(int pos) const
 	}
 }
 
+/*!
+  Nastavenie polohy kontrolneho bodu.
+
+  \param point Kontrolny bod, ktory presuvame.
+  \param pos Cielova pozicia kontrolneho bodu.
+*/
 void SNDiagramLine::setPointPos(SNDiagramControlPoint *point, const QPointF &pos)
 {
 	point->setPos(pos);
 }
 
+/*!
+  \overload
+
+  \sa setPointPos
+*/
 void SNDiagramLine::movePoint(SNDiagramControlPoint *point, const QPointF &diff)
 {
 	setPointPos(point, point->pos() + diff);
 }
 
+/*!
+  Vrati smernik na ciaru v mape.
+*/
 SNMapLineItem *SNDiagramLine::mapLine() const
 {
 	return m_mapLine;

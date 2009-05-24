@@ -73,7 +73,6 @@ class MainWindow : public QMainWindow
 		void setAntialiasing(bool antialiasing);
 
 	private:
-		SNDevicesListModel *m_devicesModel;
 		SNScene *m_scene;
 		SNDevicesDiagramScene *m_diagram;
 		//menu

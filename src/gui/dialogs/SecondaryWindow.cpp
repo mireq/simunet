@@ -101,10 +101,17 @@ void SecondaryWindow::setModel(SNDevicesListModel *model)
 	}
 }
 
+/*!
+  Zobrazenie kontextoveho menu na polozke.
+*/
 void SecondaryWindow::showContextMenu(const QPoint &point)
 {
 	if (m_list != NULL && m_model != NULL)
 	{
+		/*
+		  Vytvorenie akcii pre polozku. Ak polzka neexistuje su akcie len nova
+		  polozka a novy adresar.
+		*/
 		QList<QAction *> actions;
 		QModelIndex index = m_list->indexAt(point);
 		actions.append(m_newAct);
@@ -178,6 +185,10 @@ void SecondaryWindow::showContextMenu(const QPoint &point)
 	}
 }
 
+/*!
+  Po zatvoreni konfiguracneho dialogu sa odstrani zo zonamu otvorenych
+  konfiguracnych dialogov.
+*/
 void SecondaryWindow::settingsClosed(DeviceSettingsDlg *dialog)
 {
 	int deviceId = dialog->deviceId();
@@ -185,6 +196,9 @@ void SecondaryWindow::settingsClosed(DeviceSettingsDlg *dialog)
 	dialog->deleteLater();
 }
 
+/*!
+  Zatvorenie konfiguracneho dialogu prisluchajucemu ID zariadenia \a devId.
+*/
 void SecondaryWindow::closeSettingsDialog(int devId)
 {
 	if (m_settingsDialogs.contains(devId))
