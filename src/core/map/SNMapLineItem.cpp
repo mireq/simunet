@@ -54,10 +54,10 @@ SNMapLineItem::SNMapLineItem(SNMap *map)
 */
 SNMapLineItem::~SNMapLineItem()
 {
-	vector<SNMapControlPointItem *>::iterator controlPoint;
-	for (controlPoint = m_controlPoints.begin(); controlPoint != m_controlPoints.end(); ++controlPoint)
+	while (m_controlPoints.begin() != m_controlPoints.end())
 	{
-		delete (*controlPoint);
+		delete (*m_controlPoints.begin());
+		m_controlPoints.erase(m_controlPoints.begin());
 	}
 }
 

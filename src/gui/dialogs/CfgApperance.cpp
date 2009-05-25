@@ -197,8 +197,9 @@ CfgApperance::CfgApperance(QWidget* parent): SNConfigPanel(parent)
 */
 CfgApperance::~CfgApperance()
 {
-	delete m_changed;
-	delete m_fontResetButtons;
+	delete[] m_changed;
+	delete[] m_fontResetButtons;
+	delete[] m_colorSelectWidgets;
 }
 
 /*!

@@ -88,6 +88,7 @@ class SNMap
 	private:
 		void addConnection(const SNMapConnection &conn);
 		void removeConnection(const SNMapConnection &conn);
+		void dealloc(SNDevTreeItem *item, SNDevTreeItem *parent = 0);
 	private:
 /*!
   Odkaz na simulator.

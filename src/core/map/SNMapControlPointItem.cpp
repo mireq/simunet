@@ -77,6 +77,7 @@ SNMapConnectorItem::SNMapConnectorItem(const SNPoint3f &pos, SNMapDeviceItem *de
 */
 SNMapConnectorItem::~ SNMapConnectorItem()
 {
+	m_device = 0;
 }
 
 /*!

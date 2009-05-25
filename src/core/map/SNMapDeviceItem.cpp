@@ -53,6 +53,7 @@ SNMapDeviceItem::SNMapDeviceItem(uint32_t deviceId)
 */
 SNMapDeviceItem::~SNMapDeviceItem()
 {
+	m_device = NULL;
 }
 
 /*!

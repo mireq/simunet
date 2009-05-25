@@ -7,11 +7,11 @@ import SimuNet
 import re
 
 class generic(SimuNet.SNDevice):
-	prikazy = []
-	timerStarted = False
-	timer = None
 	def __init__(self):
 		print("init")
+		self.prikazy = []
+		self.timerStarted = False
+		self.timer = None
 		self.insertHwPort()
 	def __del__(self):
 		print("del")

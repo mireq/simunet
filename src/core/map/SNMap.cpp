@@ -70,8 +70,18 @@ SNMap::SNMap()
 */
 SNMap::~SNMap()
 {
+	while (m_rootDir->childCount() > 0)
+	{
+		dealloc(*(m_rootDir->childs()->begin()), NULL);
+	}
 	delete m_rootDir;
 	m_rootDir = NULL;
+
+	while (m_lines.begin() != m_lines.end())
+	{
+		delete (*m_lines.begin());
+		m_lines.erase(m_lines.begin());
+	}
 }
 
 /*!
@@ -278,19 +288,17 @@ void SNMap::deleteItem(SNDevTreeItem *item, SNDevTreeItem *parent)
 		set<SNMapItem *>::iterator mapItem = m_mapItems.find(item->mapItem());
 		if (mapItem != m_mapItems.end())
 		{
-			if (item->type() == SNDevTreeItem::Device)
+			SNMapDeviceItem *device = static_cast<SNMapDeviceItem *>(*mapItem);
+			m_scene->removeDevice(device);
+			uint32_t deviceId = device->deviceId();
+			std::map<uint32_t, SNMapDeviceItem *>::iterator deviceIterator = m_devices.find(deviceId);
+			if (deviceIterator != m_devices.end())
 			{
-				SNMapDeviceItem *device = static_cast<SNMapDeviceItem *>(*mapItem);
-				m_scene->removeDevice(device);
-				uint32_t deviceId = device->deviceId();
-				std::map<uint32_t, SNMapDeviceItem *>::iterator deviceIterator = m_devices.find(deviceId);
-				if (deviceIterator != m_devices.end())
-				{
-					m_devices.erase(deviceIterator);
-				}
+				m_devices.erase(deviceIterator);
 			}
+
 			m_mapItems.erase(mapItem);
-			delete (*mapItem);
+			delete device;
 		}
 	}
 
@@ -495,4 +503,56 @@ void SNMap::addConnection(const SNMapConnection &conn)
 void SNMap::removeConnection(const SNMapConnection &conn)
 {
 	m_simulate->removeConnection(conn.dev1()->deviceId(), conn.port1(), conn.dev2()->deviceId(), conn.port2());
+}
+
+void SNMap::dealloc(SNDevTreeItem *item, SNDevTreeItem *parent)
+{
+	SNDevTreeNode *tree = NULL;
+	if (parent == NULL)
+	{
+		tree = m_rootDir;
+	}
+	else
+	{
+		tree = parent->node();
+	}
+
+	SNDevTreeNode *subtree = item->node();
+	if (subtree != NULL)
+	{
+		while (subtree->childCount() != 0)
+		{
+			dealloc(*(subtree->childs()->begin()), item);
+		}
+	}
+
+	if (item->type() == SNDevTreeItem::Device)
+	{
+		set<SNMapItem *>::iterator mapItem = m_mapItems.find(item->mapItem());
+		if (mapItem != m_mapItems.end())
+		{
+			SNMapDeviceItem *device = static_cast<SNMapDeviceItem *>(*mapItem);
+			uint32_t deviceId = device->deviceId();
+			std::map<uint32_t, SNMapDeviceItem *>::iterator deviceIterator = m_devices.find(deviceId);
+			if (deviceIterator != m_devices.end())
+			{
+				m_devices.erase(deviceIterator);
+			}
+
+			m_mapItems.erase(mapItem);
+			delete device;
+		}
+	}
+
+	tree->removeItem(item->internalId());
+	if (tree == m_rootDir)
+	{
+		return;
+	}
+
+	if (tree->childCount() == 0)
+	{
+		tree->treeItem()->setNode(NULL);
+		delete tree;
+	}
 }

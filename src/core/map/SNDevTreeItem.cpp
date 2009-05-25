@@ -24,6 +24,8 @@
 #include "SNMapItem.h"
 #include "SNMapDeviceItem.h"
 
+#include <QDebug>
+
 /*!
   ID nasledujuceho interneho ID.
 */
@@ -55,6 +57,9 @@ SNDevTreeItem::SNDevTreeItem(ItemType type, SNMapItem *mapItem, SNDevTreeItem *p
 */
 SNDevTreeItem::~SNDevTreeItem()
 {
+	m_mapItem = NULL;
+	m_parent  = NULL;
+	m_node    = NULL;
 }
 
 /*!
@@ -224,7 +229,7 @@ SNDevTreeDeviceItem::SNDevTreeDeviceItem(SNMapDeviceItem *mapItem, SNDevTreeItem
 /*!
   Zrusenie polozky zoznamu zariadeni.
 */
-SNDevTreeDeviceItem::~ SNDevTreeDeviceItem()
+SNDevTreeDeviceItem::~SNDevTreeDeviceItem()
 {
 }
 
