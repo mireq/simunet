@@ -27,6 +27,7 @@
 #include <QString>
 #include <QModelIndex>
 #include <QFutureWatcher>
+#include <QUrl>
 
 class QWebView;
 class QLabel;
@@ -50,6 +51,7 @@ class SNWebConfigWidget : public QWidget
 	public slots:
 		void setPageTitle(const QString &title);
 		void setUrl(const QUrl &url);
+		QUrl url() const;
 		void addMenuItem(const QString &text, const QString &href, int depth, int mode = 0, const QString &title = QString());
 	private:
 		void loadJavascript();
@@ -59,7 +61,7 @@ class SNWebConfigWidget : public QWidget
 		void loadStarted();
 		void loadFinished(bool ok);
 		void addJavascriptObject();
-		void addJsError(QString errorMsg, int line);
+		void addJsError(const QString &errorMsg, int line);
 		void menuActivated(const QModelIndex &index);
 		void setHtml(const QString &html);
 		void htmlLoadFinished();
@@ -78,6 +80,7 @@ class SNWebConfigWidget : public QWidget
 
 		static QString m_webConfigJs;
 		QFutureWatcher<char *> *m_htmlLoadWatcher;
+		QUrl m_url;
 	signals:
 		void jsErrorsAvitable(bool);
 };

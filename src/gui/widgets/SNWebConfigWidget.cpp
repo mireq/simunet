@@ -88,7 +88,8 @@ SNWebConfigWidget::SNWebConfigWidget(uint32_t devId, QWidget* parent): QWidget(p
 	connect(m_view->page(), SIGNAL(loadFinished(bool)), SLOT(loadFinished(bool)));
 	connect(m_view->page(), SIGNAL(loadStarted()), SLOT(loadStarted()));
 	connect(m_view->page()->mainFrame(), SIGNAL(javaScriptWindowObjectCleared()), this, SLOT(addJavascriptObject()));
-	connect(m_view->page(), SIGNAL(javaScriptError(QString, int)), SLOT(addJsError(QString, int)));
+	connect(m_view->page(), SIGNAL(javaScriptError(const QString &, int)), SLOT(addJsError(const QString &, int)));
+	connect(m_view->page(), SIGNAL(urlRequest(const QUrl &)), SLOT(setUrl(const QUrl &)));
 	//connect(m_view->page(), SIGNAL(linkHovered(QString,QString,QString)), SLOT(setStatusBarLink(QString)));
 
 	loadJavascript();
@@ -116,7 +117,7 @@ SNWebConfigWidget::SNWebConfigWidget(uint32_t devId, QWidget* parent): QWidget(p
 
 	m_htmlLoadWatcher = new QFutureWatcher<char *>;
 	connect(m_htmlLoadWatcher, SIGNAL(finished()), SLOT(htmlLoadFinished()));
-	setUrl(QUrl("simunet:/"));
+	//setUrl(QUrl("simunet:/"));
 }
 
 /*!
@@ -185,6 +186,7 @@ void SNWebConfigWidget::setPageTitle(const QString &title)
 */
 void SNWebConfigWidget::setUrl(const QUrl &url)
 {
+	m_url = url;
 	QFuture<char *> future = QtConcurrent::run(SNWebConfigWidget::startLoadHtml, m_devId, url);
 	m_htmlLoadWatcher->setFuture(future);
 	/*
@@ -193,6 +195,14 @@ void SNWebConfigWidget::setUrl(const QUrl &url)
 		return;
 	m_view->setHtml(QString::fromUtf8(exampleFile.readAll()), QUrl("simunet:/"));
 	exampleFile.close();*/
+}
+
+/*!
+  Zistenie aktualneho URL.
+ */
+QUrl SNWebConfigWidget::url() const
+{
+	return m_url;
 }
 
 /*!
@@ -332,7 +342,7 @@ void SNWebConfigWidget::addJavascriptObject()
 	m_view->page()->mainFrame()->addToJavaScriptWindowObject("webConfigWidget", this);
 }
 
-void SNWebConfigWidget::addJsError(QString errorMsg, int line)
+void SNWebConfigWidget::addJsError(const QString &errorMsg, int line)
 {
 	QTreeWidgetItem *errorLine = new QTreeWidgetItem;
 	errorLine->setData(0, Qt::DisplayRole, QVariant(line));
@@ -388,3 +398,4 @@ char *SNWebConfigWidget::startLoadHtml(uint32_t devId, const QUrl &url)
 
   Indikacia dostupnosti javascript-ovych chyb.
 */
+

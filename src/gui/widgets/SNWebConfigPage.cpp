@@ -76,15 +76,22 @@ bool SNWebConfigPage::acceptNavigationRequest(QWebFrame *frame, const QNetworkRe
 	{
 		/// TODO dopisat nastavenie html
 		//mainFrame()->setHtml();
-		qDebug()<<url.path();
+		//qDebug()<<url.path();
+		emit urlRequest(url);
 		return false;
 	}
 	return QWebPage::acceptNavigationRequest(frame, request, type);
 }
 
 /*!
-  \fn SNWebConfigPage::javaScriptError(QString, int)
+  \fn SNWebConfigPage::javaScriptError(const QString &error, int lineNum)
   Tento signal sa emituje pri najdeni chyby v javascripte.
 
   Emituje sa chybova hlaska a cislo riadku na ktorom doslo k chybe.
-*/
+ */
+
+/*!
+  \fn void SNWebConfigPage::urlRequest(const QUrl &url)
+
+  Signal sa emituje pri poziadavke na nacitanie webovych dat od zariadenia.
+ */

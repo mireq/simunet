@@ -59,41 +59,62 @@ class generic(SimuNet.SNDevice):
 		print("url:" + url);
 		print(get);
 		print(post);
+
+		stranka = ""
+		prikazySel = ""
+		hlStrSel = " class=\"selected\""
+		if url == "/prikazy":
+			stranka = "prikazy"
+			prikazySel = " class=\"selected\""
+			hlStrSel = ""
+
+		nazov = "Hlavná stránka"
+		if stranka == "prikazy":
+			nazov = "Posledné príkazy"
+
 		string = """\
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 
 <head>
-  <title>Posledné príkazy</title>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>"""
+		string = string + nazov
+		string = string + """</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 </head>
 <div>
-<h1>Zoznam posledných príkazov</h1>
+<h1>"""
+		string = string + nazov
+		string = string + """</h1>
 <div id="page">
-  <div id="left">
-    <ul id="menu">
-      <li><a href="simunet:/aaa?aaa=3">Štatistiky</a>
-        <ul>
-          <li class="selected">
-            <a href="simunet:/bbb">Posledné príkazy</a>
-          </li>
-        </ul>
-      </li>
-    </ul>
-  </div>
-  <div id="main" class="main">
-    <table>
-      <tr>
-        <th>&nbsp;</th><th>Príkaz</th>
-      </tr>
-"""
-		for i in range(len(self.prikazy)):
-			string = string + "<tr><td>"+str(i)+"</td><td>"+self.prikazy[i]+"</td></tr>"
+	<div id="left">"""
+		string = string + "<ul id=\"menu\">"
+		string = string + "<li"+hlStrSel+">"
+		string = string + "<a href=\"simunet:/?dev_id="+str(self.deviceId)+"\">Hlavná stránka</a>"
+		string = string + "  <ul>";
+		string = string + "  <li"+prikazySel+">";
+		string = string + "  <a href=\"simunet:/prikazy\">Posledné príkazy</a>"
+		string = string + "  </ul>";
+		string = string + "</li>"
+		string = string + "</ul>"
 		string = string + """
-    </table>
-  </div>
-</div>
+	</div>
+	<div id="main" class="main">"""
+		if stranka == "prikazy":
+			string = string + """
+		<table>
+			<tr>
+				<th>&nbsp;</th><th>Príkaz</th>
+			</tr>
+"""
+			for i in range(len(self.prikazy)):
+				string = string + "<tr><td>"+str(i)+"</td><td>"+self.prikazy[i]+"</td></tr>"
+			string = string + """
+		</table>"""
+		string = string + """
+		</div>
+	</div>
 </body>
 </html>
 """

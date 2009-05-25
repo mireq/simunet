@@ -100,6 +100,8 @@ DeviceSettingsDlg::DeviceSettingsDlg(int devId, QWidget* parent): QDialog(parent
 
 	connect(tabs, SIGNAL(currentChanged(int)), SLOT(currentTabItemChanged(int)));
 	connect(m_errorButton, SIGNAL(clicked()), SLOT(switchJsErrors()));
+
+	m_webConfig->setUrl(QUrl("simunet:/"));
 }
 
 /*!
@@ -181,6 +183,7 @@ void DeviceSettingsDlg::currentTabItemChanged(int index)
 	if (index == 0)
 	{
 		m_statusBar->show();
+		m_webConfig->setUrl(m_webConfig->url());
 	}
 	else
 	{

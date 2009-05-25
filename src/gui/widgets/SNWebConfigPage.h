@@ -38,7 +38,8 @@ class SNWebConfigPage : public QWebPage
 		void javaScriptConsoleMessage(const QString &message, int lineNumber, const QString &sourceID);
 		bool acceptNavigationRequest(QWebFrame *frame, const QNetworkRequest &request, NavigationType type);
 	signals:
-		void javaScriptError(QString, int);
+		void javaScriptError(const QString &error, int lineNum);
+		void urlRequest(const QUrl &url);
 
 };
 
