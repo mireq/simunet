@@ -25,6 +25,8 @@
 #include "SNDiagramDevice.h"
 
 #include "core/SNDevice.h"
+#include "core/SNAccessors.h"
+#include "core/SNDynamicSettings.h"
 #include "core/map/SNMap.h"
 #include "core/map/SNPoint3f.h"
 #include "core/map/SNMapDeviceItem.h"
@@ -34,9 +36,6 @@
 #include <QPalette>
 #include <QGraphicsSceneMouseEvent>
 #include <QGraphicsView>
-
-#include "core/SNAccessors.h"
-#include "core/SNDynamicSettings.h"
 
 #include <vector>
 
@@ -218,6 +217,16 @@ void SNDevicesDiagramScene::removeHwPort(SNMapDeviceItem *item, port_num hwPort)
 	SNDiagramDevice *dev = device.value();
 	dev->removeConnector(hwPort);
 }
+
+/*!
+  Aktualizacia velkosti sceny podla pohladu na scenu.
+*/
+void SNDevicesDiagramScene::resizeSceneView(const QSize &size)
+{
+	m_viewSize = size;
+	updateSceneGeometry();
+}
+
 
 /*!
   Vukreslenie pozadia grafickej sceny. Scena sa vykresli farbou m_sceneBgColor,
@@ -611,6 +620,42 @@ void SNDevicesDiagramScene::mergeLine(SNDiagramControlPoint *point)
 }
 
 /*!
+  Zmena velkosti sceny podla polohy poloziek a velkosti pohladu.
+*/
+void SNDevicesDiagramScene::updateSceneGeometry()
+{
+	QRectF sr = sceneRect();
+	sr.setSize(m_viewSize);
+	QRectF bRect = itemsBoundingRect();
+
+	if (bRect.right() < m_viewSize.width())
+	{
+		bRect.setRight(m_viewSize.width());
+	}
+	if (bRect.bottom() < m_viewSize.height())
+	{
+		bRect.setBottom(m_viewSize.height());
+	}
+
+	if (sr.top() <= 0.0)
+	{
+		sr.setTop(bRect.top());
+	}
+	if (sr.left() <= 0.0)
+	{
+		sr.setLeft(bRect.left());
+	}
+
+	bRect = bRect.united(sr);
+	if (bRect == sceneRect())
+	{
+		return;
+	}
+
+	setSceneRect(bRect);
+}
+
+/*!
   Reakcia na zmenu farieb sceny.
 */
 void SNDevicesDiagramScene::colorChanged(const QColor & color, SNGuiSettings::ColorGroup group)
@@ -627,4 +672,6 @@ void SNDevicesDiagramScene::colorChanged(const QColor & color, SNGuiSettings::Co
 	sceneRectChanged(sceneRect());
 	update(sceneRect());
 }
+
+
 

@@ -36,6 +36,7 @@
 #include "core/map/SNMap.h"
 
 #include "diagram/SNDevicesDiagramScene.h"
+#include "diagram/SNDiagramView.h"
 
 #include <QAction>
 #include <QMenuBar>
@@ -196,10 +197,7 @@ void MainWindow::setupToolBars()
 */
 void MainWindow::setupSNScene()
 {
-	//m_scene = new SNScene();
-
 	m_diagram = new SNDevicesDiagramScene(this);
-	m_diagram->setSceneRect(0, 0, 500, 500);
 }
 
 /*!
@@ -290,7 +288,7 @@ void MainWindow::graphicsViewChanged(QAction *action)
 		SNMap *map = SNSingleton::getMap();
 		map->setScene(m_diagram);
 
-		m_2DView = new QGraphicsView;
+		m_2DView = new SNDiagramView;
 		m_2DView->setScene(m_diagram);
 		m_2DView->setCacheMode(QGraphicsView::CacheBackground);
 		//m_2DView->setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);

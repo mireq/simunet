@@ -59,6 +59,8 @@ class SNDevicesDiagramScene : public QGraphicsScene, public SNAbstractDevicesSce
 
 		void addHwPort(SNMapDeviceItem *item, port_num hwPort);
 		void removeHwPort(SNMapDeviceItem *item, port_num hwPort);
+
+		void resizeSceneView(const QSize &size);
 	protected:
 		void drawBackground(QPainter *painter, const QRectF &rect);
 		void mousePressEvent(QGraphicsSceneMouseEvent *event);
@@ -72,6 +74,7 @@ class SNDevicesDiagramScene : public QGraphicsScene, public SNAbstractDevicesSce
 		void newPoint(const QPointF &point);
 		void removeControlPoint(SNDiagramControlPoint *point, bool forceRemovePersistent = false);
 		void mergeLine(SNDiagramControlPoint *point);
+		void updateSceneGeometry();
 
 	private slots:
 		void colorChanged(const QColor &color, SNGuiSettings::ColorGroup group);
@@ -128,7 +131,13 @@ class SNDevicesDiagramScene : public QGraphicsScene, public SNAbstractDevicesSce
 */
 		QMap<uint32_t, QMap<port_num, SNDiagramConnector *> >m_ports;
 
+/*!
+  Udrziava velkost pohladu na scenu.
+*/
+		QSize m_viewSize;
+
 		friend class SNDiagramDevice;
+		friend class SNDiagramItem;
 };
 
 #endif

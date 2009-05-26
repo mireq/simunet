@@ -20,105 +20,27 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#include "SNDiagramItem.h"
+#ifndef SNDIAGRAMVIEW_H
+#define SNDIAGRAMVIEW_H
 
-#include <QGraphicsScene>
-#include <QDebug>
+#include <QGraphicsView>
+#include "SNDevicesDiagramScene.h"
 
-#include "gui/diagram/SNDevicesDiagramScene.h"
-
-/*!
-  \class SNDiagramItem
-  \brief Polozka diagramu so zariadeniami.
-  \ingroup widgets
- */
-
-/*!
-  Vytovrenie novej polozky na pozicii [0, 0].
+/**
+ @author Miroslav Bendik <miroslav.bendik@gmail.com>
 */
-SNDiagramItem::SNDiagramItem()
-		: QGraphicsItem(), m_pos(0, 0)
+class SNDiagramView : public QGraphicsView
 {
-}
+		Q_OBJECT
+	public:
+		SNDiagramView(SNDevicesDiagramScene* scene, QWidget* parent = 0);
+		SNDiagramView(QWidget* parent = 0);
 
-/*!
-  Zrusenie polozky.
-*/
-SNDiagramItem::~SNDiagramItem()
-{
-}
+		~SNDiagramView();
 
-/*!
-  Nastavenie novej pozicie na \a pos. Metoda zabezpecuje to, aby polozka nemohla
-  byt mimo sceny.
-*/
-void SNDiagramItem::setPos(const QPointF &pos)
-{
-	///@todo Optimalizovat
-	if (m_pos == pos)
-	{
-		return;
-	}
-	m_pos = pos;
-	/*if (scene() != NULL)
-	{
-		const QRectF br = boundingRect();
-		const QRectF sr = scene()->sceneRect();
-		QPointF newPos = pos;
-		if (newPos.x() < sr.x())
-		{
-			//newPos.setX(sr.x());
-			updateSceneRect();
-		}
-		else if (newPos.x() + br.width() > sr.x() + sr.width())
-		{
-			//newPos.setX(sr.x() + sr.width() - br.width());
-			updateSceneRect();
-		}
+	protected:
+		void resizeEvent(QResizeEvent *event);
 
-		if (newPos.y() < sr.y())
-		{
-			//newPos.setY(sr.y());
-			updateSceneRect();
-		}
-		else if (newPos.y() + br.height() > sr.y() + sr.height())
-		{
-			//newPos.setY(sr.y() + sr.height() - br.height());
-			updateSceneRect();
-		}
-		QGraphicsItem::setPos(newPos);
-	}
-	else
-	{
-		QGraphicsItem::setPos(pos);
-	}*/
-	updateSceneRect();
-	QGraphicsItem::setPos(pos);
-}
+};
 
-/*!
-  \overload
-*/
-void SNDiagramItem::setPos(qreal x, qreal y)
-{
-	setPos(QPointF(x, y));
-}
-
-/*!
-  Zistenie aktualnej pozicie.
-*/
-QPointF SNDiagramItem::pos() const
-{
-	return m_pos;
-}
-
-void SNDiagramItem::updateSceneRect()
-{
-	SNDevicesDiagramScene *s = qobject_cast<SNDevicesDiagramScene *>(scene());
-	if (s != NULL)
-	{
-		s->updateSceneGeometry();
-	}
-}
-
-
+#endif

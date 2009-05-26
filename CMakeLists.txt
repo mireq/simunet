@@ -90,6 +90,7 @@ set(simunet_HDRS
 
 set(simunet_MOC_HDRS
 	src/gui/diagram/SNDevicesDiagramScene.h
+	src/gui/diagram/SNDiagramView.h
 	src/gui/dialogs/AboutDlg.h
 	src/gui/dialogs/CfgApperance.h
 	src/gui/dialogs/CfgApperance_p.h
@@ -114,6 +115,7 @@ set(simunet_MOC_HDRS
 set(simunet_SRCS
 	src/simunet.cpp
 	src/gui/diagram/SNDevicesDiagramScene.cpp
+	src/gui/diagram/SNDiagramView.cpp
 	src/gui/dialogs/AboutDlg.cpp
 	src/gui/dialogs/CfgApperance.cpp
 	src/gui/dialogs/CfgPerformance.cpp

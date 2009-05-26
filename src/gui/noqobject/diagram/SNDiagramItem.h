@@ -38,6 +38,9 @@ class SNDiagramItem : public QGraphicsItem
 		QPointF pos() const;
 
 	private:
+		void updateSceneRect();
+
+	private:
 		QPointF m_pos;
 
 };

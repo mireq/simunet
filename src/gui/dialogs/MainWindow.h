@@ -29,12 +29,12 @@ class QActionGroup;
 class QAction;
 class QMenu;
 class QStackedWidget;
-class QGraphicsView;
 
 class AboutDlg;
 class ConfigureDlg;
 class GraphicsView;
 class SNDevicesListModel;
+class SNDiagramView;
 class SNGuiSettings;
 class SNScene;
 class SNSplash;
@@ -104,7 +104,7 @@ class MainWindow : public QMainWindow
 
 		// centralna cast
 		QStackedWidget *m_centralWidget;
-		QGraphicsView *m_2DView;
+		SNDiagramView *m_2DView;
 		GraphicsView *m_3DView;
 		SNGuiSettings *m_settings;
 };
