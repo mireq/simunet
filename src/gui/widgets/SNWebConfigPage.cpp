@@ -30,6 +30,11 @@
 #include <QDebug>
 
 /*!
+  @todo
+  Pre integraciu s webkit-om pouzit QNetworkAccessManager.
+ */
+
+/*!
   \class SNWebConfigPage
   \brief Vylepsenie QWebPage o filtrovanie a pridany vlastny css styl.
   \ingroup widgets

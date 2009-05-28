@@ -101,6 +101,9 @@ void SNDevicesDiagramScene::addDevice(SNMapDeviceItem *item)
 	addItem(dev);
 	m_devices[item] = dev;
 	updateDevice(item);
+
+	updateSceneGeometry();
+	processPendingEvents();
 }
 
 /*!
@@ -123,6 +126,9 @@ void SNDevicesDiagramScene::removeDevice(SNMapDeviceItem *item)
 		m_devices.erase(dev);
 	}
 	SNAbstractDevicesScene::removeDevice(item);
+
+	updateSceneGeometry();
+	processPendingEvents();
 }
 
 /*!
@@ -180,6 +186,9 @@ void SNDevicesDiagramScene::updateDevice(SNMapDeviceItem *item)
 			}
 		}
 	}
+
+	updateSceneGeometry();
+	processPendingEvents();
 }
 
 /*!
@@ -200,6 +209,9 @@ void SNDevicesDiagramScene::addHwPort(SNMapDeviceItem *item, port_num hwPort)
 
 	m_ports[item->deviceId()][hwPort] = conn;
 	updateDevice(item);
+
+	updateSceneGeometry();
+	processPendingEvents();
 }
 
 /*!
@@ -216,6 +228,9 @@ void SNDevicesDiagramScene::removeHwPort(SNMapDeviceItem *item, port_num hwPort)
 
 	SNDiagramDevice *dev = device.value();
 	dev->removeConnector(hwPort);
+
+	updateSceneGeometry();
+	processPendingEvents();
 }
 
 /*!
@@ -385,6 +400,7 @@ void SNDevicesDiagramScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 		case Norm: mouseMoveEventNorm(event); break;
 		case Line: mouseMoveEventLine(event); break;
 	}
+	mouseHover(event);
 	QGraphicsScene::mouseMoveEvent(event);
 	processPendingEvents();
 }
@@ -523,6 +539,9 @@ void SNDevicesDiagramScene::newPoint(const QPointF &point)
 	}
 	m_newPoint = m_endControlPointClicked->line()->addControlPoint(point.x(), point.y(), pos);
 	m_endControlPointClicked = m_newPoint;
+
+	updateSceneGeometry();
+	processPendingEvents();
 }
 
 /*!
@@ -546,8 +565,13 @@ void SNDevicesDiagramScene::removeControlPoint(SNDiagramControlPoint *point, boo
 		m_lines.remove(line);
 		SNMapLineItem *mapLine = line->mapLine();
 		m_map->removeLine(mapLine);
-		delete line;
+		m_hoverLines.remove(line);
+		//delete line;
+		line->deleteLater();
 	}
+
+	updateSceneGeometry();
+	processPendingEvents();
 }
 
 /*!
@@ -616,7 +640,9 @@ void SNDevicesDiagramScene::mergeLine(SNDiagramControlPoint *point)
 		m_lines.remove(oldLine);
 		SNMapLineItem *mapLine = oldLine->mapLine();
 		m_map->removeLine(mapLine);
-		delete oldLine;
+		m_hoverLines.remove(oldLine);
+		//delete oldLine;
+		oldLine->deleteLater();
 	}
 
 	m_newPoint = NULL;
@@ -682,6 +708,42 @@ void SNDevicesDiagramScene::processPendingEvents()
 }
 
 /*!
+  Aktualizacia poloziek pod kurzorom mysi.
+ */
+void SNDevicesDiagramScene::mouseHover(QGraphicsSceneMouseEvent *event)
+{
+	QList<QGraphicsItem *> itemsUnderCursor = items(event->scenePos());
+	QGraphicsItem *item;
+	QSet<SNDiagramLine *> oldLines = m_hoverLines;
+	foreach(item, itemsUnderCursor)
+	{
+		SNDiagramLineSegment *l = dynamic_cast<SNDiagramLineSegment *>(item);
+		if (l != NULL)
+		{
+			SNDiagramLine *line = l->parentLine();
+			if (line == NULL)
+			{
+				continue;
+			}
+
+			if (!m_hoverLines.contains(line))
+			{
+				line->setControlPointsVisible(true);
+				m_hoverLines.insert(line);
+			}
+			oldLines.remove(line);
+		}
+	}
+
+	SNDiagramLine *l;
+	foreach(l, oldLines)
+	{
+		l->setControlPointsVisible(false);
+		m_hoverLines.remove(l);
+	}
+}
+
+/*!
   Reakcia na zmenu farieb sceny.
 */
 void SNDevicesDiagramScene::colorChanged(const QColor & color, SNGuiSettings::ColorGroup group)
@@ -698,4 +760,5 @@ void SNDevicesDiagramScene::colorChanged(const QColor & color, SNGuiSettings::Co
 	sceneRectChanged(sceneRect());
 	update(sceneRect());
 }
+
 

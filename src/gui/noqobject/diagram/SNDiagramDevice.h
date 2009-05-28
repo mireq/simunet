@@ -27,7 +27,7 @@
 #include <QMap>
 #include <QFont>
 
-#include "SNDiagramLine.h"
+#include "SNDiagramLineSegment.h"
 #include "SNDiagramItem.h"
 #include "sntypes.h"
 

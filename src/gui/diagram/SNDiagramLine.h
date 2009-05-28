@@ -23,123 +23,22 @@
 #ifndef SNDIAGRAMLINE_H
 #define SNDIAGRAMLINE_H
 
-#include <QPen>
-#include <QBrush>
-#include <QVector>
-#include <QColor>
-#include <QLineF>
-#include <QPointF>
-#include <QGraphicsItemGroup>
-#include <QGraphicsEllipseItem>
-#include <QGraphicsLineItem>
+#include <QObject>
 
-#include "SNDiagramItem.h"
+#include <QBrush>
+#include <QPen>
 
 class SNDevicesDiagramScene;
+class SNDiagramControlPoint;
 class SNDiagramLineSegment;
-class SNDiagramLine;
 class SNMapLineItem;
 
 /**
- @author Miroslav Bendik
+  @author Miroslav Bendik
  */
-class SNDiagramControlPoint : public SNDiagramItem
+class SNDiagramLine : public QObject
 {
-	public:
-
-		/// Typ kontorlneho bodu.
-		enum ControlPointType {
-			ControlPoint, /*!< Standardny kontrolny bod na miestac spojov segmentov ciar. */
-			Connector /*!< Konektor na zariadeni. */
-		};
-		SNDiagramControlPoint(qreal x, qreal y, const QPen &pen = QPen(), const QBrush &brush = QBrush());
-		~SNDiagramControlPoint();
-
-		virtual void setPos(const QPointF &point);
-		virtual void setPos(qreal x, qreal y);
-		virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
-		virtual QRectF boundingRect() const;
-
-		QPen pen() const;
-		QBrush brush() const;
-		void setPen(const QPen &pen);
-		void setBrush(const QBrush &brush);
-
-		SNDiagramLineSegment *leftLineSegment() const;
-		SNDiagramLineSegment *rightLineSegment() const;
-		void setLeftLineSegment(SNDiagramLineSegment *segment);
-		void setRightLineSegment(SNDiagramLineSegment *segment);
-
-		void setLine(SNDiagramLine *line);
-		SNDiagramLine *line() const;
-
-		bool persistent() const;
-		void setPersistent(bool persistent);
-		virtual bool isFull() const;
-		virtual int type() const;
-
-	protected:
-		void updateLinePositions();
-
-	protected:
-/*!
-  Lavy segment ciary v kontrolnom bode.
-*/
-		SNDiagramLineSegment *m_leftSegment;
-
-/*!
-  Pravy segment ciary v kontorlnom bode.
-*/
-		SNDiagramLineSegment *m_rightSegment;
-
-/*!
-  Kontajner, v ktorom sa nachadza tento kontrolny bod.
-*/
-		SNDiagramLine *m_line;
-
-/*!
-  Informacia o tom, ci je tento kontrolny bod perzistentny.
-*/
-		bool m_persistent;
-
-
-/*!
-  Styl, ktorym sa vykresluje obvod kontrolneho bodu.
-*/
-		QPen m_pen;
-
-/*!
-  Styl, ktorym sa vykresluje vnutorna cast kontrolneho bodu.
-*/
-		QBrush m_brush;
-
-/*!
-  Oblast, na ktorej sa vykresluje konektor.
-*/
-		QRectF m_ellipseRect;
-};
-
-/**
- @author Miroslav Bendik
- */
-class SNDiagramLineSegment : public QGraphicsLineItem
-{
-	public:
-		SNDiagramLineSegment(SNDiagramLine *line, qreal x1, qreal y1, qreal x2, qreal y2, const QPen &pen = QPen());
-		SNDiagramLineSegment(qreal x1, qreal y1, qreal x2, qreal y2, const QPen &pen = QPen());
-		QPainterPath shape() const;
-		QRectF boundingRect() const;
-		void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
-		SNDiagramLine *parentLine() const;
-	private:
-		SNDiagramLine *m_line;
-};
-
-/**
- @author Miroslav Bendik
-*/
-class SNDiagramLine
-{
+	Q_OBJECT
 	public:
 		SNDiagramLine(SNDevicesDiagramScene *scene, SNMapLineItem *mapLine);
 		~SNDiagramLine();
@@ -152,7 +51,6 @@ class SNDiagramLine
 		SNDiagramControlPoint *addControlPoint(qreal x, qreal y, int pos = -1, SNDiagramControlPoint *point = 0);
 		void addControlPoint(SNDiagramControlPoint *point, int pos = -1);
 		void breakLineSegment(SNDiagramLineSegment *segment, const QPointF &newPointPosition = QPointF());
-//		void removeControlPoint(int pos);
 		void removeControlPoint(SNDiagramControlPoint *controlPoint, bool removePersistent = false);
 		int size() const;
 		bool empty() const;
@@ -161,8 +59,15 @@ class SNDiagramLine
 		void setPointPos(SNDiagramControlPoint *point, const QPointF &pos);
 		void movePoint(SNDiagramControlPoint *point, const QPointF &diff);
 		SNMapLineItem *mapLine() const;
+		void setControlPointsVisible(bool visible);
+	private slots:
+		void hideControlPoints();
+		void showControlPoints();
+		void updateFade();
+
 	private:
 		void removeControlPoint(QVector<SNDiagramControlPoint *>::iterator point, int pos, bool removePersistent);
+		void setControlPointsVisiblePrivate(bool visible);
 		// okraj kontrolnych bodov
 		QPen m_controlPointsPen;
 		// vypln kontrolnyc bodov
@@ -181,6 +86,13 @@ class SNDiagramLine
 		int m_persistentPoints;
 
 		SNMapLineItem *m_mapLine;
+
+		QTimer *m_hidePointsTimer;
+		QTimer *m_fadeTimer;
+
+		int m_fadeDuration;
+		int m_fadeValue;
+		int m_fadeInterval;
 
 };
 

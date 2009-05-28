@@ -1,6 +1,7 @@
 class SNDevice:
 	__stopped = False;
 	__processFramePortHandlers = []
+	__portHandlers = {}
 
 	def sendFrame(self, port, data):
 		if self.__stopped:
@@ -11,7 +12,10 @@ class SNDevice:
 			return
 		snsimulate.sendTelnet(self.pSNDevice, self.deviceId, text, cmd)
 	def processFrame(self, hwPort, data):
-		print("processFrame not implemented")
+		try:
+			self.__portHandlers[hwPort](data)
+		except KeyError:
+			print("port handler not defined")
 	def resetConfig(self):
 		print("resetConfig not implemented")
 	def setConfig(self, data):
@@ -30,3 +34,5 @@ class SNDevice:
 		snsimulate.insertHwPort(self.pSNDevice)
 	def removeHwPort(self, port):
 		snsimulate.removeHwPort(self.pSNDevice, port)
+	def setHwPortHandler(self, hwPort, func):
+		self.__portHandlers[hwPort] = func

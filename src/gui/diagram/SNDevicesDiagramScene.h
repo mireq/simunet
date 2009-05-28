@@ -76,6 +76,7 @@ class SNDevicesDiagramScene : public QGraphicsScene, public SNAbstractDevicesSce
 		void mergeLine(SNDiagramControlPoint *point);
 		void updateSceneGeometry();
 		void processPendingEvents();
+		void mouseHover(QGraphicsSceneMouseEvent *event);
 
 	private slots:
 		void colorChanged(const QColor &color, SNGuiSettings::ColorGroup group);
@@ -146,6 +147,11 @@ class SNDevicesDiagramScene : public QGraphicsScene, public SNAbstractDevicesSce
   Pomocna premenna indikujuca to, ze treba aktualizovat oblast grafickej sceny.
 */
 		bool m_updateSceneRect;
+
+/*!
+  Zoznam ciar nachadzajucich sa pod kurzorom.
+*/
+		QSet<SNDiagramLine *> m_hoverLines;
 
 		friend class SNDiagramDevice;
 		friend class SNDiagramItem;

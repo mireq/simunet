@@ -85,11 +85,12 @@ set(simunet_HDRS
 	src/gui/noqobject/SNIcon.h
 	src/gui/noqobject/diagram/SNDiagramDevice.h
 	src/gui/noqobject/diagram/SNDiagramItem.h
-	src/gui/noqobject/diagram/SNDiagramLine.h
+	src/gui/noqobject/diagram/SNDiagramLineSegment.h
 )
 
 set(simunet_MOC_HDRS
 	src/gui/diagram/SNDevicesDiagramScene.h
+	src/gui/diagram/SNDiagramLine.h
 	src/gui/diagram/SNDiagramView.h
 	src/gui/dialogs/AboutDlg.h
 	src/gui/dialogs/CfgApperance.h
@@ -115,6 +116,7 @@ set(simunet_MOC_HDRS
 set(simunet_SRCS
 	src/simunet.cpp
 	src/gui/diagram/SNDevicesDiagramScene.cpp
+	src/gui/diagram/SNDiagramLine.cpp
 	src/gui/diagram/SNDiagramView.cpp
 	src/gui/dialogs/AboutDlg.cpp
 	src/gui/dialogs/CfgApperance.cpp
@@ -127,7 +129,7 @@ set(simunet_SRCS
 	src/gui/noqobject/SNAbstractDevicesScene.cpp
 	src/gui/noqobject/diagram/SNDiagramDevice.cpp
 	src/gui/noqobject/diagram/SNDiagramItem.cpp
-	src/gui/noqobject/diagram/SNDiagramLine.cpp
+	src/gui/noqobject/diagram/SNDiagramLineSegment.cpp
 	src/gui/noqobject/SNIcon.cpp
 	src/gui/widgets/SNColorSelectWidget.cpp
 	src/gui/widgets/SNConfigPanel.cpp
