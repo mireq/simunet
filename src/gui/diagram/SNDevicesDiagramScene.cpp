@@ -60,7 +60,7 @@ const int SNDevicesDiagramScene::m_gridSize = 10;
 */
 SNDevicesDiagramScene::SNDevicesDiagramScene(QObject* parent)
 	:QGraphicsScene(parent), m_mode(Norm),
-	m_newPoint(NULL), m_endControlPointClicked(NULL)
+	m_newPoint(NULL), m_endControlPointClicked(NULL), m_updateSceneRect(false)
 {
 	SNGuiSettings *settings = SNSingleton::getDynSettings<SNGuiSettings>();
 	QPalette palette;
@@ -225,6 +225,7 @@ void SNDevicesDiagramScene::resizeSceneView(const QSize &size)
 {
 	m_viewSize = size;
 	updateSceneGeometry();
+	processPendingEvents();
 }
 
 
@@ -369,6 +370,8 @@ void SNDevicesDiagramScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 		}
 	}
 	QGraphicsScene::mouseReleaseEvent(event);
+	updateSceneGeometry();
+	processPendingEvents();
 }
 
 /*!
@@ -383,6 +386,7 @@ void SNDevicesDiagramScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 		case Line: mouseMoveEventLine(event); break;
 	}
 	QGraphicsScene::mouseMoveEvent(event);
+	processPendingEvents();
 }
 
 /*!
@@ -434,6 +438,7 @@ void SNDevicesDiagramScene::mouseMoveEventNorm(QGraphicsSceneMouseEvent *event)
 			else if ((dev = dynamic_cast<SNDiagramDevice *>(item)) != NULL)
 			{
 				dev->setPos(dev->pos() + diff);
+				event->accept();
 			}
 		}
 	}
@@ -651,8 +656,29 @@ void SNDevicesDiagramScene::updateSceneGeometry()
 	{
 		return;
 	}
+	if (bRect.x() > 0)
+	{
+		bRect.setX(0);
+	}
+	if (bRect.y() > 0)
+	{
+		bRect.setY(0);
+	}
 
-	setSceneRect(bRect);
+	m_newSceneRect = bRect;
+	m_updateSceneRect = true;
+}
+
+/*!
+  Spracovanie niektorych udalosti, ktore boli docasne odlozene.
+*/
+void SNDevicesDiagramScene::processPendingEvents()
+{
+	if (m_updateSceneRect == true)
+	{
+		setSceneRect(m_newSceneRect);
+		m_updateSceneRect = false;
+	}
 }
 
 /*!
@@ -672,6 +698,4 @@ void SNDevicesDiagramScene::colorChanged(const QColor & color, SNGuiSettings::Co
 	sceneRectChanged(sceneRect());
 	update(sceneRect());
 }
-
-
 

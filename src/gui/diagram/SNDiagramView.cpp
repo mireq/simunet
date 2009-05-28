@@ -53,8 +53,8 @@ void SNDiagramView::resizeEvent(QResizeEvent *event)
 
 		sc->setSceneRect(bRect.united(sceneRect));
 	}*/
+
 	QGraphicsScene *sc = scene();
-	QGraphicsView::resizeEvent(event);
 	QSize sceneSize = viewport()->size();
 	//sceneSize.setWidth(sceneSize.width() - horizontalScrollBar()->width());
 	//sceneSize.setHeight(sceneSize.height() - verticalScrollBar()->height());
@@ -66,5 +66,7 @@ void SNDiagramView::resizeEvent(QResizeEvent *event)
 	{
 		sceneSize.setWidth(sceneSize.width() + verticalScrollBar()->width());
 	}
+
 	static_cast<SNDevicesDiagramScene *>(sc)->resizeSceneView(sceneSize);
+	QGraphicsView::resizeEvent(event);
 }

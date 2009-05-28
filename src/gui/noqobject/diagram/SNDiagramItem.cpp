@@ -59,41 +59,29 @@ void SNDiagramItem::setPos(const QPointF &pos)
 	{
 		return;
 	}
+	const QPointF oldPos = m_pos;
 	m_pos = pos;
-	/*if (scene() != NULL)
+
+	bool updatePending = false;
+	SNDevicesDiagramScene *s = qobject_cast<SNDevicesDiagramScene *>(scene());
+	if (s != NULL)
 	{
 		const QRectF br = boundingRect();
 		const QRectF sr = scene()->sceneRect();
-		QPointF newPos = pos;
-		if (newPos.x() < sr.x())
+		if (pos.x() + br.x() < sr.x() || pos.y() + br.y() < sr.y())
 		{
-			//newPos.setX(sr.x());
-			updateSceneRect();
+			updatePending = true;
 		}
-		else if (newPos.x() + br.width() > sr.x() + sr.width())
+		else if (pos.x() + br.right() > sr.right() || pos.y() + br.bottom() > sr.bottom())
 		{
-			//newPos.setX(sr.x() + sr.width() - br.width());
-			updateSceneRect();
+			updatePending = true;
 		}
-
-		if (newPos.y() < sr.y())
-		{
-			//newPos.setY(sr.y());
-			updateSceneRect();
-		}
-		else if (newPos.y() + br.height() > sr.y() + sr.height())
-		{
-			//newPos.setY(sr.y() + sr.height() - br.height());
-			updateSceneRect();
-		}
-		QGraphicsItem::setPos(newPos);
 	}
-	else
-	{
-		QGraphicsItem::setPos(pos);
-	}*/
-	updateSceneRect();
 	QGraphicsItem::setPos(pos);
+	if (updatePending && s != NULL)
+	{
+		s->updateSceneGeometry();
+	}
 }
 
 /*!
@@ -112,7 +100,7 @@ QPointF SNDiagramItem::pos() const
 	return m_pos;
 }
 
-void SNDiagramItem::updateSceneRect()
+void SNDiagramItem::updateSceneGeometry()
 {
 	SNDevicesDiagramScene *s = qobject_cast<SNDevicesDiagramScene *>(scene());
 	if (s != NULL)

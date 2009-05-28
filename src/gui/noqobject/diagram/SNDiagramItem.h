@@ -38,7 +38,7 @@ class SNDiagramItem : public QGraphicsItem
 		QPointF pos() const;
 
 	private:
-		void updateSceneRect();
+		void updateSceneGeometry();
 
 	private:
 		QPointF m_pos;

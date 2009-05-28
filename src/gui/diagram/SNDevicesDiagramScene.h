@@ -75,6 +75,7 @@ class SNDevicesDiagramScene : public QGraphicsScene, public SNAbstractDevicesSce
 		void removeControlPoint(SNDiagramControlPoint *point, bool forceRemovePersistent = false);
 		void mergeLine(SNDiagramControlPoint *point);
 		void updateSceneGeometry();
+		void processPendingEvents();
 
 	private slots:
 		void colorChanged(const QColor &color, SNGuiSettings::ColorGroup group);
@@ -135,6 +136,16 @@ class SNDevicesDiagramScene : public QGraphicsScene, public SNAbstractDevicesSce
   Udrziava velkost pohladu na scenu.
 */
 		QSize m_viewSize;
+
+/*!
+  Pomocna premenna do ktorej sa uklada nova velkost sceny pred jej zmenou.
+*/
+		QRectF m_newSceneRect;
+
+/*!
+  Pomocna premenna indikujuca to, ze treba aktualizovat oblast grafickej sceny.
+*/
+		bool m_updateSceneRect;
 
 		friend class SNDiagramDevice;
 		friend class SNDiagramItem;
