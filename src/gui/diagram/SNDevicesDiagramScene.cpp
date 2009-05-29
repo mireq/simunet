@@ -489,7 +489,7 @@ void SNDevicesDiagramScene::newPoint(const QPointF &point)
 		SNDiagramControlPoint *point = dynamic_cast<SNDiagramControlPoint *>(item);
 		if (point != NULL)
 		{
-			if (!point->isFull() && point->line() != m_endControlPointClicked->line())
+			if (!point->isFull() && m_endControlPointClicked->line() != NULL && point->line() != m_endControlPointClicked->line())
 			{
 				mergeLine(point);
 				return;
