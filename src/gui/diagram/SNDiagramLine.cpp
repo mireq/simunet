@@ -378,15 +378,19 @@ int SNDiagramLine::size() const
 
 /*!
   Vrati \e true v pripade, ze je tato ciara zbytocna (napr. obsahuje jediny
-  kontrolny bod, ktory je konetorom).
+  kontrolny bod).
  */
 bool SNDiagramLine::empty() const
 {
-	if (m_persistentPoints > 1)
+	/*if (m_persistentPoints > 1)
 	{
 		return false;
 	}
 	if (m_controlPoints.size() - m_persistentPoints > 0)
+	{
+		return false;
+	}*/
+	if (m_controlPoints.size() >= 2)
 	{
 		return false;
 	}
@@ -476,7 +480,7 @@ void SNDiagramLine::showControlPoints()
 void SNDiagramLine::updateFade()
 {
 	m_fadeValue++;
-	if (m_fadeValue < m_fadeDuration)
+	if (m_fadeValue <= m_fadeDuration)
 	{
 		QColor lineColor = m_controlPointsPen.color();
 		QColor brushColor = m_controlPointsBrush.color();
@@ -498,7 +502,7 @@ void SNDiagramLine::updateFade()
 	else
 	{
 		m_fadeTimer->stop();
-		setControlPointsVisiblePrivate(false);
+		//setControlPointsVisiblePrivate(false);
 		m_fadeValue = 0;
 	}
 }

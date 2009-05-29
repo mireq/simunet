@@ -29,11 +29,13 @@
 
 SNDiagramView::SNDiagramView(SNDevicesDiagramScene *scene, QWidget *parent): QGraphicsView(scene, parent)
 {
+	setDragMode(QGraphicsView::RubberBandDrag);
 }
 
 
 SNDiagramView::SNDiagramView(QWidget* parent): QGraphicsView(parent)
 {
+	setDragMode(QGraphicsView::RubberBandDrag);
 }
 
 

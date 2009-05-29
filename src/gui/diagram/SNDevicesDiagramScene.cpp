@@ -37,6 +37,7 @@
 #include <QGraphicsSceneMouseEvent>
 #include <QGraphicsView>
 
+#include <QPair>
 #include <vector>
 
 #include <QDebug>
@@ -410,7 +411,7 @@ void SNDevicesDiagramScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 */
 void SNDevicesDiagramScene::mouseMoveEventNorm(QGraphicsSceneMouseEvent *event)
 {
-	QSet<SNDiagramDevice *> devices;
+	QList<QPair<QPointF, SNDiagramItem *> > itemsToMove;
 
 	QPointF diff = (event->scenePos() - event->lastScenePos());
 	if (event->buttons() & Qt::LeftButton)
@@ -433,36 +434,22 @@ void SNDevicesDiagramScene::mouseMoveEventNorm(QGraphicsSceneMouseEvent *event)
 		// presunieme oznacene polozky
 		foreach (item, items)
 		{
-			SNDiagramControlPoint *point;
-			SNDiagramDevice *dev;
-			if ((point = dynamic_cast<SNDiagramControlPoint *>(item)) != NULL)
+			SNDiagramItem *dItem = dynamic_cast<SNDiagramItem *>(item);
+			if (dItem != NULL)
 			{
-				SNDiagramConnector *connector = dynamic_cast<SNDiagramConnector *>(point);
-				if (connector == NULL && point->line() != NULL)
-				{
-					point->line()->movePoint(point, diff);
-				}
-				else
-				{
-					devices.insert(connector->device());
-				}
+				itemsToMove.append(QPair<QPointF, SNDiagramItem *>(dItem->pos(), dItem));
 				if (!event->isAccepted())
 				{
 					event->accept();
 				}
 			}
-			else if ((dev = dynamic_cast<SNDiagramDevice *>(item)) != NULL)
-			{
-				dev->setPos(dev->pos() + diff);
-				event->accept();
-			}
 		}
 	}
 
-	SNDiagramDevice *dev;
-	foreach(dev, devices)
+	QList<QPair<QPointF, SNDiagramItem *> >::iterator itemToMove;
+	for (itemToMove = itemsToMove.begin(); itemToMove != itemsToMove.end(); ++itemToMove)
 	{
-		dev->setPos(dev->pos() + diff);
+		itemToMove->second->setPos(itemToMove->first + diff);
 	}
 }
 
