@@ -302,8 +302,17 @@ void MainWindow::graphicsViewChanged(QAction *action)
 	{
 		createSNScene();
 		m_3DView = new GraphicsView;
+		QGLWidget *gl = new QGLWidget(QGLFormat(QGL::SampleBuffers));
+		if (!gl->isValid())
+		{
+			clearView();
+			delete gl;
+			QMessageBox::warning(this, tr("3D is not supported"), tr("3D mode is not supported by your graphic adapter or graphic driver."));
+			m_2DAct->trigger();
+			return;
+		}
+		m_3DView->setViewport(gl);
 		m_3DView->setFrameStyle(QFrame::NoFrame);
-		m_3DView->setViewport(new QGLWidget(QGLFormat(QGL::SampleBuffers)));
 		m_3DView->setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
 		m_3DView->setScene(m_scene);
 		m_centralWidget->addWidget(m_3DView);
