@@ -25,6 +25,8 @@
 #include <QPainter>
 #include <QGraphicsSceneMouseEvent>
 
+#include <QPalette>
+
 #include "SNDevicesDiagramScene.h"
 
 #include "core/map/SNMapDeviceItem.h"
@@ -160,6 +162,8 @@ SNDiagramDevice::SNDiagramDevice(SNMapDeviceItem *device, SNDevicesDiagramScene 
 {
 	setFlag(ItemIsSelectable);
 	m_device = device;
+	calcShape();
+	m_boundingRect = m_shapeRect;
 }
 
 
@@ -180,7 +184,7 @@ SNDiagramDevice::~SNDiagramDevice()
 */
 QRectF SNDiagramDevice::boundingRect() const
 {
-	return shape().controlPointRect();
+	return m_boundingRect;
 }
 
 /*!
@@ -190,10 +194,45 @@ void SNDiagramDevice::paint(QPainter *painter, const QStyleOptionGraphicsItem *o
 {
 	Q_UNUSED(option);
 	Q_UNUSED(widget);
-	painter->drawPath(shape());
+
+	QPalette palette;
+
+//	QPen pen(Qt::black);
+//	QBrush brush(Qt::white);
+	QPen pen;
+	QBrush brush;
+
+	if (isSelected())
+	{
+		pen = QPen(palette.color(QPalette::HighlightedText));
+		brush = QBrush(palette.color(QPalette::Highlight));
+	}
+	else
+	{
+		pen = QPen(palette.color(QPalette::WindowText));
+		brush = QBrush(palette.color(QPalette::Base));
+	}
+
+	painter->setPen(pen);
+	painter->setBrush(brush);
+
+	painter->drawRect(m_shapeRect.x() + 1, m_shapeRect.y() + 1, m_shapeRect.width() - 2, m_shapeRect.height() - 2);
+
 	QFontMetrics fm(m_font);
+
+	painter->drawLine(QPointF(m_shapeRect.x() + 1, fm.height() + 3), QPointF(m_shapeRect.right() - 1, fm.height() + 3));
+
 	QRect textRect(0, 0, fm.width(m_name), fm.height());
 	painter->drawText(textRect, Qt::AlignVCenter, m_name);
+
+	QMap<port_num, SNDiagramConnector *>::size_type row = 0;
+	QMap<port_num, SNDiagramConnector *>::iterator connector;
+	for (connector = m_connectors.begin(); connector != m_connectors.end(); ++connector)
+	{
+		textRect = QRect(0, fm.height() * (row + 1) + 5, fm.width(m_name), fm.height());
+		painter->drawText(textRect, Qt::AlignVCenter, QString("Port %1").arg(connector.key()));
+		row++;
+	}
 }
 
 /*!
@@ -202,11 +241,9 @@ void SNDiagramDevice::paint(QPainter *painter, const QStyleOptionGraphicsItem *o
 QPainterPath SNDiagramDevice::shape() const
 {
 	QPainterPath path;
-	QFontMetrics fm(m_font);
-	int width = fm.width(m_name);
-	int height = fm.height();
-	path.addRect(-1, -1, width + 2, height + 2);
+	path.addRect(m_shapeRect.x() + 1, m_shapeRect.y() + 1, m_shapeRect.width() - 2, m_shapeRect.height() - 2);
 	return path;
+	
 }
 
 /*!
@@ -214,12 +251,16 @@ QPainterPath SNDiagramDevice::shape() const
 */
 SNDiagramConnector *SNDiagramDevice::addConnector(port_num port)
 {
-	SNDiagramConnector *point = new SNDiagramConnector(this, 0, 0, port);
+	SNDiagramConnector *point = new SNDiagramConnector(this, 0, 0, port, QPen(Qt::black), QBrush(Qt::white));
 	m_connectors[port] = point;
+
+	calcShape();
 
 	updateConnectorDiffs();
 	point->setDevicePos(pos());
 
+	m_boundingRect = m_shapeRect;
+	update();
 	return point;
 }
 
@@ -234,16 +275,16 @@ void SNDiagramDevice::removeConnector(port_num port)
 	{
 		return;
 	}
-	else
-	{
-		SNDiagramConnector *oldConnector = connector.value();
-		m_connectors.erase(connector);
-		updateConnectorDiffs();
 
-		/*m_scene->removeItem(oldConnector);
-		delete oldConnector;*/
-		m_scene->removeControlPoint(oldConnector, true);
-	}
+	SNDiagramConnector *oldConnector = connector.value();
+	m_connectors.erase(connector);
+	m_scene->removeControlPoint(oldConnector, true);
+
+	calcShape();
+	updateConnectorDiffs();
+	update();
+	m_boundingRect = m_shapeRect;
+	updateConnectorDiffs();
 }
 
 /*!
@@ -298,9 +339,8 @@ void SNDiagramDevice::setDevice(SNMapDeviceItem *device)
 */
 void SNDiagramDevice::updateConnectorDiffs()
 {
-	const QRectF bRect = boundingRect();
-	const int width = bRect.width();
-	const int height = bRect.height();
+	const int width = m_shapeRect.width();
+	const int height = m_shapeRect.height();
 	const int pointSize = 10;
 
 	QPointF diff;
@@ -322,8 +362,10 @@ void SNDiagramDevice::updateConnectorDiffs()
 void SNDiagramDevice::setName(QString name)
 {
 	m_name = name;
+	calcShape();
 	update();
 	updateConnectorDiffs();
+	m_boundingRect = m_shapeRect;
 }
 
 /*!
@@ -340,5 +382,27 @@ QString SNDiagramDevice::name() const
 const QMap< port_num, SNDiagramConnector *> *SNDiagramDevice::connectors() const
 {
 	return &m_connectors;
+}
+
+/*!
+  Aktualizacia oblasti, ktoru zabera zariadenie.
+ */
+void SNDiagramDevice::calcShape()
+{
+	QFontMetrics fm(m_font);
+	int width = fm.width(m_name);
+	int height = fm.height();
+
+	QMap<port_num, SNDiagramConnector *>::const_iterator connector;
+	for (connector = m_connectors.begin(); connector != m_connectors.end(); ++connector)
+	{
+		const int w = fm.width(QString("Port %1").arg(connector.key()));
+		if (w > width)
+		{
+			width = w;
+		}
+	}
+	m_shapeRect = QRect(-4, -4, width + 8, height + m_connectors.count() * height + 13);
+
 }
 

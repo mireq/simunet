@@ -85,11 +85,26 @@ class SNDiagramDevice : public SNDiagramItem
 
 	private:
 		void updateConnectorDiffs();
+		void calcShape();
+
+	private:
 		SNMapDeviceItem *m_device;
 		QMap<port_num, SNDiagramConnector *> m_connectors;
 		QString m_name;
 		QFont m_font;
 		SNDevicesDiagramScene *m_scene;
+
+/*!
+  Oblast, ktora sa povazuje za oblast zariadenia.
+ */
+		QRect m_shapeRect;
+
+/*!
+  Pomocna premenna, pouziva sa pri zmenseni velkosti zariadenia. Vtedy sa
+  najskor prekresli zariadenie pricom sa prekresluje oblast s vacsim obsahom
+  nez udava shape.
+ */
+		QRect m_boundingRect;
 
 };
 
