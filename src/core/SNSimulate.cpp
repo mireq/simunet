@@ -83,7 +83,7 @@ SNSimulate::SNSimulate(int threads)
 	{
 		SNSimulateHelper *helper = new SNSimulateHelper(m_mainThreadState);
 		m_simulateHelpers.push_back(helper);
-		helper->start();
+		//helper->start();
 	}
 	m_nextSimulateHelper = m_simulateHelpers.begin();
 }
@@ -142,7 +142,7 @@ bool SNSimulate::stopDevice(uint32_t id)
 	}
 	PyEval_AcquireLock();
 	PyThreadState_Swap(m_mainThreadState);
-	delete dev->second;
+	delete (dev->second);
 	PyThreadState_Swap(NULL);
 	PyEval_ReleaseLock();
 
@@ -157,14 +157,14 @@ bool SNSimulate::stopDevice(uint32_t id)
  */
 uint32_t SNSimulate::startDevice(const std::string &filename)
 {
-	// start zariadenia v pythonovi
+	// start zariadenia v pythonov
 	PyEval_AcquireLock();
 	PyThreadState_Swap(m_mainThreadState);
 	SNDevice *device = new SNDevice(filename, m_nextDeviceId, this);
 	PyThreadState_Swap(NULL);
 	PyEval_ReleaseLock();
 
-	(*m_nextSimulateHelper)->addDevice(device);
+	//(*m_nextSimulateHelper)->addDevice(device);
 	m_devices[m_nextDeviceId] = device;
 
 	m_nextDeviceId++;

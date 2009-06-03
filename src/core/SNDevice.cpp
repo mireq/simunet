@@ -117,7 +117,7 @@ SNDevice::~SNDevice()
 	PyCPPObject pDevicesDict(PyObject_GetAttrString(pMainModule, "devices"), true);
 	if (PyDict_Contains(pDevicesDict, pDeviceId) == 1)
 	{
-		PyCPPObject pDevice(PyDict_GetItem(pDevicesDict, pDeviceId), true);
+		PyCPPObject pDevice(PyDict_GetItem(pDevicesDict, pDeviceId));
 		try
 		{
 			PyCPPObject pStopFunc(PyObject_GetAttrString(pDevice, "stop"), true);

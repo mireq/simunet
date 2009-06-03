@@ -68,7 +68,9 @@ SNSimulateHelper::SNSimulateHelper(PyThreadState *mainThreadState)
 SNSimulateHelper::~SNSimulateHelper()
 {
 	PyEval_AcquireLock();
+	PyThreadState_Swap(m_mainThreadState);
 	Py_XDECREF(m_simulateHelper);
+	PyThreadState_Swap(NULL);
 	PyEval_ReleaseLock();
 	m_simulateHelper = NULL;
 	m_threadState = NULL;

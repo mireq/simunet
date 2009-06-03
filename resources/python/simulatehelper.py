@@ -2,14 +2,17 @@
 class SimulateHelper:
 	def __init__(self):
 		import Queue
-		import thread
+		from threading import Thread
 		self.__jobs = Queue.Queue()
-		thread.start_new_thread(self.run, ())
+		self.thread = Thread(None, self.run ,None,())
+		self.thread.start()
+		#thread.start_new_thread(self.run, ())
 		print "Starting thread."
 
 	def put(self, targetDevice, port, job):
 		if job is None:
 			self.__jobs.put(None)
+			self.thread.join()
 		else:
 			self.__jobs.put([targetDevice, port, job])
 
